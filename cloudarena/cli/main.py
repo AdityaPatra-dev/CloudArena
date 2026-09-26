@@ -8,7 +8,9 @@ import typer
 from rich.console import Console
 
 from cloudarena import __version__
+from cloudarena.cli.destroy_cmd import run_destroy
 from cloudarena.cli.setup_cmd import run_setup
+from cloudarena.cli.start_cmd import run_start
 from cloudarena.cli.status_cmd import run_status
 from cloudarena.core.environment import find_binary
 from cloudarena.core.paths import KUBECONFIG_FILE, get_extended_path_env
@@ -74,16 +76,19 @@ def kubectl_proxy(ctx: typer.Context):
 def start(
     event: Optional[str] = typer.Option(None, "--event", "-e", help="Event or Tournament ID"),
     player: Optional[str] = typer.Option(None, "--player", "-p", help="Player handle / username"),
+    workers: int = typer.Option(2, "--workers", "-w", help="Number of worker nodes to provision"),
+    skip_deploy: bool = typer.Option(False, "--skip-deploy", help="Skip deploying base microservice manifests"),
 ):
     """Spin up the 3-node cluster and initialize target workloads."""
-    console.print("[yellow]Phase 1 is currently active. Cluster provisioning (Phase 2) will be enabled next.[/yellow]")
-    console.print(f"Player: [cyan]{player or 'cadet'}[/cyan] | Event: [cyan]{event or 'solo'}[/cyan]")
+    run_start(event=event, player=player, workers=workers, skip_deploy=skip_deploy)
 
 
 @app.command("destroy")
-def destroy():
+def destroy(
+    force: bool = typer.Option(False, "--force", "-f", help="Force deletion without confirmation prompt"),
+):
     """Safely tear down the arena cluster and wipe local resources clean."""
-    console.print("[yellow]Phase 1 is currently active. Cluster lifecycle manager will be connected in Phase 2.[/yellow]")
+    run_destroy(force=force)
 
 
 @app.command("hint")

@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-code
+  namespace: cloudarena-app
+data:
+  server.py: |
+    import http.server
+    import json
+    import socketserver
+    import time
+    import os
+
+    PORT = 8080
+    START_TIME = time.time()
+    REQUEST_COUNT = 0
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def log_message(self, format, *args):
+            pass  # Suppress default noisy access logging
+
+        def do_GET(self):
+            global REQUEST_COUNT
+            REQUEST_COUNT += 1
+
+            if self.path == "/healthz":
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "healthy", "service": "backend-api"}).encode())
+
+            elif self.path == "/readyz":
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"ready": True}).encode())
+
+            elif self.path.startswith("/api/data"):
+                # Lightweight CPU calculation simulation
+                total = sum(i * i for i in range(500))
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                payload = {
+                    "message": "CloudArena Backend API Operational",
+                    "uptime_seconds": int(time.time() - START_TIME),
+                    "requests_served": REQUEST_COUNT,
+                    "checksum": total,
+                }
+                self.wfile.write(json.dumps(payload).encode())
+
+            elif self.path == "/metrics":
+                self.send_response(200)
+                self.send_header("Content-Type", "text/plain")
+                self.end_headers()
+                metrics = (
+                    f"# HELP backend_requests_total Total HTTP requests served\n"
+                    f"# TYPE backend_requests_total counter\n"
+                    f"backend_requests_total {REQUEST_COUNT}\n"
+                    f"# HELP backend_uptime_seconds Process uptime\n"
+                    f"# TYPE backend_uptime_seconds gauge\n"
+                    f"backend_uptime_seconds {int(time.time() - START_TIME)}\n"
+                )
+                self.wfile.write(metrics.encode())
+
+            else:
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.write(b"Not Found")
+
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print(f"Backend API listening on port {PORT}")
+        httpd.serve_forever()
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+  namespace: cloudarena-app
+  labels:
+    app.kubernetes.io/name: backend-api
+    cloudarena.io/role: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backend-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: backend-api
+    spec:
+      containers:
+      - name: api
+        image: python:3.11-alpine
+        command: ["python3", "/app/server.py"]
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        volumeMounts:
+        - name: app-code
+          mountPath: /app
+      volumes:
+      - name: app-code
+        configMap:
+          name: backend-code
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: cloudarena-app
+  labels:
+    app.kubernetes.io/name: backend-api
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
+  selector:
+    app.kubernetes.io/name: backend-api
