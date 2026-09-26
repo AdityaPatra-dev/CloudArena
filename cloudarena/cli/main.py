@@ -10,8 +10,10 @@ from rich.console import Console
 from cloudarena import __version__
 from cloudarena.cli.destroy_cmd import run_destroy
 from cloudarena.cli.hint_cmd import run_hint
+from cloudarena.cli.leaderboard_cmd import run_leaderboard
 from cloudarena.cli.postmortem_cmd import run_postmortem
 from cloudarena.cli.reset_cmd import run_reset
+from cloudarena.cli.server_cmd import server_app
 from cloudarena.cli.setup_cmd import run_setup
 from cloudarena.cli.start_cmd import run_start
 from cloudarena.cli.status_cmd import run_status
@@ -26,6 +28,7 @@ app = typer.Typer(
     add_completion=False,
 )
 app.add_typer(wave_app, name="wave")
+app.add_typer(server_app, name="server")
 console = Console()
 
 
@@ -117,6 +120,14 @@ def postmortem(
 ):
     """View SRE Incident Post-Mortems and key architectural learnings."""
     run_postmortem(wave=wave)
+
+
+@app.command("leaderboard")
+def leaderboard(
+    event: Optional[str] = typer.Option(None, "--event", "-e", help="Filter standings by tournament event ID"),
+):
+    """Display real-time tournament leaderboard standings."""
+    run_leaderboard(event=event)
 
 
 if __name__ == "__main__":
