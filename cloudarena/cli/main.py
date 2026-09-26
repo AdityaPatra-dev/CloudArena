@@ -9,9 +9,11 @@ from rich.console import Console
 
 from cloudarena import __version__
 from cloudarena.cli.destroy_cmd import run_destroy
+from cloudarena.cli.reset_cmd import run_reset
 from cloudarena.cli.setup_cmd import run_setup
 from cloudarena.cli.start_cmd import run_start
 from cloudarena.cli.status_cmd import run_status
+from cloudarena.cli.wave_cmd import wave_app
 from cloudarena.core.environment import find_binary
 from cloudarena.core.paths import KUBECONFIG_FILE, get_extended_path_env
 
@@ -21,6 +23,7 @@ app = typer.Typer(
     no_args_is_help=True,
     add_completion=False,
 )
+app.add_typer(wave_app, name="wave")
 console = Console()
 
 
@@ -100,7 +103,7 @@ def hint():
 @app.command("reset")
 def reset():
     """Instantly reset current wave workloads to their initial baseline."""
-    console.print("[yellow]Snapshot reconciliation will be connected in Phase 3.[/yellow]")
+    run_reset()
 
 
 if __name__ == "__main__":
