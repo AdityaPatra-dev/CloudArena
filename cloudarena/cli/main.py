@@ -9,6 +9,7 @@ from rich.console import Console
 
 from cloudarena import __version__
 from cloudarena.cli.destroy_cmd import run_destroy
+from cloudarena.cli.postmortem_cmd import run_postmortem
 from cloudarena.cli.reset_cmd import run_reset
 from cloudarena.cli.setup_cmd import run_setup
 from cloudarena.cli.start_cmd import run_start
@@ -104,6 +105,14 @@ def hint():
 def reset():
     """Instantly reset current wave workloads to their initial baseline."""
     run_reset()
+
+
+@app.command("postmortem")
+def postmortem(
+    wave: Optional[int] = typer.Argument(None, help="Wave number to inspect (1 to 4). Defaults to latest."),
+):
+    """View SRE Incident Post-Mortems and key architectural learnings."""
+    run_postmortem(wave=wave)
 
 
 if __name__ == "__main__":
