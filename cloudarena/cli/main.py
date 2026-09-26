@@ -9,6 +9,7 @@ from rich.console import Console
 
 from cloudarena import __version__
 from cloudarena.cli.destroy_cmd import run_destroy
+from cloudarena.cli.hint_cmd import run_hint
 from cloudarena.cli.postmortem_cmd import run_postmortem
 from cloudarena.cli.reset_cmd import run_reset
 from cloudarena.cli.setup_cmd import run_setup
@@ -96,9 +97,12 @@ def destroy(
 
 
 @app.command("hint")
-def hint():
+def hint(
+    yes: bool = typer.Option(False, "--yes", "-y", help="Confirm point deduction automatically without prompt"),
+    force_offline: bool = typer.Option(False, "--offline", help="Use local rule catalog without attempting LLM query"),
+):
     """Request progressive guidance from the AI Incident Mentor."""
-    console.print("[yellow]Incident Mentor engine will be connected in Phase 5.[/yellow]")
+    run_hint(yes=yes, force_offline=force_offline)
 
 
 @app.command("reset")
