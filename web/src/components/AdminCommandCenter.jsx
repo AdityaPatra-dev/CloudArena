@@ -14,15 +14,36 @@ import {
   CheckCircle2, 
   Zap, 
   Sliders,
-  Check
+  Check,
+  Key,
+  Copy,
+  UserPlus,
+  Trash2,
+  ShieldCheck,
+  AlertCircle
 } from 'lucide-react';
-import { updateEventConfigAdmin } from '../firebase';
+import { 
+  updateEventConfigAdmin,
+  generateAdminAccessToken,
+  revokeAdminToken,
+  subscribeAdminTokens,
+  promoteParticipantToAdmin
+} from '../firebase';
 
-export default function AdminCommandCenter({ eventConfig, standings = [] }) {
+export default function AdminCommandCenter({ eventConfig, standings = [], user }) {
   const [filter, setFilter] = useState('ALL');
   const [participants, setParticipants] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [savedNotice, setSavedNotice] = useState(false);
+
+  // Delegation and Tokens state
+  const [adminTokens, setAdminTokens] = useState([]);
+  const [newTokenLabel, setNewTokenLabel] = useState('');
+  const [isMintingToken, setIsMintingToken] = useState(false);
+  const [copiedTokenText, setCopiedTokenText] = useState(null);
+  const [targetPromote, setTargetPromote] = useState('');
+  const [isPromoting, setIsPromoting] = useState(false);
+  const [promoteStatus, setPromoteStatus] = useState(null);
 
   const eventId = eventConfig?.event_id || 'HACKATHON_2026';
 
@@ -98,6 +119,49 @@ export default function AdminCommandCenter({ eventConfig, standings = [] }) {
     const interval = setInterval(fetchParticipants, 3000);
     return () => clearInterval(interval);
   }, [eventId]);
+
+  useEffect(() => {
+    const unsub = subscribeAdminTokens((tokens) => {
+      setAdminTokens(tokens);
+    }, eventId);
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
+  }, [eventId]);
+
+  const handleMintAdminToken = async (e) => {
+    e.preventDefault();
+    setIsMintingToken(true);
+    await generateAdminAccessToken(eventId, newTokenLabel || "Co-Organizer Access Key", user?.handle || "root_admin");
+    setNewTokenLabel('');
+    setIsMintingToken(false);
+  };
+
+  const handleRevokeToken = async (tokenId) => {
+    if (confirm("Revoke this organizer access key? Anyone using it will lose admin authority.")) {
+      await revokeAdminToken(tokenId, eventId);
+    }
+  };
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopiedTokenText(text);
+    setTimeout(() => setCopiedTokenText(null), 2000);
+  };
+
+  const handlePromoteParticipant = async (identifier) => {
+    const target = identifier || targetPromote;
+    if (!target) return;
+    setIsPromoting(true);
+    setPromoteStatus(null);
+    const result = await promoteParticipantToAdmin(target, eventId);
+    setPromoteStatus(result);
+    setIsPromoting(false);
+    if (result.success && !identifier) {
+      setTargetPromote('');
+    }
+    setTimeout(() => setPromoteStatus(null), 5000);
+  };
 
   const handleSaveSettings = async () => {
     setIsSaving(true);
@@ -196,6 +260,161 @@ export default function AdminCommandCenter({ eventConfig, standings = [] }) {
             {savedNotice ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
             <span>{savedNotice ? "Saved to Cloud! ✓" : isSaving ? "Saving..." : "Save Settings"}</span>
           </button>
+        </div>
+      </div>
+
+      {/* Organizer Authority & Token Delegation Card */}
+      <div className="bg-gradient-to-br from-purple-950/40 via-slate-900/60 to-slate-950/80 border border-purple-500/30 rounded-3xl p-5 sm:p-8 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-500/20 pb-4">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-purple-500/20 text-purple-400">
+              <ShieldCheck className="w-5 h-5" />
+            </span>
+            <div>
+              <h3 className="font-extrabold text-white text-base sm:text-lg flex items-center gap-2">
+                <span>Organizer Authority & Token Delegation</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40 font-bold">
+                  Root Super Admin
+                </span>
+              </h3>
+              <p className="text-xs text-slate-400">
+                Primary Administrator: <strong className="text-purple-300">adityapatraraj@gmail.com</strong> (Has authority to mint tokens and promote competitors)
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 2-Column: Left = Mint Token, Right = Promote Participant */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Column A: Mint Organizer Access Token */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-4">
+            <div className="flex items-center gap-2">
+              <Key className="w-4 h-4 text-purple-400" />
+              <h4 className="text-sm font-bold text-white">Mint Organizer Access Key</h4>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Generate a unique 32-character admin token (<code className="text-purple-300 font-mono">ca_admin_...</code>) for co-organizers, proctors, or judges. Entering this key in Competitor Hub unlocks the Command Center.
+            </p>
+
+            <form onSubmit={handleMintAdminToken} className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Key Label (e.g. Judge Desk 1, Co-Organizer)"
+                value={newTokenLabel}
+                onChange={(e) => setNewTokenLabel(e.target.value)}
+                className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-400"
+              />
+              <button
+                type="submit"
+                disabled={isMintingToken}
+                className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow"
+              >
+                <Key className="w-3.5 h-3.5" />
+                <span>{isMintingToken ? "Minting..." : "Mint Key"}</span>
+              </button>
+            </form>
+
+            {/* Active Admin Tokens List */}
+            <div className="space-y-2 pt-2">
+              <div className="text-[11px] font-mono text-slate-400 uppercase font-semibold">Active Access Keys & Passcodes</div>
+              
+              {/* Default Master Passcode */}
+              <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-2 text-xs">
+                <div>
+                  <div className="font-mono text-purple-300 font-bold">arena_organizer</div>
+                  <div className="text-[10px] text-slate-500">Global Master Passcode (Emergency Fallback)</div>
+                </div>
+                <button
+                  onClick={() => handleCopy("arena_organizer")}
+                  className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-mono flex items-center gap-1 transition"
+                >
+                  {copiedTokenText === "arena_organizer" ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedTokenText === "arena_organizer" ? "Copied" : "Copy"}</span>
+                </button>
+              </div>
+
+              {/* Dynamic Minted Tokens */}
+              {adminTokens.filter(t => t.token !== "arena_organizer").map((tok) => (
+                <div key={tok.id || tok.token} className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-2 text-xs">
+                  <div className="truncate max-w-[200px] sm:max-w-xs">
+                    <div className="font-mono text-purple-300 font-bold truncate">{tok.token}</div>
+                    <div className="text-[10px] text-slate-400">{tok.label || "Co-Organizer"} • by @{tok.created_by || "admin"}</div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handleCopy(tok.token)}
+                      className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-mono flex items-center gap-1 transition"
+                    >
+                      {copiedTokenText === tok.token ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                      <span>{copiedTokenText === tok.token ? "Copied" : "Copy"}</span>
+                    </button>
+                    <button
+                      onClick={() => handleRevokeToken(tok.id || tok.token)}
+                      className="p-1 rounded-lg hover:bg-rose-950/60 text-slate-500 hover:text-rose-400 transition"
+                      title="Revoke Token"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Column B: Direct Participant Promotion */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-4 flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <UserPlus className="w-4 h-4 text-emerald-400" />
+                <h4 className="text-sm font-bold text-white">Directly Promote Participant to Organizer</h4>
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Elevate any competitor or staff member to full Organizer status by entering their registered Google email, gamer handle, or Firebase UID.
+              </p>
+
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="e.g. user@gmail.com or @cyber_valkyrie"
+                    value={targetPromote}
+                    onChange={(e) => setTargetPromote(e.target.value)}
+                    className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-400 font-mono"
+                  />
+                  <button
+                    onClick={() => handlePromoteParticipant()}
+                    disabled={isPromoting || !targetPromote.trim()}
+                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow disabled:opacity-50"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>{isPromoting ? "Promoting..." : "Promote"}</span>
+                  </button>
+                </div>
+
+                {promoteStatus && (
+                  <div className={`p-2.5 rounded-xl text-xs flex items-center gap-2 font-mono ${
+                    promoteStatus.success ? 'bg-emerald-950/40 border border-emerald-500/30 text-emerald-300' : 'bg-rose-950/40 border border-rose-500/30 text-rose-300'
+                  }`}>
+                    {promoteStatus.success ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> : <AlertCircle className="w-3.5 h-3.5 shrink-0" />}
+                    <span>{promoteStatus.message}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 text-[11px] text-slate-400 space-y-1">
+              <div className="font-bold text-slate-300 flex items-center gap-1.5">
+                <ShieldAlert className="w-3.5 h-3.5 text-purple-400" />
+                <span>Super Admin Invariant:</span>
+              </div>
+              <div>
+                User <code>adityapatraraj@gmail.com</code> is permanently configured as Root Super Admin in Cloud Firestore Security Rules and can delegate admin authority to anyone.
+              </div>
+            </div>
+
+          </div>
+
         </div>
       </div>
 
@@ -456,7 +675,14 @@ export default function AdminCommandCenter({ eventConfig, standings = [] }) {
                         {p.traffic_pct?.toFixed(1)}%
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-3 px-4 text-right space-x-1.5">
+                      <button
+                        onClick={() => handlePromoteParticipant(p.handle)}
+                        className="px-2 py-1 rounded-lg bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 text-[11px] font-medium transition border border-purple-800/60"
+                        title="Promote this participant to Organizer"
+                      >
+                        + Make Admin
+                      </button>
                       <button
                         onClick={() => alert(`Reset signal sent to @${p.handle}`)}
                         className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium transition"

@@ -199,6 +199,12 @@ def rollback(wave: Optional[int] = typer.Argument(None, help="Wave number to rol
             console.print(f"[bold red]❌ Rollback error:[/bold red] {e}")
 
 
+@wave_app.command("stop")
+def stop_wave(wave: Optional[int] = typer.Argument(None, help="Wave number to stop/cancel")):
+    """Stop/cancel the active attack wave and restore workloads to healthy baseline."""
+    rollback(wave=wave)
+
+
 @wave_app.command("list")
 def list_waves():
     """List all available attack wave challenges."""

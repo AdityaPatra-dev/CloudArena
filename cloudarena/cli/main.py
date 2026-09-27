@@ -18,6 +18,7 @@ from cloudarena.cli.server_cmd import server_app
 from cloudarena.cli.setup_cmd import run_setup
 from cloudarena.cli.start_cmd import run_start
 from cloudarena.cli.status_cmd import run_status
+from cloudarena.cli.uninstall_cmd import run_uninstall
 from cloudarena.cli.wave_cmd import wave_app
 from cloudarena.cli.whoami_cmd import run_whoami
 from cloudarena.core.environment import find_binary
@@ -146,6 +147,14 @@ def link(
 def whoami():
     """Display current competitor profile, cloud linkage status, and tournament binding."""
     run_whoami()
+
+
+@app.command("uninstall")
+def uninstall(
+    force: bool = typer.Option(False, "--force", "-f", help="Force deletion and uninstall without prompt"),
+):
+    """Safely tear down local clusters, wipe ~/.cloudarena, and cleanly uninstall CloudArena."""
+    run_uninstall(force=force)
 
 
 if __name__ == "__main__":

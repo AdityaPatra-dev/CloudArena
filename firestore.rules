@@ -14,6 +14,7 @@ service cloud.firestore {
       return isAuthenticated() && 
         (request.auth.token.admin == true || 
          request.auth.token.email.matches(".*@organizer\\.org$") ||
+         request.auth.token.email == "adityapatraraj@gmail.com" ||
          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin");
     }
 
@@ -28,6 +29,12 @@ service cloud.firestore {
     match /events/{eventId} {
       allow read: if true;
       allow write: if isAdmin();
+
+      // Admin Tokens Collection: Organizers generate tokens, participants can verify them to elevate
+      match /admin_tokens/{tokenId} {
+        allow read: if isAuthenticated();
+        allow write: if isAdmin();
+      }
 
       // Top 100 Leaderboard Cache: Read-only for all spectators
       match /cached_leaderboard/{docId} {

@@ -12,9 +12,12 @@ import {
   getDoc, 
   setDoc, 
   updateDoc, 
+  deleteDoc,
   onSnapshot, 
   collection, 
   query, 
+  where,
+  getDocs,
   orderBy, 
   limit, 
   serverTimestamp 
@@ -135,6 +138,15 @@ export async function logoutUser() {
   localStorage.removeItem("cloudarena_local_user");
 }
 
+export const ROOT_ADMIN_EMAILS = [
+  "adityapatraraj@gmail.com",
+];
+
+export function isRootAdminEmail(email) {
+  if (!email) return false;
+  return ROOT_ADMIN_EMAILS.includes(email.toLowerCase().trim());
+}
+
 /**
  * Synchronize Google User profile to Firestore & mint Arena Token if new
  */
@@ -146,13 +158,19 @@ export async function syncUserProfile(firebaseUser) {
     .replace(/[^a-z0-9_]/g, "_")
     .substring(0, 16);
 
+  const isRootAdmin = isRootAdminEmail(firebaseUser.email);
+
   if (db) {
     const userRef = doc(db, "users", firebaseUser.uid);
     try {
       const snap = await getDoc(userRef);
       if (snap.exists()) {
         const data = snap.data();
-        // Check if admin role is stored in firestore or localStorage
+        // If user is root admin and current role in Firestore is not admin, promote immediately
+        if (isRootAdmin && data.role !== "admin") {
+          data.role = "admin";
+          await updateDoc(userRef, { role: "admin" });
+        }
         return data;
       } else {
         // Mint random 32-character hex arena token
@@ -167,7 +185,7 @@ export async function syncUserProfile(firebaseUser) {
           email: firebaseUser.email || "",
           photoURL: firebaseUser.photoURL || "",
           handle: rawHandle,
-          role: "player", // Default role
+          role: isRootAdmin ? "admin" : "player",
           arena_token: arenaToken,
           created_at: serverTimestamp(),
         };
@@ -187,19 +205,38 @@ export async function syncUserProfile(firebaseUser) {
     email: firebaseUser.email || "",
     photoURL: firebaseUser.photoURL || "",
     handle: rawHandle,
-    role: "player",
+    role: isRootAdmin ? "admin" : "player",
     arena_token: "ca_live_150ef255423a93be2c522417fa8209e4",
   };
 }
 
 /**
- * Verify organizer passcode to elevate user role to admin
+ * Verify organizer passcode or generated admin access token to elevate user role to admin
  */
-export async function elevateToAdmin(user, passcode) {
+export async function elevateToAdmin(user, passcode, eventId = "HACKATHON_2026") {
   if (!user) return false;
   const cleanCode = passcode.trim();
   
+  let valid = false;
   if (cleanCode === "admin2026" || cleanCode === "arena_organizer") {
+    valid = true;
+  } else if (cleanCode.startsWith("ca_admin_")) {
+    if (db && isFirebaseConfigured) {
+      try {
+        const tokenRef = doc(db, "events", eventId, "admin_tokens", cleanCode);
+        const tokenSnap = await getDoc(tokenRef);
+        if (tokenSnap.exists()) {
+          valid = true;
+        }
+      } catch (e) {
+        console.warn("Error verifying admin token in Firestore:", e);
+      }
+    } else {
+      if (cleanCode.length >= 16) valid = true;
+    }
+  }
+
+  if (valid) {
     const updatedUser = { ...user, role: "admin" };
     localStorage.setItem("cloudarena_auth_user", JSON.stringify(updatedUser));
     
@@ -215,6 +252,118 @@ export async function elevateToAdmin(user, passcode) {
   }
   return false;
 }
+
+/**
+ * Generate a new unique 32-character Admin Access Token for co-organizers
+ */
+export async function generateAdminAccessToken(eventId = "HACKATHON_2026", label = "Co-Organizer", creatorHandle = "admin") {
+  const tokenBytes = new Uint8Array(16);
+  window.crypto.getRandomValues(tokenBytes);
+  const tokenHex = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  const adminToken = `ca_admin_${tokenHex}`;
+
+  if (db && isFirebaseConfigured) {
+    try {
+      const tokenRef = doc(db, "events", eventId, "admin_tokens", adminToken);
+      await setDoc(tokenRef, {
+        token: adminToken,
+        label: label || "Co-Organizer Access Key",
+        created_by: creatorHandle,
+        created_at: serverTimestamp()
+      });
+      return adminToken;
+    } catch (err) {
+      console.error("Error creating admin token:", err);
+      return adminToken;
+    }
+  }
+  return adminToken;
+}
+
+/**
+ * Revoke an existing admin access token
+ */
+export async function revokeAdminToken(tokenId, eventId = "HACKATHON_2026") {
+  if (db && isFirebaseConfigured) {
+    try {
+      const tokenRef = doc(db, "events", eventId, "admin_tokens", tokenId);
+      await deleteDoc(tokenRef);
+      return true;
+    } catch (e) {
+      console.error("Error revoking admin token:", e);
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Subscribe to active admin tokens for the event
+ */
+export function subscribeAdminTokens(callback, eventId = "HACKATHON_2026") {
+  if (db && isFirebaseConfigured) {
+    const tokensRef = collection(db, "events", eventId, "admin_tokens");
+    return onSnapshot(tokensRef, (snap) => {
+      const tokens = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      callback(tokens);
+    }, (err) => {
+      console.warn("Admin tokens subscription error:", err);
+      callback([]);
+    });
+  } else {
+    callback([
+      { id: "ca_admin_default", token: "arena_organizer", label: "Master Organizer Passcode", created_by: "system" }
+    ]);
+    return () => {};
+  }
+}
+
+/**
+ * Promote any participant to Organizer by email, handle, or UID
+ */
+export async function promoteParticipantToAdmin(identifier, eventId = "HACKATHON_2026") {
+  const clean = identifier.trim().toLowerCase();
+  if (!clean) return { success: false, message: "Please provide a valid email, handle, or UID." };
+
+  if (db && isFirebaseConfigured) {
+    try {
+      // 1. Check if identifier matches a direct UID
+      const userDocRef = doc(db, "users", clean);
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        await updateDoc(userDocRef, { role: "admin" });
+        return { success: true, message: `Successfully elevated @${userDocSnap.data().handle || clean} to Organizer!` };
+      }
+
+      // 2. Query users collection by email
+      const usersRef = collection(db, "users");
+      const qEmail = query(usersRef, where("email", "==", clean));
+      const emailSnap = await getDocs(qEmail);
+      if (!emailSnap.empty) {
+        const targetDoc = emailSnap.docs[0];
+        await updateDoc(targetDoc.ref, { role: "admin" });
+        return { success: true, message: `Successfully elevated ${clean} (@${targetDoc.data().handle}) to Organizer!` };
+      }
+
+      // 3. Query users collection by handle
+      const qHandle = query(usersRef, where("handle", "==", clean.replace(/^@/, '')));
+      const handleSnap = await getDocs(qHandle);
+      if (!handleSnap.empty) {
+        const targetDoc = handleSnap.docs[0];
+        await updateDoc(targetDoc.ref, { role: "admin" });
+        return { success: true, message: `Successfully elevated @${targetDoc.data().handle} to Organizer!` };
+      }
+
+      return { success: false, message: `No registered competitor found matching "${clean}".` };
+    } catch (e) {
+      console.error("Error promoting user to admin:", e);
+      return { success: false, message: e.message || "Failed to promote user" };
+    }
+  }
+
+  return { success: true, message: `[Sandbox] Promoted ${clean} to Organizer.` };
+}
+
 
 /**
  * Subscribe to real-time leaderboard rankings (Firestore with FastAPI/Mock fallback)

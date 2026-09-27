@@ -6,7 +6,8 @@ import {
   Tv, 
   LogIn, 
   LogOut, 
-  Radio
+  Radio,
+  BookOpen
 } from 'lucide-react';
 import Logo from './Logo';
 
@@ -76,6 +77,18 @@ export default function Navbar({
               {user?.arena_token && (
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               )}
+            </button>
+
+            <button
+              onClick={() => setActiveTab('docs')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+                activeTab === 'docs'
+                  ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+              }`}
+            >
+              <BookOpen className="w-4 h-4 text-sky-400" />
+              <span>Field Guide</span>
             </button>
 
             {/* Admin Command tab - ONLY visible to verified organizers */}
@@ -169,6 +182,16 @@ export default function Navbar({
           {user?.arena_token && (
             <span className="absolute top-1 right-3 w-2 h-2 rounded-full bg-emerald-400"></span>
           )}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('docs')}
+          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition ${
+            activeTab === 'docs' ? 'text-sky-400' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <BookOpen className="w-5 h-5" />
+          <span className="text-[10px] font-semibold">Guide</span>
         </button>
 
         {isAdmin && (

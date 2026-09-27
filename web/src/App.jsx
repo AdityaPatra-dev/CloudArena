@@ -4,6 +4,7 @@ import LeaderboardView from './components/LeaderboardView';
 import CompetitorHub from './components/CompetitorHub';
 import AdminCommandCenter from './components/AdminCommandCenter';
 import ProjectorMode from './components/ProjectorMode';
+import DocsFieldGuide from './components/DocsFieldGuide';
 import { 
   loginWithGoogle, 
   logoutUser, 
@@ -135,10 +136,15 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'docs' && (
+          <DocsFieldGuide />
+        )}
+
         {activeTab === 'admin' && user?.role === 'admin' && (
           <AdminCommandCenter 
             eventConfig={eventConfig}
             standings={standings}
+            user={user}
           />
         )}
       </main>
