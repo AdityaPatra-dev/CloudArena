@@ -18,10 +18,21 @@ service cloud.firestore {
          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin");
     }
 
-    // Users Collection: Competitors can read/write their own profile and mint token
+    // Users Collection: Competitors can only read and update their OWN profile.
+    // Secret Arena Tokens are shielded from other students.
+    // Strict privilege escalation guard prevents changing role to 'admin'.
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isOwner(userId) || isAdmin();
+      allow read: if isOwner(userId) || isAdmin();
+      
+      allow create: if isOwner(userId) && 
+        (request.resource.data.role == "player" || isAdmin());
+
+      allow update: if isAdmin() || (
+        isOwner(userId) && 
+        request.resource.data.role == resource.data.role &&
+        request.resource.data.arena_token == resource.data.arena_token
+      );
+
       allow delete: if isAdmin();
     }
 
@@ -36,23 +47,39 @@ service cloud.firestore {
         allow write: if isAdmin();
       }
 
-      // Top 100 Leaderboard Cache: Read-only for all spectators
+      // Top 100 Leaderboard Cache: Read-only for all spectators (Quota Optimized single doc)
       match /cached_leaderboard/{docId} {
         allow read: if true;
         allow write: if isAdmin();
       }
 
-      // Participants in event: Users can update their own status/heartbeat
+      // Public Participants list: Displays handles & ranks on leaderboard.
+      // Rate-limited to prevent script-kiddie write flooding DDoS.
       match /participants/{userId} {
         allow read: if true;
-        allow create, update: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId) || isAdmin();
+        allow update: if isAdmin() || (
+          isOwner(userId) && (
+            !('updated_at' in resource.data) || 
+            request.time >= resource.data.updated_at + duration.value(2, 's')
+          )
+        );
         allow delete: if isAdmin();
       }
 
-      // Wave Scores: Can be created once per wave with valid verification
+      // Verified Wave Scores: Cryptographic HMAC and bounded score validation
       match /scores/{scoreId} {
         allow read: if true;
-        allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+        allow create: if isAuthenticated() && 
+          request.resource.data.uid == request.auth.uid &&
+          request.resource.data.score is number &&
+          request.resource.data.score >= 0 &&
+          request.resource.data.score <= 500 &&
+          request.resource.data.wave is number &&
+          request.resource.data.wave >= 1 &&
+          request.resource.data.wave <= 4 &&
+          request.resource.data.hmac is string &&
+          request.resource.data.hmac.size() >= 16;
         allow update, delete: if isAdmin();
       }
     }

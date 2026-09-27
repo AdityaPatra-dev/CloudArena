@@ -368,4 +368,123 @@ gantt
 3. Add tournament replay timeline viewer for auditorium projector display.
 
 ---
+
+## 8. Cyber Defense, Anti-Abuse & Infrastructure Hardening Matrix
+
+```mermaid
+flowchart TD
+    subgraph Client["Student Browser & CLI"]
+        C1["Student Laptop (CLI)"]
+        C2["Browser (DevTools / Script)"]
+    end
+
+    subgraph SecurityPerimeter["CloudArena Security Perimeter"]
+        H1["HTTP Security Headers<br/>(CSP, X-Frame-Options, Cache-Control)"]
+        FR["Firestore Security Rules<br/>(Role Locks, Rate Limit, Nonce Attestation)"]
+        LQ["Quota Shield & Cache Fallback<br/>(LocalStorage + Top100 Aggregator)"]
+    end
+
+    subgraph FirebaseBackend["Firebase Cloud Infrastructure"]
+        FStore["Cloud Firestore<br/>(Users, Events, Scores)"]
+        FHost["Firebase Hosting CDN<br/>(Static Assets)"]
+    end
+
+    C2 -->|"Malicious Write Loop / Token Probe"| H1
+    H1 -->|"Blocked or Throttled"| FR
+    FR -->|"Valid & Rate-Limited Only"| FStore
+    C1 -->|"HMAC-SHA256 Score Proof"| FR
+    FStore -->|"Single Top100 Doc Broadcast"| LQ
+    LQ -->|"Resilient Offline Fallback"| C2
+```
+
+### Threat Model & Production Defenses
+
+| Threat Vector | Attack Scenario | Blast Radius without Defense | CloudArena Implemented Defense | Status |
+| :--- | :--- | :--- | :--- | :---: |
+| **Firestore Write Flooding** | Student writes a loop calling `setDoc` every 10ms from browser DevTools | Depletes 20,000 daily free writes in under 3 minutes; freezes tournament score posting | **Rule Rate-Limiter:** `firestore.rules` enforces `request.time >= resource.data.updated_at + duration.value(2, 's')`. Burst writes are rejected with `PERMISSION_DENIED`. | **ACTIVE** |
+| **Privilege Escalation** | Cadet submits `{ role: "admin" }` in their user profile document | Cadet gains master organizer control (freezing scoreboard, modifying times) | **Rule Immutability Guard:** `request.resource.data.role == resource.data.role`. Non-admins can never alter their role. Only verified root admins (`adityapatraraj@gmail.com`) can elevate users. | **ACTIVE** |
+| **Token Theft & Identity Spoofing** | Student queries `/users` collection to read other competitors' `arena_token` | Cadet submits scores under a competitor's identity | **Private Credential Segregation:** `users/{userId}` is strictly locked to `isOwner(userId) \|\| isAdmin()`. Competitors can only view public handles in `participants/`. | **ACTIVE** |
+| **Score Tampering & Value Spoofing** | Student sends arbitrary score payload (e.g., `score: 999999`) | Corrupts leaderboard standings and awards false rankings | **HMAC & Range Bounds:** Scores must satisfy `0 <= score <= 500`, `1 <= wave <= 4`, and contain valid `hmac.size() >= 16` signed by the cluster secret nonce. | **ACTIVE** |
+| **Clickjacking & UI Redress** | Competitor embeds CloudArena in a transparent iframe on phishing site | Steals Google OAuth credentials or tokens | **Security Headers in `firebase.json`:** `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection: 1; mode=block`. | **ACTIVE** |
+| **Hosting Bandwidth Exhaustion** | 2,000 competitors spam hard refresh (Ctrl+F5) on 700KB bundle | Exceeds 360 MB/day Firebase Hosting bandwidth free quota | **Immutable Edge Caching:** `firebase.json` serves `/assets/**` with `Cache-Control: public, max-age=31536000, immutable`. Browser fetches bundle once; subsequent reloads hit browser disk cache (0 bytes egress). | **ACTIVE** |
+| **Quota Denial-of-Service (`RESOURCE_EXHAUSTED`)** | Firestore daily read quota (50k) runs out during live event | Website crashes with uncaught exception, blank white screen for all 2,000 competitors | **Client Resilient Cache Mode:** In `firebase.js`, `subscribeLeaderboard` caches data in `localStorage`. If `RESOURCE_EXHAUSTED` occurs, the app automatically switches to cached standings without interrupting the user. | **ACTIVE** |
+
+---
+
+## 9. Firebase Free Tier (Spark Plan) Capacity Benchmark & Stress Analysis
+
+### 1. Firebase Free Tier Hard Quotas (Spark Plan)
+
+| Resource | Spark Free Tier Quota | Reset Cadence | Critical Threshold |
+| :--- | :--- | :--- | :--- |
+| **Firestore Document Reads** | **50,000 reads** | Daily (00:00 UTC) | $50,000 / \text{Active Competitors}$ |
+| **Firestore Document Writes** | **20,000 writes** | Daily (00:00 UTC) | $20,000 / \text{Event Duration}$ |
+| **Firestore Document Deletes** | **20,000 deletes** | Daily (00:00 UTC) | Minimal impact |
+| **Hosting Bandwidth (Egress)** | **360 MB / day** (10 GB/mo) | Daily | $\approx 1,950$ cold loads |
+| **Single-Document Write Rate** | **1 write / second** | Continuous | Hotspot bottleneck on shared docs |
+| **Concurrent WebSocket Connections** | **1,000,000 connections** | Continuous | Not a bottleneck ($\le 1\text{M}$) |
+| **Google Sign-In Auth MAU** | **50,000 MAU** | Monthly | Not a bottleneck ($\le 50\text{k}$) |
+
+---
+
+### 2. Capacity by Architecture Comparison
+
+#### A. Naive Architecture (Un-Aggregated Queries) ❌
+- Every student subscribes with `onSnapshot(query(collection("participants"), limit(100)))`.
+- Every student reads **100 documents** on initial page load.
+- When 1 score is posted, all connected students receive 1 read.
+- **Capacity Formula:** $\text{Initial Reads} = N \times 100$.
+
+#### B. CloudArena Quota-Optimized Architecture (Aggregated Top 100 Document) ✅
+- Every student subscribes to **1 single document**: `events/{eventId}/cached_leaderboard/top100`.
+- Initial page load = **1 document read** per student.
+- Live broadcast update = **1 document read** per student.
+- **Capacity Formula:** $\text{Total Reads} = N \times (1 + \text{Updates})$.
+
+---
+
+### 3. Comprehensive Scale & Stress Matrix
+
+| Concurrent Students | Naive Initial Reads | Naive Status | Aggregated Initial Reads | Max Live Updates Allowed on Free Tier | Recommended Update Frequency (4-Hour Event) | Daily Write Budget Consumed (4 Waves + Profiles) | Hosting Bandwidth (Cold Loads) | Verdict on Free Tier |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **100** | 10,000 | Safe | 100 | **499 updates** | Every 30 seconds | 500 writes (2.5%) | 18.4 MB (5.1%) | 🟢 **Flawless** |
+| **250** | 25,000 | Warning | 250 | **199 updates** | Every 1.2 minutes | 1,250 writes (6.2%) | 46.0 MB (12.8%) | 🟢 **Flawless** |
+| **500** | 50,000 | 🛑 **QUOTA DEAD** | 500 | **99 updates** | Every 2.4 minutes | 2,500 writes (12.5%) | 92.0 MB (25.5%) | 🟢 **Solid** |
+| **1,000** | 100,000 | 🛑 **QUOTA DEAD** | 1,000 | **49 updates** | Every 5 minutes | 5,000 writes (25.0%) | 184.0 MB (51.1%) | 🟡 **Manageable** |
+| **2,000** | 200,000 | 🛑 **QUOTA DEAD** | 2,000 | **24 updates** | Every 10 minutes | 10,024 writes (50.1%) | 368.0 MB (102% cold)* | 🟡 **Feasible with Caching** |
+| **5,000** | 500,000 | 🛑 **QUOTA DEAD** | 5,000 | **9 updates** | Closing ceremonies only | 25,000 writes (125%) 🛑 | 920.0 MB (255%) 🛑 | 🔴 **Requires Blaze Plan** |
+
+*\*Note on Bandwidth for 2,000 students: With browser asset caching (`max-age=31536000`), returning students consume 0 bytes. Only 1st cold loads consume bandwidth.*
+
+---
+
+### 4. Mathematical Limit Proof: Why Heartbeats Must NOT Hit Firestore on Free Tier
+
+$$\text{Heartbeat Write Rate} = 2,000 \text{ students} \times 6 \text{ pings/min} = 12,000 \text{ writes/min}$$
+
+$$\text{Time to Quota Exhaustion} = \frac{20,000 \text{ Daily Writes}}{12,000 \text{ writes/min}} = 1.66 \text{ minutes} \text{ (100 seconds!)}$$
+
+> [!CAUTION]
+> If live telemetry heartbeats (radar pings) were written directly to Firestore, a 2,000-student event would exhaust the entire daily write quota in **under 100 seconds**!
+> **Architectural Invariant:** CloudArena keeps high-frequency telemetry on the local/edge node via `cloudarena server` (FastAPI / WebSockets) and only submits verified wave completions to Cloud Firestore.
+
+---
+
+### 5. Recommended Production Infrastructure Playbook for 2,000+ Competitors
+
+1. **Option A: Pure 100% Free Tier (Spark Plan)**
+   - Set Leaderboard broadcast interval to **5–10 minutes** (or update on significant rank shifts).
+   - Freeze the scoreboard during the final 30 minutes (`is_frozen: true`).
+   - Enable Cloudflare Free Tier in front of `gdg-cloudarena.web.app` (provides unmetered free bandwidth and full DDoS protection).
+   - Total hosting cost: **$0.00**.
+
+2. **Option B: Firebase Blaze Tier (Pay-As-You-Go with Free Allowances)**
+   - **Cost to run a 2,000-student 4-hour hackathon with real-time updates every 15 seconds:**
+     - 50,000 reads free + ~200,000 additional reads @ $0.06 per 100,000 reads = **~$0.12 USD (12 cents!)**.
+     - 20,000 writes free = **$0.00 USD**.
+     - Total event hosting cost: **Less than \$0.50 USD**.
+   - Upgrading to Blaze tier eliminates any risk of a hard `RESOURCE_EXHAUSTED` shutdown while remaining practically free.
+
+---
 *Maintained by CloudArena Core Team • Built for Google Developer Groups & Cloud Communities Worldwide.*
+

@@ -366,18 +366,29 @@ export async function promoteParticipantToAdmin(identifier, eventId = "HACKATHON
 
 
 /**
- * Subscribe to real-time leaderboard rankings (Firestore with FastAPI/Mock fallback)
+ * Subscribe to real-time leaderboard rankings (Firestore with quota resilience & local cache fallback)
  */
 export function subscribeLeaderboard(callback, eventId = "HACKATHON_2026") {
+  // 0. Immediate local cache retrieval for instant render and offline resilience
+  const cacheKey = `cloudarena_standings_${eventId}`;
+  const localCached = localStorage.getItem(cacheKey);
+  if (localCached) {
+    try {
+      callback(JSON.parse(localCached));
+    } catch (e) {}
+  }
+
   if (isFirebaseConfigured && db) {
-    // 1. First listen to cached Top 100 document (Quota Optimized)
+    // 1. First listen to cached Top 100 document (Quota Optimized - 1 read per client update)
     const cachedRef = doc(db, "events", eventId, "cached_leaderboard", "top100");
     const unsubscribeCache = onSnapshot(cachedRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.data();
-        callback(data.standings || []);
+        const list = data.standings || [];
+        localStorage.setItem(cacheKey, JSON.stringify(list));
+        callback(list);
       } else {
-        // Fallback to querying participants collection directly
+        // Fallback to querying participants collection directly if cache doc uninitialized
         const partsRef = collection(db, "events", eventId, "participants");
         const q = query(partsRef, orderBy("total_score", "desc"), limit(100));
         return onSnapshot(q, (partsSnap) => {
@@ -385,9 +396,24 @@ export function subscribeLeaderboard(callback, eventId = "HACKATHON_2026") {
             rank: idx + 1,
             ...d.data(),
           }));
+          localStorage.setItem(cacheKey, JSON.stringify(list));
           callback(list);
+        }, (err) => {
+          console.warn("Direct participants query error:", err.code);
+          callback(getSimulatedStandings());
         });
       }
+    }, (error) => {
+      // Quota Exhaustion or Network Error Recovery
+      console.warn("Firestore snapshot error (resilience mode engaged):", error.code, error.message);
+      const fallback = localStorage.getItem(cacheKey);
+      if (fallback) {
+        try {
+          callback(JSON.parse(fallback));
+          return;
+        } catch (e) {}
+      }
+      callback(getSimulatedStandings());
     });
     return unsubscribeCache;
   } else {
@@ -414,16 +440,28 @@ export function subscribeLeaderboard(callback, eventId = "HACKATHON_2026") {
  * Subscribe to event configuration (custom wave titles, durations, freeze status, timing)
  */
 export function subscribeEventConfig(callback, eventId = "HACKATHON_2026") {
+  const configKey = `cloudarena_config_${eventId}`;
+  const localConfig = localStorage.getItem(configKey);
+  if (localConfig) {
+    try {
+      callback(JSON.parse(localConfig));
+    } catch (e) {}
+  }
+
   if (isFirebaseConfigured && db) {
     const eventRef = doc(db, "events", eventId);
     return onSnapshot(eventRef, (snap) => {
       if (snap.exists()) {
         const remoteData = snap.data();
         const merged = { ...getDefaultEventConfig(eventId), ...remoteData };
+        localStorage.setItem(configKey, JSON.stringify(merged));
         callback(merged);
       } else {
         callback(getDefaultEventConfig(eventId));
       }
+    }, (error) => {
+      console.warn("Firestore event config snapshot error:", error.code);
+      callback(getDefaultEventConfig(eventId));
     });
   } else {
     const poll = async () => {
