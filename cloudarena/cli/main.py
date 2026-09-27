@@ -11,6 +11,7 @@ from cloudarena import __version__
 from cloudarena.cli.destroy_cmd import run_destroy
 from cloudarena.cli.hint_cmd import run_hint
 from cloudarena.cli.leaderboard_cmd import run_leaderboard
+from cloudarena.cli.link_cmd import run_link
 from cloudarena.cli.postmortem_cmd import run_postmortem
 from cloudarena.cli.reset_cmd import run_reset
 from cloudarena.cli.server_cmd import server_app
@@ -18,6 +19,7 @@ from cloudarena.cli.setup_cmd import run_setup
 from cloudarena.cli.start_cmd import run_start
 from cloudarena.cli.status_cmd import run_status
 from cloudarena.cli.wave_cmd import wave_app
+from cloudarena.cli.whoami_cmd import run_whoami
 from cloudarena.core.environment import find_binary
 from cloudarena.core.paths import KUBECONFIG_FILE, get_extended_path_env
 
@@ -128,6 +130,22 @@ def leaderboard(
 ):
     """Display real-time tournament leaderboard standings."""
     run_leaderboard(event=event)
+
+
+@app.command("link")
+def link(
+    token: str = typer.Argument(..., help="Your personal Arena Token from the CloudArena web dashboard"),
+    event: Optional[str] = typer.Option(None, "--event", "-e", help="Tournament event code to join"),
+    handle: Optional[str] = typer.Option(None, "--handle", "-u", help="Gamer handle / username override"),
+):
+    """Link local environment to CloudArena web platform using your Personal Arena Token."""
+    run_link(token=token, event=event, handle=handle)
+
+
+@app.command("whoami")
+def whoami():
+    """Display current competitor profile, cloud linkage status, and tournament binding."""
+    run_whoami()
 
 
 if __name__ == "__main__":

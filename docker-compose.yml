@@ -1,0 +1,23 @@
+services:
+  leaderboard-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: cloudarena-leaderboard
+    ports:
+      - "8000:8000"
+    environment:
+      - CLOUDARENA_HOST=0.0.0.0
+      - CLOUDARENA_PORT=8000
+    volumes:
+      - leaderboard-data:/root/.cloudarena
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  leaderboard-data:
+    driver: local

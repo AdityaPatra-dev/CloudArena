@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy project files
+COPY pyproject.toml README.md ./
+COPY cloudarena/ ./cloudarena/
+
+# Install python dependencies
+RUN pip install --no-cache-dir .
+
+EXPOSE 8000
+
+ENV CLOUDARENA_HOST=0.0.0.0
+ENV CLOUDARENA_PORT=8000
+
+CMD ["uvicorn", "cloudarena.backend.api.app:app", "--host", "0.0.0.0", "--port", "8000"]

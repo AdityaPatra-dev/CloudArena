@@ -45,9 +45,17 @@ def launch_wave(wave: int) -> AttackInfo:
         except Exception:
             pass
 
+    config = load_config()
+    from cloudarena.attestation.proof import generate_wave_nonce, inject_cluster_nonce
+    token = config.player.arena_token or "offline_token"
+    nonce = generate_wave_nonce(token, wave, config.cluster.cluster_name)
+    try:
+        inject_cluster_nonce(nonce, wave)
+    except Exception:
+        pass
+
     attack.inject()
 
-    config = load_config()
     config.game.current_wave = wave
     config.game.wave_start_time = time.time()
     config.game.hints_used_in_wave = 0

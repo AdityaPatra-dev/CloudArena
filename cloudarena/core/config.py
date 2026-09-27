@@ -8,8 +8,13 @@ from cloudarena.core.paths import CONFIG_FILE, ensure_directories
 
 class PlayerConfig(BaseModel):
     handle: str = "cadet"
+    email: Optional[str] = None
+    user_id: Optional[str] = None
+    arena_token: Optional[str] = None
     event_id: Optional[str] = None
+    team_id: Optional[str] = None
     solo_mode: bool = True
+    is_linked: bool = False
 
 
 class ClusterConfig(BaseModel):

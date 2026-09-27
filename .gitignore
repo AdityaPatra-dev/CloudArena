@@ -40,3 +40,9 @@ htmlcov/
 # CloudArena local runtime state
 .cloudarena/
 *.kubeconfig
+
+# Web frontend artifacts
+web/node_modules/
+.env
+.env.local
+
