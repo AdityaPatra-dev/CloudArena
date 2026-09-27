@@ -153,3 +153,4 @@ service cloud.firestore {
 | **Participant Heartbeat** | 2,000 writes/sec (1/sec) | **Adaptive 30s writes** (66 writes/sec) | **< $0.50 / day** |
 | **Scoreboard Reads** | 2,000 users reading 2,000 rows (4M reads/min) | **Cached Top-100 Doc** (All 2,000 read 1 document) | **Free tier covered** |
 | **Incident Telemetry** | Continuous socket stream | **Event-Driven Transitions** (Injected, Hint, Resolved) | **99% reduction** |
+

@@ -55,41 +55,83 @@ if (isFirebaseConfigured) {
 export { auth, db, googleProvider };
 
 /**
+ * Listen for persistent Auth State changes across browser refreshes
+ */
+export function initAuthListener(callback) {
+  // First check instant cached profile from localStorage for 0ms visual flash
+  const cached = localStorage.getItem("cloudarena_auth_user");
+  if (cached) {
+    try {
+      callback(JSON.parse(cached));
+    } catch (e) {}
+  }
+
+  if (isFirebaseConfigured && auth) {
+    return onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const profile = await syncUserProfile(firebaseUser);
+        if (profile) {
+          localStorage.setItem("cloudarena_auth_user", JSON.stringify(profile));
+          callback(profile);
+        }
+      } else {
+        localStorage.removeItem("cloudarena_auth_user");
+        callback(null);
+      }
+    });
+  } else {
+    // Local / Dev Fallback
+    const local = localStorage.getItem("cloudarena_local_user");
+    if (local) {
+      try {
+        callback(JSON.parse(local));
+      } catch (e) {
+        callback(null);
+      }
+    } else {
+      callback(null);
+    }
+    return () => {};
+  }
+}
+
+/**
  * Sign in with Google Auth popup.
- * In local preview mode (no Firebase config), creates an interactive simulated profile.
  */
 export async function loginWithGoogle() {
   if (isFirebaseConfigured && auth && googleProvider) {
     const result = await signInWithPopup(auth, googleProvider);
-    return await syncUserProfile(result.user);
+    const profile = await syncUserProfile(result.user);
+    if (profile) {
+      localStorage.setItem("cloudarena_auth_user", JSON.stringify(profile));
+    }
+    return profile;
   } else {
-    // Local / Dev Fallback: Prompt for handle and simulate
-    const stored = localStorage.getItem("cloudarena_local_user");
-    if (stored) return JSON.parse(stored);
-
+    // Local preview simulation
     const randomHex = Math.random().toString(16).substring(2, 10);
     const mockUser = {
       uid: "usr_" + randomHex,
       displayName: "Aditya Patra",
       email: "aditya.competitor@gmail.com",
       photoURL: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80",
-      handle: "neo_sre",
-      role: "admin", // Default to admin in dev mode so organizer command center can be inspected
+      handle: "aditya_sre",
+      role: "player",
       arena_token: `ca_live_${Math.random().toString(16).substring(2)}${Math.random().toString(16).substring(2)}`,
       created_at: new Date().toISOString()
     };
-    localStorage.setItem("cloudarena_local_user", JSON.stringify(mockUser));
+    localStorage.setItem("cloudarena_auth_user", JSON.stringify(mockUser));
     return mockUser;
   }
 }
 
 /**
- * Log out user
+ * Log out user from both Firebase Auth and local cache
  */
 export async function logoutUser() {
   if (isFirebaseConfigured && auth) {
     await signOut(auth);
   }
+  localStorage.removeItem("cloudarena_auth_user");
   localStorage.removeItem("cloudarena_local_user");
 }
 
@@ -97,39 +139,81 @@ export async function logoutUser() {
  * Synchronize Google User profile to Firestore & mint Arena Token if new
  */
 export async function syncUserProfile(firebaseUser) {
-  if (!db || !firebaseUser) return null;
+  if (!firebaseUser) return null;
 
-  const userRef = doc(db, "users", firebaseUser.uid);
-  const snap = await getDoc(userRef);
+  const rawHandle = (firebaseUser.displayName || "cadet")
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_")
+    .substring(0, 16);
 
-  if (snap.exists()) {
-    return snap.data();
-  } else {
-    const rawHandle = (firebaseUser.displayName || "cadet")
-      .toLowerCase()
-      .replace(/[^a-z0-9_]/g, "_")
-      .substring(0, 16);
-    
-    // Mint random 32-character hex arena token
-    const tokenBytes = new Uint8Array(16);
-    window.crypto.getRandomValues(tokenBytes);
-    const tokenHex = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
-    const arenaToken = `ca_live_${tokenHex}`;
+  if (db) {
+    const userRef = doc(db, "users", firebaseUser.uid);
+    try {
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        // Check if admin role is stored in firestore or localStorage
+        return data;
+      } else {
+        // Mint random 32-character hex arena token
+        const tokenBytes = new Uint8Array(16);
+        window.crypto.getRandomValues(tokenBytes);
+        const tokenHex = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+        const arenaToken = `ca_live_${tokenHex}`;
 
-    const newProfile = {
-      uid: firebaseUser.uid,
-      displayName: firebaseUser.displayName || "Cloud Cadet",
-      email: firebaseUser.email || "",
-      photoURL: firebaseUser.photoURL || "",
-      handle: rawHandle,
-      role: "player",
-      arena_token: arenaToken,
-      created_at: serverTimestamp(),
-    };
+        const newProfile = {
+          uid: firebaseUser.uid,
+          displayName: firebaseUser.displayName || "Cloud Cadet",
+          email: firebaseUser.email || "",
+          photoURL: firebaseUser.photoURL || "",
+          handle: rawHandle,
+          role: "player", // Default role
+          arena_token: arenaToken,
+          created_at: serverTimestamp(),
+        };
 
-    await setDoc(userRef, newProfile);
-    return newProfile;
+        await setDoc(userRef, newProfile);
+        return newProfile;
+      }
+    } catch (err) {
+      console.warn("Firestore user sync error:", err);
+    }
   }
+
+  // Fallback profile if offline
+  return {
+    uid: firebaseUser.uid,
+    displayName: firebaseUser.displayName || "Cloud Cadet",
+    email: firebaseUser.email || "",
+    photoURL: firebaseUser.photoURL || "",
+    handle: rawHandle,
+    role: "player",
+    arena_token: "ca_live_150ef255423a93be2c522417fa8209e4",
+  };
+}
+
+/**
+ * Verify organizer passcode to elevate user role to admin
+ */
+export async function elevateToAdmin(user, passcode) {
+  if (!user) return false;
+  const cleanCode = passcode.trim();
+  
+  if (cleanCode === "admin2026" || cleanCode === "arena_organizer") {
+    const updatedUser = { ...user, role: "admin" };
+    localStorage.setItem("cloudarena_auth_user", JSON.stringify(updatedUser));
+    
+    if (db && isFirebaseConfigured) {
+      try {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { role: "admin" });
+      } catch (e) {
+        console.warn("Could not persist admin role to Firestore:", e);
+      }
+    }
+    return updatedUser;
+  }
+  return false;
 }
 
 /**
@@ -167,9 +251,7 @@ export function subscribeLeaderboard(callback, eventId = "HACKATHON_2026") {
           callback(json.standings || []);
           return;
         }
-      } catch (err) {
-        // Server not running, provide initial simulated tournament standings
-      }
+      } catch (err) {}
       callback(getSimulatedStandings());
     };
 
@@ -180,14 +262,16 @@ export function subscribeLeaderboard(callback, eventId = "HACKATHON_2026") {
 }
 
 /**
- * Subscribe to event configuration (freeze status, timing, active wave)
+ * Subscribe to event configuration (custom wave titles, durations, freeze status, timing)
  */
 export function subscribeEventConfig(callback, eventId = "HACKATHON_2026") {
   if (isFirebaseConfigured && db) {
     const eventRef = doc(db, "events", eventId);
     return onSnapshot(eventRef, (snap) => {
       if (snap.exists()) {
-        callback(snap.data());
+        const remoteData = snap.data();
+        const merged = { ...getDefaultEventConfig(eventId), ...remoteData };
+        callback(merged);
       } else {
         callback(getDefaultEventConfig(eventId));
       }
@@ -210,15 +294,15 @@ export function subscribeEventConfig(callback, eventId = "HACKATHON_2026") {
 }
 
 /**
- * Update event configuration with Admin authority
+ * Update event configuration with full organizer authority
  */
 export async function updateEventConfigAdmin(eventId, data) {
   if (isFirebaseConfigured && db) {
     const eventRef = doc(db, "events", eventId);
-    await updateDoc(eventRef, {
+    await setDoc(eventRef, {
       ...data,
       updated_at: serverTimestamp()
-    });
+    }, { merge: true });
   } else {
     try {
       await fetch("http://localhost:8000/api/v1/admin/config", {
@@ -232,21 +316,32 @@ export async function updateEventConfigAdmin(eventId, data) {
   }
 }
 
-function getDefaultEventConfig(eventId) {
+export function getDefaultEventConfig(eventId) {
   return {
     event_id: eventId,
-    title: "Global Cloud Hackathon 2026",
+    title: "CloudArena Championship",
+    description: "AI-Powered Sandboxed Kubernetes Incident Survival Arena",
     status: "IN_PROGRESS",
     mode: "synchronized",
     is_frozen: false,
-    active_wave: 2,
-    wave_durations: { "1": 300, "2": 420, "3": 480, "4": 600 }
+    freeze_message: "❄️ Leaderboard is frozen for the grand finale! Standings will be unveiled at closing ceremonies.",
+    active_wave: 1,
+    wave_names: {
+      "1": "CPU Starvation Outage",
+      "2": "Memory Leak OOMKilled Cascade",
+      "3": "Broken Health Probe Deadlock",
+      "4": "Ingress Surge Traffic Overload"
+    },
+    wave_durations: { "1": 300, "2": 420, "3": 480, "4": 600 },
+    wave_points: { "1": 100, "2": 150, "3": 200, "4": 250 },
+    max_hints: 3,
+    allow_resets: true,
   };
 }
 
 function getSimulatedStandings() {
   return [
-    { rank: 1, handle: "neo_sre", event_id: "HACKATHON_2026", total_score: 540, waves_cleared: 3, total_time: 215, total_hints_cost: 0 },
+    { rank: 1, handle: "aditya_sre", event_id: "HACKATHON_2026", total_score: 540, waves_cleared: 3, total_time: 215, total_hints_cost: 0 },
     { rank: 2, handle: "k8s_sorcerer", event_id: "HACKATHON_2026", total_score: 495, waves_cleared: 3, total_time: 260, total_hints_cost: 15 },
     { rank: 3, handle: "cyber_valkyrie", event_id: "HACKATHON_2026", total_score: 410, waves_cleared: 2, total_time: 145, total_hints_cost: 0 },
     { rank: 4, handle: "chaos_monkey_01", event_id: "HACKATHON_2026", total_score: 360, waves_cleared: 2, total_time: 180, total_hints_cost: 30 },

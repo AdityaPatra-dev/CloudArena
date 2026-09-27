@@ -9,9 +9,10 @@ import {
   logoutUser, 
   subscribeLeaderboard, 
   subscribeEventConfig,
+  initAuthListener,
   isFirebaseConfigured 
 } from './firebase';
-import { Terminal, Shield, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('leaderboard');
@@ -20,15 +21,22 @@ export default function App() {
   const [eventConfig, setEventConfig] = useState(null);
   const [isProjector, setIsProjector] = useState(false);
 
-  // Check saved local user session on mount
+  // Persistent Auth Listener across page refreshes
   useEffect(() => {
-    const saved = localStorage.getItem('cloudarena_local_user');
-    if (saved) {
-      try {
-        setUser(JSON.parse(saved));
-      } catch (e) {}
-    }
+    const unsubscribe = initAuthListener((profile) => {
+      setUser(profile);
+    });
+    return () => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+    };
   }, []);
+
+  // Protect admin tab from non-admins
+  useEffect(() => {
+    if (activeTab === 'admin' && user?.role !== 'admin') {
+      setActiveTab('leaderboard');
+    }
+  }, [activeTab, user]);
 
   // Subscribe to real-time leaderboard standings
   useEffect(() => {
@@ -40,7 +48,7 @@ export default function App() {
     };
   }, []);
 
-  // Subscribe to event settings (freeze, active wave, etc.)
+  // Subscribe to event settings (freeze, active wave, custom titles, timing)
   useEffect(() => {
     const unsubscribe = subscribeEventConfig((config) => {
       setEventConfig(config);
@@ -53,8 +61,10 @@ export default function App() {
   const handleLogin = async () => {
     try {
       const profile = await loginWithGoogle();
-      setUser(profile);
-      setActiveTab('hub');
+      if (profile) {
+        setUser(profile);
+        setActiveTab('hub');
+      }
     } catch (err) {
       console.error("Login failed:", err);
     }
@@ -63,6 +73,7 @@ export default function App() {
   const handleLogout = async () => {
     await logoutUser();
     setUser(null);
+    setActiveTab('leaderboard');
   };
 
   if (isProjector) {
@@ -76,7 +87,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-sky-500 selection:text-white">
       
       {/* Top Navbar */}
       <Navbar 
@@ -91,21 +102,19 @@ export default function App() {
       />
 
       {/* Main Tab Body */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full flex-grow">
         
-        {/* Firebase Config Notice banner if running in local sandbox mode */}
+        {/* Firebase Config Notice banner only if running in mock dev mode */}
         {!isFirebaseConfigured && (
-          <div className="mb-6 p-3.5 rounded-2xl bg-sky-950/40 border border-sky-500/30 flex items-center justify-between text-xs text-sky-200">
-            <div className="flex items-center gap-2.5">
-              <span className="p-1.5 rounded-lg bg-sky-500/20 text-sky-400">
-                <Sparkles className="w-4 h-4" />
+          <div className="mb-4 sm:mb-6 p-3 sm:p-3.5 rounded-2xl bg-sky-950/40 border border-sky-500/30 flex items-center justify-between text-xs text-sky-200">
+            <div className="flex items-center gap-2">
+              <span className="p-1 rounded-lg bg-sky-500/20 text-sky-400">
+                <Sparkles className="w-3.5 h-3.5" />
               </span>
-              <span>
-                Running in <strong>Local Development Sandbox Mode</strong> (connecting to local FastAPI server & mock attestation).
-              </span>
+              <span>Running in <strong>Local Development Sandbox Mode</strong></span>
             </div>
-            <span className="font-mono text-[11px] text-sky-400 font-bold hidden sm:inline">
-              Option B Token Flow Active
+            <span className="font-mono text-[10px] text-sky-400 font-bold hidden sm:inline">
+              Option B Active
             </span>
           </div>
         )}
@@ -121,11 +130,12 @@ export default function App() {
           <CompetitorHub 
             user={user} 
             onLogin={handleLogin}
+            onUserUpdated={(updated) => setUser(updated)}
             eventConfig={eventConfig}
           />
         )}
 
-        {activeTab === 'admin' && (
+        {activeTab === 'admin' && user?.role === 'admin' && (
           <AdminCommandCenter 
             eventConfig={eventConfig}
             standings={standings}
@@ -134,11 +144,11 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/80 bg-slate-950/60 py-6 text-center text-xs text-slate-500 font-mono">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <footer className="border-t border-slate-800/80 bg-slate-950/60 py-5 text-center text-xs text-slate-500 font-mono hidden md:block">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <div>CloudArena v0.2.0 • AI-Powered Sandboxed Kubernetes Incident Simulator</div>
           <div className="flex items-center gap-4 text-slate-400">
-            <span>2,000 Concurrent Scale Architecture</span>
+            <span>2,000+ Concurrent Scale</span>
             <span>•</span>
             <span>HMAC Anti-Cheat Verified</span>
           </div>

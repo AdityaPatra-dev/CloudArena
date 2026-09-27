@@ -43,6 +43,15 @@ htmlcov/
 
 # Web frontend artifacts
 web/node_modules/
+web/dist/
 .env
 .env.local
+*.env
+
+# Firebase CLI cache
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
 
