@@ -89,7 +89,7 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
   const linkCommand = `cloudarena link ${token} --event ${eventId}`;
 
   const installCommand = selectedOs === 'windows' 
-    ? "pip install git+https://github.com/adityapatra/CloudArena.git"
+    ? "pip install https://github.com/AdityaPatra-dev/CloudArena/archive/refs/heads/main.zip"
     : "curl -sSL https://gdg-cloudarena.web.app/install.sh | bash";
 
   const copyToClipboard = (text, setCopied) => {

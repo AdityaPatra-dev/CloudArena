@@ -31,7 +31,7 @@
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/adityapatra/CloudArena.git
+git clone https://github.com/AdityaPatra-dev/CloudArena.git
 cd CloudArena
 
 python3 -m venv .venv

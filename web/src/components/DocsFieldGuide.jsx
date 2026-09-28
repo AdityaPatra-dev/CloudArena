@@ -132,7 +132,7 @@ export default function DocsFieldGuide() {
                 <pre className="text-xs font-mono bg-slate-900 p-3 rounded-xl text-sky-300 overflow-x-auto border border-slate-800">
 curl -sSL https://gdg-cloudarena.web.app/install.sh | bash
                 </pre>
-                <div className="text-[11px] text-slate-500">For Windows PowerShell: <code>irm https://gdg-cloudarena.web.app/install.ps1 | iex</code> or install via pip: <code>pip install git+https://github.com/adityapatra/CloudArena.git</code></div>
+                <div className="text-[11px] text-slate-500">For Windows PowerShell: <code>irm https://gdg-cloudarena.web.app/install.ps1 | iex</code> or install via pip: <code>pip install https://github.com/AdityaPatra-dev/CloudArena/archive/refs/heads/main.zip</code></div>
               </div>
 
               <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">

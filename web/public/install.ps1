@@ -36,7 +36,10 @@ if (-not $dockerCmd) {
 
 # 4. Install CloudArena via pip
 Write-Host "`n📦 Installing CloudArena CLI via pip..." -ForegroundColor Cyan
-& python -m pip install --upgrade --user git+https://github.com/adityapatra/CloudArena.git
+& python -m pip install --upgrade --user https://github.com/AdityaPatra-dev/CloudArena/archive/refs/heads/main.zip
+if ($LASTEXITCODE -ne 0) {
+    & python -m pip install --upgrade --user git+https://github.com/AdityaPatra-dev/CloudArena.git
+}
 
 Write-Host "`n✓ CloudArena CLI successfully installed!" -ForegroundColor Green
 Write-Host "`nNext Steps in PowerShell:" -ForegroundColor White

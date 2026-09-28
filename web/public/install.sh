@@ -49,13 +49,13 @@ fi
 
 # 4. Install CloudArena CLI via pip
 echo -e "\n${CYAN}📦 Installing CloudArena CLI...${RESET}"
-python3 -m pip install --upgrade --user git+https://github.com/adityapatra/CloudArena.git > /dev/null 2>&1 || {
+python3 -m pip install --upgrade --user git+https://github.com/AdityaPatra-dev/CloudArena.git > /dev/null 2>&1 || {
     echo -e "${YELLOW}pip --user install encountered managed environment. Using pipx / virtualenv fallback...${RESET}"
     if command -v pipx &> /dev/null; then
-        pipx install git+https://github.com/adityapatra/CloudArena.git --force
+        pipx install git+https://github.com/AdityaPatra-dev/CloudArena.git --force
     else
-        python3 -m pip install --upgrade --user --break-system-packages git+https://github.com/adityapatra/CloudArena.git || {
-            echo -e "${RED}❌ Could not install package via pip. Please clone https://github.com/adityapatra/CloudArena and run pip install .${RESET}"
+        python3 -m pip install --upgrade --user --break-system-packages git+https://github.com/AdityaPatra-dev/CloudArena.git || {
+            echo -e "${RED}❌ Could not install package via pip. Please clone https://github.com/AdityaPatra-dev/CloudArena and run pip install .${RESET}"
             exit 1
         }
     fi
