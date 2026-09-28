@@ -1,11 +1,17 @@
-"""CLI subcommands for managing attack waves, live watch, and scoring."""
-
+from pathlib import Path
 import time
 from typing import Optional
 import typer
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+
+from cloudarena.attacks.custom import (
+    CustomScenario,
+    create_scenario_template,
+    list_scenarios,
+    load_scenario,
+)
 
 from cloudarena.attacks.manager import (
     check_wave_resolution,
@@ -30,7 +36,7 @@ console = Console()
 
 @wave_app.command("start")
 def start_wave(
-    wave: Optional[int] = typer.Argument(None, help="Wave number to launch (1 to 4). Defaults to next uncompleted wave.")
+    wave: Optional[int] = typer.Argument(None, help="Wave number to launch (1 to 8). Defaults to next uncompleted wave.")
 ):
     """Initiate an infrastructure attack wave."""
     config = load_config()
@@ -38,8 +44,8 @@ def start_wave(
     if wave is None:
         wave = config.game.current_wave if config.game.current_wave > 0 else 1
 
-    if wave < 1 or wave > 4:
-        console.print("[bold red]Invalid wave number.[/bold red] Available waves: 1, 2, 3, 4.")
+    if wave < 1 or wave > 8:
+        console.print("[bold red]Invalid wave number.[/bold red] Available waves: 1 to 8.")
         raise typer.Exit(code=1)
 
     with console.status(f"[bold red]Injecting chaos for Wave {wave}...[/bold red]"):
@@ -228,3 +234,79 @@ def list_waves():
         table.add_row(f"Wave {atk.wave_number}", atk.title, atk.difficulty, status)
 
     console.print(table)
+
+
+custom_app = typer.Typer(
+    name="custom",
+    help="🛠️ Custom Chaos Scenario SDK commands (run, list, init).",
+    no_args_is_help=True,
+)
+wave_app.add_typer(custom_app, name="custom")
+
+
+@custom_app.command("run")
+def run_custom(
+    manifest: Path = typer.Argument(..., help="Path to scenario YAML manifest file")
+):
+    """Launch and inject a custom chaos scenario manifest."""
+    if not manifest.exists():
+        console.print(f"[bold red]❌ Manifest file not found:[/bold red] {manifest}")
+        raise typer.Exit(code=1)
+
+    try:
+        scenario = load_scenario(manifest)
+    except Exception as e:
+        console.print(f"[bold red]❌ Failed to parse scenario YAML:[/bold red] {e}")
+        raise typer.Exit(code=1)
+
+    with console.status(f"[bold red]Injecting custom scenario '{scenario.info.title}'...[/bold red]"):
+        success = scenario.inject()
+        if not success:
+            console.print("[bold red]❌ Chaos injection failed. Verify cluster connectivity.[/bold red]")
+            raise typer.Exit(code=1)
+
+    console.print(Panel(
+        f"[bold red]⚠️ CUSTOM SCENARIO ACTIVE: {scenario.info.title}[/bold red]\n"
+        f"Difficulty: [yellow]{scenario.info.difficulty}[/yellow] | Namespace: [cyan]{scenario._target_namespace}[/cyan]\n\n"
+        f"[bold white]Description:[/bold white]\n{scenario.info.description}\n\n"
+        f"[bold white]Symptoms:[/bold white]\n[yellow]{scenario.info.symptoms}[/yellow]\n\n"
+        f"[dim]Run `cloudarena dashboard` or `cloudarena wave status` to monitor resolution.[/dim]",
+        title="[bold red]🛠️ Custom Scenario Injected[/bold red]",
+        border_style="red",
+    ))
+
+
+@custom_app.command("list")
+def list_custom():
+    """List available custom scenario manifests."""
+    scenarios = list_scenarios()
+    if not scenarios:
+        console.print("[yellow]No custom scenarios found in ~/.cloudarena/scenarios/ or manifests/.[/yellow]")
+        console.print("[dim]Create one using: `cloudarena wave custom init my-scenario`[/dim]")
+        return
+
+    table = Table(title="Custom Chaos Scenarios", show_lines=True)
+    table.add_column("Scenario ID", style="bold cyan")
+    table.add_column("Name", style="bold white")
+    table.add_column("Difficulty", width=14)
+    table.add_column("Author", width=16)
+    table.add_column("Path", style="dim")
+
+    for s in scenarios:
+        table.add_row(s["id"], s["name"], s["difficulty"], s["author"], s["path"])
+
+    console.print(table)
+
+
+@custom_app.command("init")
+def init_custom(
+    name: str = typer.Argument("custom-chaos", help="Name of the scenario to create"),
+    output: Optional[Path] = typer.Option(None, "--output", "-o", help="Target YAML output path"),
+):
+    """Generate a starter custom chaos scenario manifest template."""
+    from cloudarena.core.paths import SCENARIOS_DIR
+    target = output or (SCENARIOS_DIR / f"{name.lower().replace(' ', '_')}.yaml")
+    create_scenario_template(target, name=name)
+    console.print(f"[bold green]✓ Created custom scenario manifest:[/bold green] [cyan]{target}[/cyan]")
+    console.print(f"[dim]Run it with: `cloudarena wave custom run {target}`[/dim]")
+

@@ -13,8 +13,11 @@ class PlayerConfig(BaseModel):
     arena_token: Optional[str] = None
     event_id: Optional[str] = None
     team_id: Optional[str] = None
+    team_name: Optional[str] = None
+    team_role: str = "Operator"
     solo_mode: bool = True
     is_linked: bool = False
+
 
 
 class ClusterConfig(BaseModel):

@@ -31,6 +31,7 @@ KUBECONFIG_FILE = CLOUDARENA_HOME / "kubeconfig.yaml"
 LOGS_DIR = CLOUDARENA_HOME / "logs"
 POSTMORTEMS_DIR = CLOUDARENA_HOME / "postmortems"
 REPLAYS_DIR = CLOUDARENA_HOME / "replays"
+SCENARIOS_DIR = CLOUDARENA_HOME / "scenarios"
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 MANIFESTS_DIR = PACKAGE_ROOT / "manifests"
@@ -38,12 +39,11 @@ MANIFESTS_DIR = PACKAGE_ROOT / "manifests"
 
 def ensure_directories() -> None:
     """Create all required CloudArena directories if they do not exist."""
-    for d in (CLOUDARENA_HOME, BIN_DIR, LOGS_DIR, POSTMORTEMS_DIR, REPLAYS_DIR):
+    for d in (CLOUDARENA_HOME, BIN_DIR, LOGS_DIR, POSTMORTEMS_DIR, REPLAYS_DIR, SCENARIOS_DIR):
         try:
             d.mkdir(parents=True, exist_ok=True)
         except OSError:
             pass
-
 
 
 def get_extended_path_env() -> dict[str, str]:

@@ -517,10 +517,32 @@ export function getDefaultEventConfig(eventId) {
       "1": "CPU Starvation Outage",
       "2": "Memory Leak OOMKilled Cascade",
       "3": "Broken Health Probe Deadlock",
-      "4": "Ingress Surge Traffic Overload"
+      "4": "Ingress Surge Traffic Overload",
+      "5": "CoreDNS Resolution Blackout",
+      "6": "Storage Deadlock & ReadOnly Mount",
+      "7": "RBAC Authorization Failure",
+      "8": "Corrupted Ingress TLS Handshake"
     },
-    wave_durations: { "1": 300, "2": 420, "3": 480, "4": 600 },
-    wave_points: { "1": 100, "2": 150, "3": 200, "4": 250 },
+    wave_durations: { 
+      "1": 300, 
+      "2": 420, 
+      "3": 480, 
+      "4": 600,
+      "5": 600,
+      "6": 720,
+      "7": 780,
+      "8": 900
+    },
+    wave_points: { 
+      "1": 100, 
+      "2": 150, 
+      "3": 200, 
+      "4": 250,
+      "5": 350,
+      "6": 450,
+      "7": 550,
+      "8": 700
+    },
     max_hints: 3,
     allow_resets: true,
   };
@@ -537,3 +559,238 @@ function getSimulatedStandings() {
     { rank: 7, handle: "daemon_slayer", event_id: "HACKATHON_2026", total_score: 180, waves_cleared: 1, total_time: 98, total_hints_cost: 15 },
   ];
 }
+
+/**
+ * Create or join a team / squad for CTF co-op mode
+ */
+export async function createOrJoinSquad(user, squadName, squadCode, role = "Operator", eventId = "HACKATHON_2026") {
+  if (!user) return null;
+  const cleanCode = (squadCode || squadName || "SQ_" + Math.random().toString(36).substring(2, 8))
+    .toUpperCase()
+    .replace(/[^A-Z0-9_-]/g, "_")
+    .substring(0, 16);
+  const cleanName = squadName?.trim() || cleanCode;
+  const cleanRole = role.trim() || "Operator";
+
+  const updatedProfile = {
+    ...user,
+    team_id: cleanCode,
+    team_name: cleanName,
+    team_role: cleanRole,
+  };
+
+  localStorage.setItem("cloudarena_auth_user", JSON.stringify(updatedProfile));
+
+  if (isFirebaseConfigured && db) {
+    try {
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, {
+        team_id: cleanCode,
+        team_name: cleanName,
+        team_role: cleanRole,
+      });
+
+      const teamRef = doc(db, "events", eventId, "teams", cleanCode);
+      const teamSnap = await getDoc(teamRef);
+      const currentMembers = teamSnap.exists() ? (teamSnap.data().members || []) : [];
+      const filtered = currentMembers.filter(m => m.uid !== user.uid && m.handle !== user.handle);
+      filtered.push({
+        uid: user.uid,
+        handle: user.handle || user.displayName || "cadet",
+        role: cleanRole,
+        score: user.score || 0,
+      });
+
+      await setDoc(teamRef, {
+        team_id: cleanCode,
+        team_name: cleanName,
+        members: filtered,
+        member_count: filtered.length,
+        total_score: filtered.reduce((acc, m) => acc + (m.score || 0), 0),
+        updated_at: serverTimestamp(),
+      }, { merge: true });
+    } catch (err) {
+      console.warn("Failed to persist squad to Firestore:", err);
+    }
+  }
+
+  try {
+    await fetch("http://localhost:8000/api/v1/teams/join", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        team_id: cleanCode,
+        team_name: cleanName,
+        handle: user.handle || "cadet",
+        role: cleanRole,
+        event_id: eventId,
+        arena_token: user.arena_token,
+      }),
+    });
+  } catch (e) {}
+
+  return updatedProfile;
+}
+
+/**
+ * Leave current squad and return to Solo Cadet mode
+ */
+export async function leaveSquad(user, eventId = "HACKATHON_2026") {
+  if (!user) return null;
+  const currentTeamId = user.team_id;
+
+  const updatedProfile = {
+    ...user,
+    team_id: null,
+    team_name: null,
+    team_role: "Operator",
+  };
+
+  localStorage.setItem("cloudarena_auth_user", JSON.stringify(updatedProfile));
+
+  if (isFirebaseConfigured && db) {
+    try {
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, {
+        team_id: null,
+        team_name: null,
+        team_role: "Operator",
+      });
+
+      if (currentTeamId) {
+        const teamRef = doc(db, "events", eventId, "teams", currentTeamId);
+        const teamSnap = await getDoc(teamRef);
+        if (teamSnap.exists()) {
+          const members = (teamSnap.data().members || []).filter(m => m.uid !== user.uid && m.handle !== user.handle);
+          await updateDoc(teamRef, {
+            members: members,
+            member_count: members.length,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to leave squad in Firestore:", err);
+    }
+  }
+
+  try {
+    if (currentTeamId) {
+      await fetch("http://localhost:8000/api/v1/teams/leave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          team_id: currentTeamId,
+          handle: user.handle || "cadet",
+          arena_token: user.arena_token,
+        }),
+      });
+    }
+  } catch (e) {}
+
+  return updatedProfile;
+}
+
+/**
+ * Subscribe to Squad / Team Standings
+ */
+export function subscribeTeamStandings(callback, eventId = "HACKATHON_2026") {
+  const cacheKey = `cloudarena_team_standings_${eventId}`;
+  const localCached = localStorage.getItem(cacheKey);
+  if (localCached) {
+    try {
+      callback(JSON.parse(localCached));
+    } catch (e) {}
+  }
+
+  if (isFirebaseConfigured && db) {
+    const teamsRef = collection(db, "events", eventId, "teams");
+    const q = query(teamsRef, orderBy("total_score", "desc"), limit(50));
+    return onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const list = snapshot.docs.map((d, idx) => ({
+          rank: idx + 1,
+          ...d.data(),
+        }));
+        localStorage.setItem(cacheKey, JSON.stringify(list));
+        callback(list);
+      } else {
+        callback(getSimulatedTeamStandings());
+      }
+    }, (error) => {
+      console.warn("Team standings snapshot error:", error.code);
+      callback(getSimulatedTeamStandings());
+    });
+  } else {
+    const pollServer = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/v1/teams/standings?event_id=${eventId}`);
+        if (res.ok) {
+          const json = await res.json();
+          callback(json.standings || []);
+          return;
+        }
+      } catch (err) {}
+      callback(getSimulatedTeamStandings());
+    };
+
+    pollServer();
+    const interval = setInterval(pollServer, 4000);
+    return () => clearInterval(interval);
+  }
+}
+
+export function getSimulatedTeamStandings() {
+  return [
+    {
+      rank: 1,
+      team_id: "SQ_TITAN",
+      team_name: "Titan SRE Guild",
+      total_score: 1150,
+      waves_cleared: 6,
+      member_count: 3,
+      members: [
+        { handle: "aditya_sre", role: "Captain", score: 540 },
+        { handle: "k8s_sorcerer", role: "Chaos Specialist", score: 495 },
+        { handle: "pod_healer", role: "Triage Engineer", score: 115 },
+      ]
+    },
+    {
+      rank: 2,
+      team_id: "SQ_CHAOS",
+      team_name: "Chaos Theory Crew",
+      total_score: 980,
+      waves_cleared: 5,
+      member_count: 3,
+      members: [
+        { handle: "cyber_valkyrie", role: "Captain", score: 410 },
+        { handle: "chaos_monkey_01", role: "SRE Lead", score: 360 },
+        { handle: "ingress_ninja", role: "Operator", score: 210 },
+      ]
+    },
+    {
+      rank: 3,
+      team_id: "SQ_DEVNULL",
+      team_name: "Dev Null Vanguard",
+      total_score: 720,
+      waves_cleared: 4,
+      member_count: 2,
+      members: [
+        { handle: "daemon_slayer", role: "SRE Lead", score: 380 },
+        { handle: "byte_whisperer", role: "Operator", score: 340 },
+      ]
+    },
+    {
+      rank: 4,
+      team_id: "SQ_NOC",
+      team_name: "Midnight NOC Operators",
+      total_score: 590,
+      waves_cleared: 3,
+      member_count: 2,
+      members: [
+        { handle: "ping_master", role: "Captain", score: 310 },
+        { handle: "packet_tracer", role: "Operator", score: 280 },
+      ]
+    }
+  ];
+}
+

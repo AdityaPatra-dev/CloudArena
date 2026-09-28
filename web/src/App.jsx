@@ -5,6 +5,8 @@ import CompetitorHub from './components/CompetitorHub';
 import AdminCommandCenter from './components/AdminCommandCenter';
 import ProjectorMode from './components/ProjectorMode';
 import DocsFieldGuide from './components/DocsFieldGuide';
+import ReplayViewer from './components/ReplayViewer';
+import CredentialVerifier from './components/CredentialVerifier';
 import { 
   loginWithGoogle, 
   logoutUser, 
@@ -24,6 +26,13 @@ export default function App() {
 
   // Persistent Auth Listener across page refreshes
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('verify')) {
+      setActiveTab('verify');
+    } else if (params.get('tab')) {
+      setActiveTab(params.get('tab'));
+    }
+
     const unsubscribe = initAuthListener((profile) => {
       setUser(profile);
     });
@@ -138,6 +147,14 @@ export default function App() {
 
         {activeTab === 'docs' && (
           <DocsFieldGuide />
+        )}
+
+        {activeTab === 'replay' && (
+          <ReplayViewer />
+        )}
+
+        {activeTab === 'verify' && (
+          <CredentialVerifier />
         )}
 
         {activeTab === 'admin' && user?.role === 'admin' && (

@@ -1,0 +1,52 @@
+scenario_id: oom_kill_memory_limit
+name: "OOMKilled Memory Limit Exhaustion"
+difficulty: "Intermediate"
+author: "Google Developer Groups SRE Team"
+target_namespace: "cloudarena-app"
+symptoms: "Frontend service pod is constantly terminating with ExitCode 137 (OOMKilled)."
+expected_fix: "Inspect dmesg / pod termination reasons, then increase container memory limits in Deployment manifest."
+description: "Simulates memory pressure where the application leaks memory beyond the enforced cgroup limit."
+
+mutation:
+  kind: "deployment"
+  name: "frontend"
+  action: "patch"
+  patch:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: "web"
+              resources:
+                limits:
+                  memory: "32Mi"
+                requests:
+                  memory: "16Mi"
+
+validation:
+  check_type: "pod_ready"
+  target_resource: "frontend"
+  expected: "Running"
+
+rollback:
+  kind: "deployment"
+  name: "frontend"
+  action: "patch"
+  patch:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: "web"
+              resources:
+                limits:
+                  memory: "256Mi"
+                requests:
+                  memory: "64Mi"
+
+hints:
+  - "Hint 1: Inspect pod exit codes: 'kubectl describe pod -l app=frontend -n cloudarena-app' and look for 'OOMKilled'."
+  - "Hint 2: The memory limit was artificially reduced to 32Mi, which is insufficient for the Node.js/Go process."
+  - "Hint 3: Edit the deployment with 'kubectl edit deployment frontend -n cloudarena-app' and bump memory limits to 256Mi."
+
+mentor_guidance: "The frontend pod is getting OOMKilled because its memory limit is set to 32Mi. Guide the competitor to check 'kubectl describe pod' and locate the Last State reason."

@@ -7,7 +7,9 @@ import {
   LogIn, 
   LogOut, 
   Radio,
-  BookOpen
+  BookOpen,
+  Film,
+  ShieldCheck
 } from 'lucide-react';
 import Logo from './Logo';
 
@@ -89,6 +91,30 @@ export default function Navbar({
             >
               <BookOpen className="w-4 h-4 text-sky-400" />
               <span>Field Guide</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('replay')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+                activeTab === 'replay'
+                  ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+              }`}
+            >
+              <Film className="w-4 h-4 text-indigo-400" />
+              <span>Replay</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('verify')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+                activeTab === 'verify'
+                  ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+              }`}
+            >
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>Verify</span>
             </button>
 
             {/* Admin Command tab - ONLY visible to verified organizers */}
@@ -186,12 +212,32 @@ export default function Navbar({
 
         <button
           onClick={() => setActiveTab('docs')}
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition ${
+          className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition ${
             activeTab === 'docs' ? 'text-sky-400' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <BookOpen className="w-5 h-5" />
           <span className="text-[10px] font-semibold">Guide</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('replay')}
+          className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition ${
+            activeTab === 'replay' ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Film className="w-5 h-5" />
+          <span className="text-[10px] font-semibold">Replay</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('verify')}
+          className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition ${
+            activeTab === 'verify' ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <ShieldCheck className="w-5 h-5" />
+          <span className="text-[10px] font-semibold">Verify</span>
         </button>
 
         {isAdmin && (

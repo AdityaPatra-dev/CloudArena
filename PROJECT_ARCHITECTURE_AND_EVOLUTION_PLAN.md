@@ -363,11 +363,11 @@ gantt
     Phase 9: Interactive Terminal AI Chat  :done, p9, 2026-09-28, 1d
     Phase 10: Verifiable SRE Badges & Certs :done, p10, 2026-09-28, 1d
     section Next Frontier (Phases 11-15)
-    Phase 11: Real-Time Incident Replay    :active, p11, 2026-09-29, 2d
-    Phase 12: Public Credential Verifier   :p12, after p11, 1d
-    Phase 13: Live Terminal SRE TUI Dash   :p13, after p12, 2d
-    Phase 14: Chaos Custom Scenario SDK    :p14, after p13, 2d
-    Phase 15: Cross-Platform System Doctor :p15, after p14, 1d
+    Phase 11: Real-Time Incident Replay    :done, p11, 2026-09-28, 1d
+    Phase 12: Public Credential Verifier   :done, p12, 2026-09-28, 1d
+    Phase 13: Live Terminal SRE TUI Dash   :done, p13, 2026-09-28, 1d
+    Phase 14: Chaos Custom Scenario SDK    :done, p14, 2026-09-28, 1d
+    Phase 15: Cross-Platform System Doctor :done, p15, 2026-09-28, 1d
 ```
 
 ### Detailed Phase Specifications & Implementation Status:
@@ -399,7 +399,7 @@ gantt
 3. Tiered honors: First Responder (Bronze), Chaos Specialist (Silver), Resilience Architect (Gold), Mythic Principal SRE (Platinum).
 4. Created `web/src/components/CertificateModal.jsx` for 1-click in-browser preview, proof copying, and SVG download.
 
-#### Phase 11: Real-Time Incident Audit Log & Tournament Replay Engine — [IMPLEMENTING]
+#### Phase 11: Real-Time Incident Audit Log & Tournament Replay Engine — [COMPLETED & VERIFIED ✓]
 1. **Flight Recorder Engine (`cloudarena/telemetry/flight_recorder.py`):**
    - Automatically buffers chronological lifecycle events during wave sessions:
      - Attack injection timestamp & initial failure symptoms
@@ -412,47 +412,52 @@ gantt
    - Interactive visual scrubber with playback controls (Play, Pause, 1x/2x/4x speed, scrubber slider).
    - Real-time animated health matrix (Red -> Yellow -> Green) visualizing the exact moment the incident was cured.
    - Built-in sample championship runs for auditorium projector demonstrations.
+   - Integrated into web navigation bar and URL query param `?tab=replay`.
 
-#### Phase 12: Public Cryptographic Credential Verification Page & Proof Checker — [IMPLEMENTING]
+#### Phase 12: Public Cryptographic Credential Verification Page & Proof Checker — [COMPLETED & VERIFIED ✓]
 1. **Dedicated Verification View (`web/src/components/CredentialVerifier.jsx`):**
    - URL parameter listener: `https://gdg-cloudarena.web.app/?verify=<proof_hash>`.
    - Standalone verification input for recruiters, organizers, and competitors to validate any proof signature.
    - Cryptographic verification algorithm verifying HMAC-SHA256 signature against event ID, handle, score, and wave parameters.
    - Displays official verified security badge with Google Developer Group / CloudArena stamp, student credentials, and issued date.
+   - 1-click SVG download directly from public verification page.
+   - Backend verification API endpoint `/api/v1/certify/verify`.
 
-#### Phase 13: Live Terminal SRE Telemetry TUI Dashboard — [IMPLEMENTING]
+#### Phase 13: Live Terminal SRE Telemetry TUI Dashboard — [COMPLETED & VERIFIED ✓]
 1. **Interactive Real-Time TUI (`cloudarena dashboard` / `cloudarena watch`):**
-   - Built with Rich Live displays and terminal layouts.
+   - Built with Rich Live displays and terminal layouts in `cloudarena/cli/dashboard_cmd.py`.
    - Dynamic panels:
-     - Incident Header & Countdown Timer
-     - Live Traffic Success Rate gauge bar
-     - Pod Health Matrix (namespace, name, ready status, restarts, CPU/Memory metrics)
-     - 10-Second Stabilization Progress Bar
-     - Live Incident Event Log Stream
-   - Smooth 1-second auto-refresh with zero flicker and graceful Ctrl+C termination.
+     - Incident Header & Active Wave Tracker
+     - Live Traffic Success Rate gauge bar (`0%` outage to `100%` optimal with SLA thresholds)
+     - Pod Health Matrix (`cloudarena-app` namespace pod states, restart counters, ready checks)
+     - Live Incident Event Log Stream (Audit Log stream with timestamps and status badges)
+     - Keybindings footer with `[Ctrl+C]` exit and `[R]` refresh
+   - 1-second auto-refresh with zero flicker and graceful signal handling.
 
-#### Phase 14: Chaos Custom Scenario Plugin System & SDK — [IMPLEMENTING]
+#### Phase 14: Chaos Custom Scenario Plugin System & SDK — [COMPLETED & VERIFIED ✓]
 1. **Extensible Scenario Framework (`cloudarena/attacks/custom.py`):**
-   - Declarative YAML scenario schema supporting custom outages.
-   - Fields: `name`, `wave_id`, `difficulty`, `target_namespace`, `chaos_type`, `mutation_spec`, `validation_rules`, `rollback_spec`, `mentor_hints`.
-   - CLI commands: `cloudarena wave custom list` and `cloudarena wave custom run <path/to/scenario.yaml>`.
-   - Allows educators, GDG chapters, and enterprise teams to author proprietary chaos engineering challenges without altering core codebase.
+   - Declarative YAML scenario schema supporting custom outages (`CustomScenario`).
+   - Fields: `name`, `wave_id`, `difficulty`, `target_namespace`, `mutation`, `validation`, `rollback`, `hints`, `mentor_guidance`.
+   - CLI commands: `cloudarena wave custom list`, `cloudarena wave custom run <manifest.yaml>`, and `cloudarena wave custom init <name>`.
+   - Sample production scenario provided in `manifests/custom_scenario_template.yaml`.
+   - Enables educators and organizers to author and run custom chaos scenarios without modifying Python source code.
 
-#### Phase 15: Cross-Platform Environment Doctor (`cloudarena doctor`) — [IMPLEMENTING]
+#### Phase 15: Cross-Platform Environment Doctor (`cloudarena doctor`) — [COMPLETED & VERIFIED ✓]
 1. **Pre-Flight Diagnostic Suite (`cloudarena/cli/doctor_cmd.py`):**
    - 12 comprehensive checks covering:
      - OS version & Linux/macOS/Windows architecture
-     - Virtualization support (VT-x/AMD-V/KVM)
-     - Docker Engine daemon connectivity & non-root socket permissions
-     - Memory allocation (>= 4 GB free RAM)
+     - Virtualization support (VT-x/AMD-V/KVM / cgroups v2)
+     - Docker Engine daemon connectivity & responsiveness
+     - Docker Non-Root socket permissions (`docker ps` without sudo)
+     - Memory allocation (>= 4 GB free RAM, 8 GB optimal)
      - Disk storage availability (>= 10 GB free)
-     - Port conflicts (80, 443, 6443, 8000)
+     - TCP Port conflicts (8000, 8080, 8443, 6443)
      - `k3d` and `kubectl` binary availability and execution permissions
-     - Python virtual environment integrity
-     - Loopback and local DNS resolution
-     - Network connectivity to GitHub & container registries
-     - `cloudarena` CLI symlink health in `$PATH`
-   - Actionable fix commands printed for any failed check.
+     - Local loopback and DNS resolution
+     - `~/.cloudarena/` directory write permissions
+     - Python runtime version (>= 3.10)
+     - Outbound connectivity to container registries (`registry.k8s.io`, `ghcr.io`, `docker.io`)
+   - Clean color-coded Rich table output with copy-paste remediation commands.
 
 
 
