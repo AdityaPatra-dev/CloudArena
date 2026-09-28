@@ -30,7 +30,7 @@ console = Console()
 
 @wave_app.command("start")
 def start_wave(
-    wave: Optional[int] = typer.Argument(None, help="Wave number to launch (1 to 4). Defaults to next uncompleted wave.")
+    wave: Optional[int] = typer.Argument(None, help="Wave number to launch (1 to 8). Defaults to next uncompleted wave.")
 ):
     """Initiate an infrastructure attack wave."""
     config = load_config()
@@ -38,8 +38,8 @@ def start_wave(
     if wave is None:
         wave = config.game.current_wave if config.game.current_wave > 0 else 1
 
-    if wave < 1 or wave > 4:
-        console.print("[bold red]Invalid wave number.[/bold red] Available waves: 1, 2, 3, 4.")
+    if wave < 1 or wave > 8:
+        console.print("[bold red]Invalid wave number.[/bold red] Available waves: 1 to 8.")
         raise typer.Exit(code=1)
 
     with console.status(f"[bold red]Injecting chaos for Wave {wave}...[/bold red]"):

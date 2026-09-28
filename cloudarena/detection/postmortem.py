@@ -47,6 +47,38 @@ _SRE_KNOWLEDGE_BASE = {
             "3. Implement graceful degradation, rate limiting, and circuit breakers (e.g. envoy / ingress controllers)."
         ),
     },
+    5: {
+        "rca": "The frontend deployment spec had its `dnsPolicy` set to `None` with an invalid blackholed nameserver IP (`192.0.2.53`). Internal CoreDNS resolution failed, preventing frontend pods from discovering and connecting to `backend-api`.",
+        "prevention": (
+            "1. Standardize on `dnsPolicy: ClusterFirst` unless explicitly integrating external mesh nameservers.\n"
+            "2. Implement NodeLocal DNSCache in production clusters to reduce CoreDNS query latency and prevent upstream timeout cascades.\n"
+            "3. Add automated health checks on internal service DNS resolution in deployment readiness probes."
+        ),
+    },
+    6: {
+        "rca": "The persistence volume mount on `/data` was configured with `readOnly: true` in the backend deployment spec. When the application attempted to write state or database transactions, the Linux filesystem driver threw `EROFS: Read-only file system`.",
+        "prevention": (
+            "1. Separate read-only configuration mounts (ConfigMaps, Secrets) from mutable data volumes.\n"
+            "2. Use non-root container users combined with `securityContext.fsGroup` to ensure predictable POSIX write permissions across node mounts.\n"
+            "3. Validate volume mount options in CI/CD pipeline linters before deploying to production."
+        ),
+    },
+    7: {
+        "rca": "The RoleBinding granting the `telemetry-collector` ServiceAccount access to list pods in `cloudarena-app` was deleted or unlinked. The Kubernetes API server rejected all probe requests with HTTP 403 Forbidden, blinding monitoring systems.",
+        "prevention": (
+            "1. Manage RBAC roles and bindings strictly via GitOps (ArgoCD or Flux) to prevent accidental manual deletion.\n"
+            "2. Use least-privilege Roles scoped to specific namespaces rather than broad cluster-admin grants.\n"
+            "3. Set up Prometheus alerts for elevated `apiserver_request_total{code='403'}` rates."
+        ),
+    },
+    8: {
+        "rca": "The Ingress resource was bound to a Secret containing corrupted or truncated PEM certificate and private key blocks. The ingress controller was unable to initialize the TLS handshake context, causing client SSL negotiations to fail.",
+        "prevention": (
+            "1. Automate certificate lifecycle management using `cert-manager` with ACME/Let's Encrypt or Vault.\n"
+            "2. Validate that certificate and private key modulus match before committing Secret manifests (`openssl x509 -modulus` == `openssl rsa -modulus`).\n"
+            "3. Implement synthetic SSL handshake monitors (e.g. Blackbox Exporter) that alert on upcoming expiry or invalid TLS negotiation."
+        ),
+    },
 }
 
 

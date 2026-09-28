@@ -410,6 +410,75 @@ cloudarena wave start 1
                   <p><strong>Fix:</strong> Horizontally scale the deployment to 3+ replicas: <code>cloudarena kubectl scale deployment &lt;deploy-name&gt; --replicas=3</code> and verify load distribution.</p>
                 </div>
               </div>
+
+              {/* Pattern 5 */}
+              <div className="p-5 rounded-2xl bg-slate-950/70 border border-teal-500/20 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-bold text-white flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 text-xs font-mono">WAVE 5</span>
+                    <span>CoreDNS Resolution Blackout</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-teal-400 uppercase font-bold">Difficulty: Advanced SRE</span>
+                </div>
+                <div className="text-xs text-slate-300 space-y-1.5 leading-relaxed">
+                  <p><strong>Symptoms:</strong> Frontend throws 502/504 Bad Gateway errors; logs show <code>lookup backend-api on 192.0.2.53:53: i/o timeout</code>; inter-service communication severed.</p>
+                  <p><strong>Root Cause:</strong> Injected <code>dnsPolicy: None</code> overriding standard cluster DNS with a blackholed nameserver IP.</p>
+                  <p><strong>Triage Step:</strong> Run <code>cloudarena kubectl get deployment frontend -n cloudarena-app -o yaml</code> and inspect the <code>dnsPolicy</code> and <code>dnsConfig</code> section.</p>
+                  <p><strong>Fix:</strong> Restore <code>dnsPolicy: ClusterFirst</code> on the frontend deployment and remove the blackhole nameserver configuration.</p>
+                </div>
+              </div>
+
+              {/* Pattern 6 */}
+              <div className="p-5 rounded-2xl bg-slate-950/70 border border-indigo-500/20 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-bold text-white flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-xs font-mono">WAVE 6</span>
+                    <span>Persistent Storage Deadlock & ReadOnly Mount</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-indigo-400 uppercase font-bold">Difficulty: Nightmare SRE</span>
+                </div>
+                <div className="text-xs text-slate-300 space-y-1.5 leading-relaxed">
+                  <p><strong>Symptoms:</strong> Backend throws HTTP 500 on stateful transactions; container logs report <code>IOError: [Errno 30] Read-only file system: '/data'</code> or SQLite write errors.</p>
+                  <p><strong>Root Cause:</strong> Persistence mount path <code>/data</code> was mounted with <code>readOnly: true</code> in the container specification.</p>
+                  <p><strong>Triage Step:</strong> Check <code>cloudarena kubectl describe deployment backend-api -n cloudarena-app</code> under <code>Mounts:</code>.</p>
+                  <p><strong>Fix:</strong> Edit or patch the deployment to set <code>readOnly: false</code> on the volume mount.</p>
+                </div>
+              </div>
+
+              {/* Pattern 7 */}
+              <div className="p-5 rounded-2xl bg-slate-950/70 border border-fuchsia-500/20 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-bold text-white flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 text-xs font-mono">WAVE 7</span>
+                    <span>RBAC Authorization Failure & Token Revocation</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-fuchsia-400 uppercase font-bold">Difficulty: Master SRE</span>
+                </div>
+                <div className="text-xs text-slate-300 space-y-1.5 leading-relaxed">
+                  <p><strong>Symptoms:</strong> Cluster telemetry agents fail to discover pods; logs report HTTP 403 Forbidden: <code>User cannot list resource 'pods' in namespace 'cloudarena-app'</code>.</p>
+                  <p><strong>Root Cause:</strong> Missing or deleted <code>RoleBinding</code> connecting the agent's ServiceAccount to the application namespace.</p>
+                  <p><strong>Triage Step:</strong> Check agent pod logs in <code>cloudarena-system</code>: <code>cloudarena kubectl logs -n cloudarena-system -l app=telemetry-probe</code>.</p>
+                  <p><strong>Fix:</strong> Create the missing RoleBinding: <code>cloudarena kubectl create rolebinding telemetry-reader-binding --clusterrole=view --serviceaccount=cloudarena-system:telemetry-collector -n cloudarena-app</code>.</p>
+                </div>
+              </div>
+
+              {/* Pattern 8 */}
+              <div className="p-5 rounded-2xl bg-slate-950/70 border border-amber-500/30 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-bold text-white flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-xs font-mono">WAVE 8</span>
+                    <span>Corrupted Ingress TLS Handshake (Boss Wave)</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-amber-400 uppercase font-bold">Difficulty: Grandmaster SRE</span>
+                </div>
+                <div className="text-xs text-slate-300 space-y-1.5 leading-relaxed">
+                  <p><strong>Symptoms:</strong> External HTTPS connections fail with SSL handshake errors (<code>ERR_SSL_PROTOCOL_ERROR</code>); Ingress reports invalid certificate PEM data.</p>
+                  <p><strong>Root Cause:</strong> The Ingress TLS Secret <code>cloudarena-tls-secret</code> contains truncated or corrupted base64 certificate/key payloads.</p>
+                  <p><strong>Triage Step:</strong> Check <code>cloudarena kubectl get secret cloudarena-tls-secret -n cloudarena-app -o yaml</code> and decode the certificate payload.</p>
+                  <p><strong>Fix:</strong> Generate and apply a valid self-signed TLS certificate and private key matching the ingress host domain.</p>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
