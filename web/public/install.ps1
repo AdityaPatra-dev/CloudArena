@@ -149,3 +149,11 @@ Write-Host "  3. Spin up local cluster:  " -NoNewline
 Write-Host "cloudarena start" -ForegroundColor Cyan
 Write-Host "  4. Enter Wave 1 battle:    " -NoNewline
 Write-Host "cloudarena wave start 1`n" -ForegroundColor Cyan
+
+Write-Host "----------------------------------------------------------------" -ForegroundColor DarkGray
+Write-Host "💡 NOTE IF COMMAND IS NOT RECOGNIZED IN THIS TERMINAL:" -ForegroundColor Yellow
+Write-Host "   If PowerShell shows 'The term cloudarena is not recognized', either:" -ForegroundColor Yellow
+Write-Host "   1. Restart PowerShell to load updated PATH environment variables, OR" -ForegroundColor Yellow
+Write-Host "   2. Refresh PATH in current session: `$$env:Path = [System.Environment]::GetEnvironmentVariable('Path','User') + ';' + [System.Environment]::GetEnvironmentVariable('Path','Machine'), OR" -ForegroundColor Yellow
+Write-Host "   3. Run directly with Python (no PATH needed): python -m cloudarena <command>`n" -ForegroundColor Yellow
+

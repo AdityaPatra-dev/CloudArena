@@ -129,31 +129,30 @@ python3 -m pip install --upgrade --user "$ARCHIVE_URL" > /dev/null 2>&1 || {
 
 # Symlink CLI
 CLI_SOURCE="$(python3 -m site --user-base 2>/dev/null)/bin/cloudarena"
-TARGET_LINK="$HOME/.local/bin/cloudarena"
-if [ -f "$CLI_SOURCE" ] && [ "$CLI_SOURCE" != "$TARGET_LINK" ]; then
-    ln -sf "$CLI_SOURCE" "$TARGET_LINK"
+if [ -f "$CLI_SOURCE" ]; then
+    ln -sf "$CLI_SOURCE" "$HOME/.local/bin/cloudarena"
 fi
 
-# Ensure ~/.cloudarena/bin and ~/.local/bin are in PATH
-SHELL_RC=""
-if [ -n "$BASH_VERSION" ]; then
-    SHELL_RC="$HOME/.bashrc"
-elif [ -n "$ZSH_VERSION" ]; then
-    SHELL_RC="$HOME/.zshrc"
-fi
-
-if [ -f "$SHELL_RC" ]; then
-    if ! grep -q "$BIN_DIR" "$SHELL_RC"; then
-        echo -e "\n# CloudArena Binaries" >> "$SHELL_RC"
-        echo "export PATH=\"$BIN_DIR:\$HOME/.local/bin:\$PATH\"" >> "$SHELL_RC"
+# Ensure ~/.cloudarena/bin and ~/.local/bin are in PATH across all shell configurations
+TARGET_EXPORT="export PATH=\"$BIN_DIR:\$HOME/.local/bin:\$PATH\""
+for RC_FILE in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile" "$HOME/.bash_profile"; do
+    if [ -f "$RC_FILE" ]; then
+        if ! grep -q "$BIN_DIR" "$RC_FILE"; then
+            echo -e "\n# CloudArena Binaries" >> "$RC_FILE"
+            echo "$TARGET_EXPORT" >> "$RC_FILE"
+            echo -e "  ${GREEN}✓ Added CloudArena PATH to $RC_FILE${RESET}"
+        fi
     fi
-fi
+done
 
 echo -e "\n${GREEN}================================================================${RESET}"
 echo -e "${GREEN}  🎉 All CloudArena dependencies are ready!                     ${RESET}"
 echo -e "${GREEN}================================================================${RESET}"
+echo -e "\n${YELLOW}⚠️ NOTE: If 'cloudarena' command is not recognized in this open terminal:${RESET}"
+echo -e "  1. Reload your environment:   ${CYAN}source ~/.bashrc${RESET}  (or open a new terminal window)"
+echo -e "  2. Or run directly:           ${CYAN}python3 -m cloudarena link <YOUR_ARENA_TOKEN>${RESET}"
 echo -e "\n${WHITE}Next Steps:${RESET}"
-echo -e "  1. Link your arena token:  ${CYAN}cloudarena link <YOUR_ARENA_TOKEN>${RESET}"
-echo -e "  2. Run environment doctor: ${CYAN}cloudarena doctor${RESET}"
-echo -e "  3. Spin up local cluster:  ${CYAN}cloudarena start${RESET}"
-echo -e "  4. Enter Wave 1 battle:    ${CYAN}cloudarena wave start 1${RESET}\n"
+echo -e "  1. Link your arena token:     ${CYAN}cloudarena link <YOUR_ARENA_TOKEN>${RESET}"
+echo -e "  2. Run environment doctor:    ${CYAN}cloudarena doctor${RESET}"
+echo -e "  3. Spin up local cluster:     ${CYAN}cloudarena start${RESET}"
+echo -e "  4. Enter Wave 1 battle:       ${CYAN}cloudarena wave start 1${RESET}\n"
