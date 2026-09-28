@@ -109,6 +109,10 @@ If you break manifests or get tangled during an incident, instantly restore the 
 cloudarena reset
 ```
 
+### Master Playbook & Incident Solutions
+For an exhaustive, step-by-step engineering walkthrough of all 8 challenge waves, root cause analyses, and solutions, consult:
+👉 **[WAVES_MASTER_PLAYBOOK_AND_SOLUTIONS.md](WAVES_MASTER_PLAYBOOK_AND_SOLUTIONS.md)**
+
 ### Teardown
 When finished, cleanly wipe the cluster and Docker networks:
 ```bash
