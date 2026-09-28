@@ -8,6 +8,7 @@ from rich.table import Table
 
 from cloudarena.core.config import load_config, save_config
 from cloudarena.core.environment import audit_environment
+from cloudarena.core.installer import install_docker, install_k3d, install_kubectl, start_docker_daemon
 from cloudarena.core.paths import KUBECONFIG_FILE
 from cloudarena.k8s.cluster import create_cluster, is_cluster_running, list_nodes_summary
 from cloudarena.k8s.deployer import deploy_base_workloads, get_workloads_summary, wait_for_workloads_ready
@@ -35,17 +36,54 @@ def run_start(
     with console.status("[bold green]Validating environment prerequisites...[/bold green]"):
         env_status = audit_environment()
 
-    if not env_status.docker_installed or not env_status.docker_running:
-        console.print("[bold red]❌ Cannot start CloudArena: Docker is not active or accessible.[/bold red]")
-        if env_status.docker_error:
-            console.print(f"[yellow]{env_status.docker_error}[/yellow]")
-        console.print("Please resolve Docker access and run [bold cyan]cloudarena start[/bold cyan] again.")
-        raise typer.Exit(code=1)
+    # Auto-remediate Docker missing
+    if not env_status.docker_installed:
+        console.print("[yellow]⚠️ Docker is not installed on this system.[/yellow]")
+        import sys
+        should_install = True
+        if sys.stdin.isatty():
+            should_install = typer.confirm("Would you like CloudArena to automatically install Docker now?", default=True)
 
-    if not env_status.k3d_path:
-        console.print("[bold red]❌ k3d is not installed.[/bold red]")
-        console.print("Run [bold cyan]cloudarena setup -i[/bold cyan] to install it automatically.")
-        raise typer.Exit(code=1)
+        if should_install:
+            with console.status("[bold cyan]Installing Docker automatically (this may take a few moments)...[/bold cyan]"):
+                installed = install_docker()
+            if installed:
+                console.print("[bold green]✓ Docker installed! Starting Docker daemon...[/bold green]")
+                start_docker_daemon(timeout_seconds=45)
+                env_status = audit_environment()
+            else:
+                console.print("[bold red]❌ Automated Docker installation was not completed.[/bold red]")
+                console.print("Please install Docker Desktop from https://docs.docker.com/get-docker/ and run [bold cyan]cloudarena start[/bold cyan] again.")
+                raise typer.Exit(code=1)
+        else:
+            console.print("[bold red]❌ Docker is required to spin up the local Kubernetes arena.[/bold red]")
+            raise typer.Exit(code=1)
+
+    # Auto-remediate Docker daemon stopped
+    if env_status.docker_installed and not env_status.docker_running:
+        console.print("[yellow]⚡ Docker daemon is not running. Waking up Docker service...[/yellow]")
+        with console.status("[bold green]Starting Docker daemon...[/bold green]"):
+            started = start_docker_daemon(timeout_seconds=30)
+            env_status = audit_environment()
+        if started:
+            console.print("[bold green]✓ Docker daemon is now running and responsive![/bold green]")
+        else:
+            console.print("[bold red]❌ Could not connect to Docker daemon.[/bold red]")
+            if env_status.docker_error:
+                console.print(f"[yellow]{env_status.docker_error}[/yellow]")
+            console.print("Please ensure Docker Desktop / service is running and run [bold cyan]cloudarena start[/bold cyan] again.")
+            raise typer.Exit(code=1)
+
+    # Auto-remediate missing k3d or kubectl
+    if not env_status.k3d_path or not env_status.kubectl_path:
+        with console.status("[bold cyan]Auto-downloading missing Kubernetes tooling (k3d, kubectl)...[/bold cyan]"):
+            if not env_status.k3d_path:
+                install_k3d()
+                console.print("[green]✓ k3d installed to ~/.cloudarena/bin/k3d[/green]")
+            if not env_status.kubectl_path:
+                install_kubectl()
+                console.print("[green]✓ kubectl installed to ~/.cloudarena/bin/kubectl[/green]")
+        env_status = audit_environment()
 
     cluster_name = config.cluster.cluster_name
 
