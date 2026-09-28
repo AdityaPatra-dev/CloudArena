@@ -20,6 +20,7 @@ import {
   Award,
   ChevronRight
 } from 'lucide-react';
+import Logo from './Logo';
 
 export default function DocsFieldGuide() {
   const [activeSection, setActiveSection] = useState('quickstart');
@@ -46,11 +47,11 @@ export default function DocsFieldGuide() {
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-sky-950/60 via-slate-900/80 to-slate-900/80 border border-sky-500/30 rounded-3xl p-5 sm:p-8 backdrop-blur shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
         <div>
-          <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-sky-500/20 border border-sky-500/30 text-sky-400">
-              <BookOpen className="w-5 h-5" />
-            </span>
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">Competitor Field Guide & Documentation</h2>
+          <div className="flex items-center gap-3">
+            <Logo className="w-9 h-9 sm:w-10 sm:h-10 shrink-0" />
+            <div>
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">Competitor Field Guide & Documentation</h2>
+            </div>
           </div>
           <p className="text-xs text-slate-400 mt-1">
             Master the arena: Kubernetes triage commands, chaos troubleshooting, scoring rules, and clean laptop teardown.

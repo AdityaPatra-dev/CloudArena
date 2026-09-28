@@ -14,6 +14,7 @@ import {
   Layers,
   ArrowRight
 } from 'lucide-react';
+import Logo from './Logo';
 
 export default function CredentialVerifier({ initialProof }) {
   const [proofInput, setProofInput] = useState(initialProof || '');
@@ -137,6 +138,7 @@ export default function CredentialVerifier({ initialProof }) {
     <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
       {/* Header Banner */}
       <div className="text-center space-y-2">
+        <Logo className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-2" />
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20">
           <Lock className="w-3.5 h-3.5 text-sky-400" />
           PUBLIC CREDENTIAL & SRE BADGE VERIFIER

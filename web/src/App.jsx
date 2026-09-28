@@ -7,6 +7,7 @@ import ProjectorMode from './components/ProjectorMode';
 import DocsFieldGuide from './components/DocsFieldGuide';
 import ReplayViewer from './components/ReplayViewer';
 import CredentialVerifier from './components/CredentialVerifier';
+import Logo from './components/Logo';
 import { 
   loginWithGoogle, 
   logoutUser, 
@@ -169,7 +170,10 @@ export default function App() {
       {/* Footer */}
       <footer className="border-t border-slate-800/80 bg-slate-950/60 py-5 text-center text-xs text-slate-500 font-mono hidden md:block">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-          <div>CloudArena v0.2.0 • AI-Powered Sandboxed Kubernetes Incident Simulator</div>
+          <div className="flex items-center gap-2">
+            <Logo className="w-5 h-5 inline-block" />
+            <span>CloudArena v2.0 • AI-Powered Sandboxed Kubernetes Incident Simulator</span>
+          </div>
           <div className="flex items-center gap-4 text-slate-400">
             <span>2,000+ Concurrent Scale</span>
             <span>•</span>

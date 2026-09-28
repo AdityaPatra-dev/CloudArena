@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { elevateToAdmin, createOrJoinSquad, leaveSquad } from '../firebase';
 import CertificateModal from './CertificateModal';
+import Logo from './Logo';
 
 export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfig }) {
   const [copiedToken, setCopiedToken] = useState(false);
@@ -46,9 +47,7 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
   if (!user) {
     return (
       <div className="max-w-2xl mx-auto my-6 sm:my-12 p-6 sm:p-12 bg-slate-900/60 border border-slate-800 rounded-3xl backdrop-blur-md text-center shadow-2xl">
-        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg shadow-sky-500/20">
-          <Terminal className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-        </div>
+        <Logo className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-5 sm:mb-6" />
         <h2 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
           Competitor Identity & Token Passport
         </h2>
