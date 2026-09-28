@@ -126,10 +126,12 @@ def status_wave():
                 border_style="green",
             ))
             console.print(score_table)
-            if current_wave < 4:
+            from cloudarena.attacks.manager import _ATTACK_REGISTRY
+            total_waves = len(_ATTACK_REGISTRY)
+            if current_wave < total_waves:
                 console.print(f"\nReady for next challenge: [bold cyan]cloudarena wave start {current_wave + 1}[/bold cyan]")
             else:
-                console.print("\n[bold gold1]🌟 CONGRATULATIONS! You have conquered all 4 CloudArena waves![/bold gold1]")
+                console.print(f"\n[bold gold1]🌟 CONGRATULATIONS! You have conquered all {total_waves} CloudArena waves![/bold gold1]")
         else:
             console.print(Panel(
                 f"[bold green]✓ Wave {current_wave} is already cleared.[/bold green]\n\n"
