@@ -28,11 +28,7 @@ def run_whoami():
 
     table.add_row("Tournament Event:", f"[bold yellow]{config.player.event_id or 'None (Open Arena)'}[/bold yellow]")
     if config.player.team_id:
-        team_display = f"[bold magenta]{config.player.team_name or config.player.team_id}[/bold magenta]"
-        if config.player.team_name and config.player.team_id != config.player.team_name:
-            team_display += f" [dim]({config.player.team_id})[/dim]"
-        table.add_row("Team / Squad:", team_display)
-        table.add_row("Squad Role:", f"[bold cyan]{config.player.team_role}[/bold cyan]")
+        table.add_row("Team / Squad:", f"[bold magenta]{config.player.team_id}[/bold magenta]")
 
     table.add_row("Career Score:", f"[bold green]{config.game.total_score} pts[/bold green]")
     table.add_row("Current Wave:", f"Wave {config.game.current_wave}" if config.game.current_wave > 0 else "Not active")

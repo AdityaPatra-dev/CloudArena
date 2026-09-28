@@ -60,33 +60,21 @@ export default function AdminCommandCenter({ eventConfig, standings = [], user }
     "1": "CPU Starvation Outage",
     "2": "Memory Leak OOMKilled Cascade",
     "3": "Broken Health Probe Deadlock",
-    "4": "Ingress Surge Traffic Overload",
-    "5": "CoreDNS Resolution Blackout",
-    "6": "Storage Deadlock & ReadOnly Mount",
-    "7": "RBAC Authorization Failure",
-    "8": "Corrupted Ingress TLS Handshake"
+    "4": "Ingress Surge Traffic Overload"
   });
 
   const [waveDurations, setWaveDurations] = useState(eventConfig?.wave_durations || {
     "1": 300,
     "2": 420,
     "3": 480,
-    "4": 600,
-    "5": 600,
-    "6": 720,
-    "7": 780,
-    "8": 900
+    "4": 600
   });
 
   const [wavePoints, setWavePoints] = useState(eventConfig?.wave_points || {
     "1": 100,
     "2": 150,
     "3": 200,
-    "4": 250,
-    "5": 350,
-    "6": 450,
-    "7": 550,
-    "8": 700
+    "4": 250
   });
 
   // Sync state if eventConfig changes externally
@@ -501,7 +489,7 @@ export default function AdminCommandCenter({ eventConfig, standings = [], user }
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => {
+          {[1, 2, 3, 4].map((num) => {
             const waveKey = String(num);
             const isCurrent = (eventConfig?.active_wave || 1) === num;
             const currentName = waveNames[waveKey] || `Wave ${num}`;

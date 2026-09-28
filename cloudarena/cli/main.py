@@ -1,29 +1,23 @@
 """Main Typer CLI entrypoint for CloudArena."""
 
 import os
-from pathlib import Path
 import subprocess
 import sys
 from typing import Optional
-
 import typer
 from rich.console import Console
 
 from cloudarena import __version__
-from cloudarena.cli.cert_cmd import run_certify
 from cloudarena.cli.destroy_cmd import run_destroy
-
 from cloudarena.cli.hint_cmd import run_hint
 from cloudarena.cli.leaderboard_cmd import run_leaderboard
 from cloudarena.cli.link_cmd import run_link
-from cloudarena.cli.mentor_cmd import mentor_app
 from cloudarena.cli.postmortem_cmd import run_postmortem
 from cloudarena.cli.reset_cmd import run_reset
 from cloudarena.cli.server_cmd import server_app
 from cloudarena.cli.setup_cmd import run_setup
 from cloudarena.cli.start_cmd import run_start
 from cloudarena.cli.status_cmd import run_status
-from cloudarena.cli.team_cmd import team_app
 from cloudarena.cli.uninstall_cmd import run_uninstall
 from cloudarena.cli.wave_cmd import wave_app
 from cloudarena.cli.whoami_cmd import run_whoami
@@ -37,12 +31,8 @@ app = typer.Typer(
     add_completion=False,
 )
 app.add_typer(wave_app, name="wave")
-app.add_typer(team_app, name="team")
-app.add_typer(mentor_app, name="mentor")
 app.add_typer(server_app, name="server")
 console = Console()
-
-
 
 
 @app.command("setup")
@@ -129,7 +119,7 @@ def reset():
 
 @app.command("postmortem")
 def postmortem(
-    wave: Optional[int] = typer.Argument(None, help="Wave number to inspect (1 to 8). Defaults to latest."),
+    wave: Optional[int] = typer.Argument(None, help="Wave number to inspect (1 to 4). Defaults to latest."),
 ):
     """View SRE Incident Post-Mortems and key architectural learnings."""
     run_postmortem(wave=wave)
@@ -138,10 +128,9 @@ def postmortem(
 @app.command("leaderboard")
 def leaderboard(
     event: Optional[str] = typer.Option(None, "--event", "-e", help="Filter standings by tournament event ID"),
-    teams: bool = typer.Option(False, "--teams", "-t", help="Display squad / CTF co-op standings"),
 ):
     """Display real-time tournament leaderboard standings."""
-    run_leaderboard(event=event, teams=teams)
+    run_leaderboard(event=event)
 
 
 @app.command("link")
@@ -149,12 +138,9 @@ def link(
     token: str = typer.Argument(..., help="Your personal Arena Token from the CloudArena web dashboard"),
     event: Optional[str] = typer.Option(None, "--event", "-e", help="Tournament event code to join"),
     handle: Optional[str] = typer.Option(None, "--handle", "-u", help="Gamer handle / username override"),
-    team: Optional[str] = typer.Option(None, "--team", "-t", help="Squad Name or Code to join"),
-    role: Optional[str] = typer.Option(None, "--role", "-r", help="Assigned squad role"),
 ):
     """Link local environment to CloudArena web platform using your Personal Arena Token."""
-    run_link(token=token, event=event, handle=handle, team=team, role=role)
-
+    run_link(token=token, event=event, handle=handle)
 
 
 @app.command("whoami")
@@ -171,14 +157,5 @@ def uninstall(
     run_uninstall(force=force)
 
 
-@app.command("certify")
-def certify(
-    output: Optional[Path] = typer.Option(None, "--output", "-o", help="Target SVG file path to save certificate"),
-):
-    """Generate your verifiable SRE Incident Certificate & Badge vector document."""
-    run_certify(output=output)
-
-
 if __name__ == "__main__":
     app()
-

@@ -25,9 +25,6 @@ def sync_score_to_server(breakdown: ScoreBreakdown) -> bool:
     payload = {
         "event_id": config.player.event_id or "solo",
         "handle": config.player.handle or "cadet",
-        "team_id": config.player.team_id,
-        "team_name": config.player.team_name,
-        "team_role": config.player.team_role,
         "wave_number": breakdown.wave_number,
         "base_points": breakdown.base_points,
         "speed_bonus": breakdown.speed_bonus,
@@ -65,25 +62,4 @@ def fetch_remote_leaderboard(event_id: Optional[str] = None) -> Optional[list[di
     except Exception:
         pass
     return None
-
-
-def fetch_remote_team_leaderboard(event_id: Optional[str] = None) -> Optional[list[dict]]:
-    """Fetch live squad / CTF standings list from central server."""
-    config = load_config()
-    server_url = config.central_server_url.rstrip("/")
-    url = f"{server_url}/api/v1/teams/standings"
-    params = {}
-    if event_id:
-        params["event_id"] = event_id
-    elif config.player.event_id:
-        params["event_id"] = config.player.event_id
-
-    try:
-        resp = requests.get(url, params=params, timeout=3.0)
-        if resp.status_code == 200:
-            return resp.json().get("standings", [])
-    except Exception:
-        pass
-    return None
-
 

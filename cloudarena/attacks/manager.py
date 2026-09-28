@@ -8,10 +8,6 @@ from cloudarena.attacks.wave1_cpu import Wave1CpuAttack
 from cloudarena.attacks.wave2_memory import Wave2MemoryAttack
 from cloudarena.attacks.wave3_probe import Wave3ProbeAttack
 from cloudarena.attacks.wave4_traffic import Wave4TrafficAttack
-from cloudarena.attacks.wave5_dns import Wave5DnsAttack
-from cloudarena.attacks.wave6_storage import Wave6StorageAttack
-from cloudarena.attacks.wave7_rbac import Wave7RbacAttack
-from cloudarena.attacks.wave8_tls import Wave8TlsAttack
 from cloudarena.core.config import load_config, save_config
 from cloudarena.k8s.client import is_kubeconfig_present
 from cloudarena.k8s.deployer import deploy_base_workloads, wait_for_workloads_ready
@@ -21,15 +17,11 @@ _ATTACK_REGISTRY: dict[int, BaseAttack] = {
     2: Wave2MemoryAttack(),
     3: Wave3ProbeAttack(),
     4: Wave4TrafficAttack(),
-    5: Wave5DnsAttack(),
-    6: Wave6StorageAttack(),
-    7: Wave7RbacAttack(),
-    8: Wave8TlsAttack(),
 }
 
 
 def get_attack(wave: int) -> BaseAttack:
-    """Retrieve attack handler by wave number (1 to 8)."""
+    """Retrieve attack handler by wave number (1 to 4)."""
     if wave not in _ATTACK_REGISTRY:
         raise ValueError(f"Unknown wave number {wave}. Available waves: {list(_ATTACK_REGISTRY.keys())}")
     return _ATTACK_REGISTRY[wave]

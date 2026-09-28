@@ -35,16 +35,6 @@ def get_apps_v1() -> client.AppsV1Api:
     return client.AppsV1Api(api_client=get_k8s_client())
 
 
-def get_rbac_v1() -> client.RbacAuthorizationV1Api:
-    """Get Kubernetes RbacAuthorizationV1Api client."""
-    return client.RbacAuthorizationV1Api(api_client=get_k8s_client())
-
-
-def get_networking_v1() -> client.NetworkingV1Api:
-    """Get Kubernetes NetworkingV1Api client."""
-    return client.NetworkingV1Api(api_client=get_k8s_client())
-
-
 def apply_manifest_file(file_path: Path) -> list[Any]:
     """Load and apply all resources from a multi-document YAML manifest file."""
     with open(file_path, "r", encoding="utf-8") as f:

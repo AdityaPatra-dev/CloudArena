@@ -74,22 +74,14 @@ service cloud.firestore {
           request.resource.data.uid == request.auth.uid &&
           request.resource.data.score is number &&
           request.resource.data.score >= 0 &&
-          request.resource.data.score <= 1000 &&
+          request.resource.data.score <= 500 &&
           request.resource.data.wave is number &&
           request.resource.data.wave >= 1 &&
-          request.resource.data.wave <= 8 &&
+          request.resource.data.wave <= 4 &&
           request.resource.data.hmac is string &&
           request.resource.data.hmac.size() >= 16;
         allow update, delete: if isAdmin();
       }
-
-      // Squads / Teams Collection for Co-op CTF mode
-      match /teams/{teamId} {
-        allow read: if true;
-        allow create, update: if isAuthenticated();
-        allow delete: if isAdmin();
-      }
     }
   }
 }
-
