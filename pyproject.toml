@@ -36,3 +36,7 @@ cloudarena = "cloudarena.cli.main:app"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["cloudarena*"]
+
+[tool.setuptools.package-data]
+"*" = ["manifests/*.yaml", "manifests/*.yml", "*.yaml", "*.yml"]
+cloudarena = ["manifests/*.yaml", "manifests/*.yml", "*.yaml", "*.yml"]

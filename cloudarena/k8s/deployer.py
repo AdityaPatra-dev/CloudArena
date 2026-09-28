@@ -4,7 +4,7 @@ import time
 from typing import Callable, Optional
 from kubernetes.client.rest import ApiException
 
-from cloudarena.core.paths import MANIFESTS_DIR
+from cloudarena.core.paths import MANIFESTS_DIR, get_manifests_dir
 from cloudarena.k8s.client import apply_manifest_file, get_apps_v1, get_core_v1
 
 
@@ -15,9 +15,11 @@ class DeploymentError(Exception):
 
 def deploy_base_workloads(progress_callback: Optional[Callable[[str], None]] = None) -> list[str]:
     """Apply all standard bundled manifests in alphabetical order."""
-    manifest_files = sorted(MANIFESTS_DIR.glob("*.yaml"))
+    target_dir = get_manifests_dir()
+    manifest_files = sorted(target_dir.glob("*.yaml")) if target_dir.exists() else []
+
     if not manifest_files:
-        raise DeploymentError(f"No manifest files found in {MANIFESTS_DIR}")
+        raise DeploymentError(f"No manifest files found in {target_dir}")
 
     deployed_files = []
     for manifest_path in manifest_files:

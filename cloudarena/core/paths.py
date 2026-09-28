@@ -37,13 +37,37 @@ PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 MANIFESTS_DIR = PACKAGE_ROOT / "manifests"
 
 
+def get_manifests_dir() -> Path:
+    """Resolve manifests directory with multi-location fallback."""
+    if MANIFESTS_DIR.exists() and list(MANIFESTS_DIR.glob("*.yaml")):
+        return MANIFESTS_DIR
+    cached_manifests = CLOUDARENA_HOME / "manifests"
+    if cached_manifests.exists() and list(cached_manifests.glob("*.yaml")):
+        return cached_manifests
+    repo_manifests = Path("/home/adityapatra/Documents/GitHub/CloudArena/cloudarena/manifests")
+    if repo_manifests.exists() and list(repo_manifests.glob("*.yaml")):
+        return repo_manifests
+    return MANIFESTS_DIR
+
+
 def ensure_directories() -> None:
     """Create all required CloudArena directories if they do not exist."""
-    for d in (CLOUDARENA_HOME, BIN_DIR, LOGS_DIR, POSTMORTEMS_DIR, REPLAYS_DIR, SCENARIOS_DIR):
+    manifests_dest = CLOUDARENA_HOME / "manifests"
+    for d in (CLOUDARENA_HOME, BIN_DIR, LOGS_DIR, POSTMORTEMS_DIR, REPLAYS_DIR, SCENARIOS_DIR, manifests_dest):
         try:
             d.mkdir(parents=True, exist_ok=True)
         except OSError:
             pass
+
+    if MANIFESTS_DIR.exists():
+        import shutil
+        for mf in MANIFESTS_DIR.glob("*.yaml"):
+            dest_file = manifests_dest / mf.name
+            if not dest_file.exists():
+                try:
+                    shutil.copy2(mf, dest_file)
+                except Exception:
+                    pass
 
 
 def get_extended_path_env() -> dict[str, str]:

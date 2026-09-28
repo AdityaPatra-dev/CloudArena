@@ -129,8 +129,9 @@ python3 -m pip install --upgrade --user "$ARCHIVE_URL" > /dev/null 2>&1 || {
 
 # Symlink CLI
 CLI_SOURCE="$(python3 -m site --user-base 2>/dev/null)/bin/cloudarena"
-if [ -f "$CLI_SOURCE" ]; then
-    ln -sf "$CLI_SOURCE" "$HOME/.local/bin/cloudarena"
+TARGET_LINK="$HOME/.local/bin/cloudarena"
+if [ -f "$CLI_SOURCE" ] && [ "$CLI_SOURCE" != "$TARGET_LINK" ]; then
+    ln -sf "$CLI_SOURCE" "$TARGET_LINK"
 fi
 
 # Ensure ~/.cloudarena/bin and ~/.local/bin are in PATH
