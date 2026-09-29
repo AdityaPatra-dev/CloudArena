@@ -123,3 +123,174 @@
   background: #0284c7;
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
 }
+
+/* ==================== CONTINUOUS ANIMATION UTILITIES ==================== */
+@keyframes continuousMarquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: continuousMarquee 28s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes pulseBorder {
+  0%, 100% { border-color: rgba(0, 240, 255, 0.3); box-shadow: 0 0 15px rgba(0, 240, 255, 0.1); }
+  50% { border-color: rgba(0, 240, 255, 0.7); box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); }
+}
+
+.animate-pulseBorder {
+  animation: pulseBorder 3s infinite ease-in-out;
+}
+
+/* ==================== LIGHT THEME STYLES ==================== */
+body.light-theme {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+.light-theme .cyber-grid {
+  background-image: 
+    linear-gradient(to right, rgba(148, 163, 184, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.15) 1px, transparent 1px);
+}
+
+/* Light Theme Navigation & Header */
+.light-theme header,
+.light-theme nav.md\:flex,
+.light-theme nav.md\:hidden {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  border-color: rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06) !important;
+}
+
+.light-theme nav button {
+  color: #475569 !important;
+}
+
+.light-theme nav button:hover {
+  color: #0f172a !important;
+  background-color: rgba(241, 245, 249, 0.9) !important;
+}
+
+/* Light Theme Cards & Containers */
+.light-theme .glass-panel,
+.light-theme .glass-card,
+.light-theme .bg-\[\#0b1022\]\/80,
+.light-theme .bg-\[\#0b1022\]\/90,
+.light-theme .bg-slate-900\/70,
+.light-theme .bg-slate-900\/80,
+.light-theme .bg-slate-900\/90,
+.light-theme .bg-slate-950\/60,
+.light-theme .bg-slate-950\/70,
+.light-theme .bg-\[\#060a15\]\/95,
+.light-theme .bg-\[\#060a16\],
+.light-theme .bg-purple-950\/30,
+.light-theme .bg-purple-950\/40,
+.light-theme .bg-amber-950\/50,
+.light-theme .bg-amber-950\/30,
+.light-theme .bg-slate-800\/40 {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: rgba(203, 213, 225, 0.8) !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03) !important;
+}
+
+/* Light Theme Typography */
+.light-theme h1,
+.light-theme h2,
+.light-theme h3,
+.light-theme h4,
+.light-theme .text-white {
+  color: #0f172a !important;
+}
+
+.light-theme .text-slate-100 {
+  color: #0f172a !important;
+}
+
+.light-theme .text-slate-200 {
+  color: #1e293b !important;
+}
+
+.light-theme .text-slate-300 {
+  color: #334155 !important;
+}
+
+.light-theme .text-slate-400 {
+  color: #64748b !important;
+}
+
+/* Maintain dark & authentic console styling for terminals and bash commands */
+.light-theme .bg-\[\#040711\],
+.light-theme .bg-\[\#03060c\],
+.light-theme .bg-\[\#050811\] {
+  background-color: #0b1120 !important;
+  border-color: #1e293b !important;
+}
+
+.light-theme .border-slate-800,
+.light-theme .border-slate-800\/80,
+.light-theme .border-slate-800\/90 {
+  border-color: rgba(226, 232, 240, 0.8) !important;
+}
+
+/* Light Theme Tables */
+.light-theme table {
+  color: #1e293b !important;
+}
+
+.light-theme thead tr {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light-theme tbody tr {
+  border-color: #f1f5f9 !important;
+}
+
+.light-theme tbody tr:hover {
+  background-color: #f8fafc !important;
+}
+
+/* Light Theme Footer */
+.light-theme footer {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(226, 232, 240, 0.9) !important;
+}
+
+/* Light Theme Inputs */
+.light-theme input,
+.light-theme select {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light-theme input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Scrollbars for Light Theme */
+.light-theme ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.light-theme ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

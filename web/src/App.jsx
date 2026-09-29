@@ -24,6 +24,31 @@ export default function App() {
   const [standings, setStandings] = useState([]);
   const [eventConfig, setEventConfig] = useState(null);
   const [isProjector, setIsProjector] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('cloudarena_theme') || 'dark';
+  });
+
+  // Apply theme to documentElement & body
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    if (theme === 'light') {
+      root.classList.add('light-theme');
+      root.classList.remove('dark');
+      body.classList.add('light-theme');
+      body.classList.remove('dark');
+    } else {
+      root.classList.add('dark');
+      root.classList.remove('light-theme');
+      body.classList.add('dark');
+      body.classList.remove('light-theme');
+    }
+    localStorage.setItem('cloudarena_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   // Persistent Auth Listener across page refreshes
   useEffect(() => {
@@ -117,6 +142,8 @@ export default function App() {
         eventConfig={eventConfig}
         isProjector={isProjector}
         setIsProjector={setIsProjector}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Main Tab Body with animated view transitions */}

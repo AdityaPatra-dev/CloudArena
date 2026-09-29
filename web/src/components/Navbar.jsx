@@ -9,7 +9,9 @@ import {
   Radio,
   BookOpen,
   Film,
-  ShieldCheck
+  ShieldCheck,
+  Sun,
+  Moon
 } from 'lucide-react';
 import Logo from './Logo';
 
@@ -21,7 +23,9 @@ export default function Navbar({
   onLogout, 
   eventConfig, 
   isProjector, 
-  setIsProjector 
+  setIsProjector,
+  theme,
+  onToggleTheme
 }) {
   const isAdmin = user?.role === 'admin';
 
@@ -149,8 +153,26 @@ export default function Navbar({
             </button>
           </nav>
 
-          {/* User Auth Info */}
+          {/* User Auth Info & Theme Toggle */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Theme Switcher Toggle */}
+            <button
+              onClick={onToggleTheme}
+              className={`p-2 rounded-xl transition-all duration-300 flex items-center justify-center border ${
+                theme === 'light'
+                  ? 'bg-amber-100/90 text-amber-700 border-amber-300 hover:bg-amber-200 shadow-sm'
+                  : 'bg-slate-900/90 text-amber-400 border-slate-700/80 hover:bg-slate-800 hover:border-amber-400/50 shadow-sm shadow-amber-500/10'
+              }`}
+              title={theme === 'light' ? 'Switch to Dark Mode (Cyber)' : 'Switch to Light Mode (Clean Slate)'}
+              aria-label="Toggle Color Theme"
+            >
+              {theme === 'light' ? (
+                <Moon className="w-4 h-4 text-indigo-600 transition-transform duration-300 hover:-rotate-12" />
+              ) : (
+                <Sun className="w-4 h-4 text-amber-400 transition-transform duration-300 hover:rotate-45" />
+              )}
+            </button>
+
             {user ? (
               <div className="flex items-center gap-2">
                 <img 
@@ -273,10 +295,19 @@ export default function Navbar({
 
         <button
           onClick={() => setIsProjector(!isProjector)}
-          className="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-slate-400 hover:text-slate-200 transition"
+          className="flex flex-col items-center gap-1 py-1 px-2 rounded-xl text-slate-400 hover:text-slate-200 transition"
         >
           <Tv className="w-5 h-5" />
           <span className="text-[10px] font-medium">Projector</span>
+        </button>
+
+        <button
+          onClick={onToggleTheme}
+          className="flex flex-col items-center gap-1 py-1 px-2 rounded-xl text-amber-400 hover:text-amber-300 transition"
+          title="Toggle Theme"
+        >
+          {theme === 'light' ? <Moon className="w-5 h-5 text-indigo-500" /> : <Sun className="w-5 h-5 text-amber-400" />}
+          <span className="text-[10px] font-medium">{theme === 'light' ? 'Dark' : 'Light'}</span>
         </button>
       </nav>
     </>

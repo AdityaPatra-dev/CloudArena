@@ -18,11 +18,14 @@ import {
   Users,
   UserPlus,
   LogOut,
-  Award
+  Award,
+  Zap
 } from 'lucide-react';
 import { elevateToAdmin, createOrJoinSquad, leaveSquad } from '../firebase';
 import CertificateModal from './CertificateModal';
 import Logo from './Logo';
+import ContinuousTelemetryMonitor from './ContinuousTelemetryMonitor';
+import InteractiveTerminalSimulator from './InteractiveTerminalSimulator';
 
 export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfig }) {
   const [copiedToken, setCopiedToken] = useState(false);
@@ -44,58 +47,7 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
   const [cliMode, setCliMode] = useState('standard'); // 'standard' | 'zeropath'
   const [copiedPathFix, setCopiedPathFix] = useState(false);
 
-
-
-  if (!user) {
-    return (
-      <div className="max-w-2xl mx-auto my-6 sm:my-12 p-6 sm:p-12 bg-slate-900/70 border border-cyan-500/30 rounded-3xl backdrop-blur-xl text-center shadow-[0_0_50px_rgba(0,212,255,0.12)] relative overflow-hidden group">
-        <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
-        <Logo className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-5 sm:mb-6 animate-floatSlow filter drop-shadow-[0_0_20px_rgba(0,212,255,0.45)]" />
-        <h2 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-300 bg-clip-text text-transparent">
-          Competitor Identity & Token Passport
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-300 mt-2.5 sm:mt-3 max-w-md mx-auto leading-relaxed">
-          Sign in with your Google account to mint your personal Arena Token. Link your local laptop cluster to stream telemetry and compete on the live leaderboard.
-        </p>
-
-        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button
-            onClick={onLogin}
-            className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-xl shadow-cyan-500/25 hover:shadow-[0_0_25px_rgba(0,240,255,0.4)] transition-all duration-300 transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2.5"
-          >
-            <LogIn className="w-4 h-4" />
-            <span>Sign in with Google</span>
-          </button>
-        </div>
-
-        <div className="mt-8 pt-6 sm:mt-10 sm:pt-8 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-left">
-          <div className="bg-slate-950/60 p-4 rounded-2xl border border-cyan-500/20 hover:border-cyan-400/40 transition-all hover:-translate-y-1">
-            <div className="text-cyan-400 font-bold text-xs uppercase mono mb-1 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-              01. Zero Cost
-            </div>
-            <div className="text-xs text-slate-400">Sandboxed 3-node cluster runs locally on your laptop via k3d.</div>
-          </div>
-          <div className="bg-slate-950/60 p-4 rounded-2xl border border-indigo-500/20 hover:border-indigo-400/40 transition-all hover:-translate-y-1">
-            <div className="text-indigo-400 font-bold text-xs uppercase mono mb-1 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-              02. Anti-Cheat
-            </div>
-            <div className="text-xs text-slate-400">K8s secret nonces and HMAC proofs secure all verified score posts.</div>
-          </div>
-          <div className="bg-slate-950/60 p-4 rounded-2xl border border-emerald-500/20 hover:border-emerald-400/40 transition-all hover:-translate-y-1">
-            <div className="text-emerald-400 font-bold text-xs uppercase mono mb-1 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              03. AI SRE RCA
-            </div>
-            <div className="text-xs text-slate-400">Automated post-mortems and multi-tier progressive hints.</div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const token = user.arena_token || "ca_live_150ef255423a93be2c522417fa8209e4";
+  const token = user?.arena_token || "ca_live_sandbox_cadet_2026";
   const eventId = eventConfig?.event_id || "HACKATHON_2026";
   const linkCommand = cliMode === 'zeropath'
     ? (selectedOs === 'windows' ? `python -m cloudarena link ${token} --event ${eventId}` : `python3 -m cloudarena link ${token} --event ${eventId}`)
@@ -114,6 +66,7 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
 
   const handleElevate = async (e) => {
     e.preventDefault();
+    if (!user) return;
     const updated = await elevateToAdmin(user, passcode);
     if (updated) {
       setPasscodeStatus('success');
@@ -125,6 +78,10 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
 
   const handleSquadSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      if (onLogin) onLogin();
+      return;
+    }
     setSquadSubmitting(true);
     try {
       const code = squadTab === 'join' ? squadCode : null;
@@ -143,6 +100,7 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
   };
 
   const handleSquadLeave = async () => {
+    if (!user) return;
     setSquadSubmitting(true);
     try {
       const updated = await leaveSquad(user, eventId);
@@ -156,64 +114,114 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
     }
   };
 
-
   const maskedToken = showToken ? token : `${token.substring(0, 7)}••••••••••••••••${token.substring(token.length - 4)}`;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 animate-fadeIn pb-16 md:pb-0">
       
-      {/* Competitor Passport Card */}
-      <div className="bg-[#0b1022]/80 border border-slate-800 hover:border-cyan-500/40 rounded-3xl p-5 sm:p-8 backdrop-blur-xl shadow-2xl relative overflow-hidden transition-all duration-300 group">
-        <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60"></div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
-          <div className="flex items-center gap-3.5 sm:gap-4">
-            <div className="relative">
-              <img 
-                src={user.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80"}
-                alt={user.displayName}
-                className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ring-2 ring-cyan-400/50 ring-offset-2 ring-offset-[#080d1a] shadow-lg shadow-cyan-500/20 object-cover shrink-0 group-hover:scale-105 transition-transform duration-300"
-              />
-              <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#0b1022] flex items-center justify-center shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
-              </span>
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight group-hover:text-cyan-200 transition-colors">
-                  {user.displayName}
-                </h2>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono ${
-                  user.role === 'admin' 
-                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-sm shadow-purple-500/20' 
-                    : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 shadow-sm shadow-cyan-500/20'
-                }`}>
-                  {user.role === 'admin' ? 'ORGANIZER' : 'COMPETITOR'}
-                </span>
-              </div>
-              <div className="text-xs text-slate-400 font-mono mt-0.5 truncate max-w-[240px] sm:max-w-md">
-                @{user.handle || 'cadet'} • {user.email}
-              </div>
-            </div>
+      {/* If Not Logged In: Sign-in Hero Banner */}
+      {!user ? (
+        <div className="p-6 sm:p-10 bg-slate-900/70 border border-cyan-500/30 rounded-3xl backdrop-blur-xl text-center shadow-[0_0_50px_rgba(0,212,255,0.12)] relative overflow-hidden group">
+          <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+          <Logo className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 animate-floatSlow filter drop-shadow-[0_0_20px_rgba(0,212,255,0.45)]" />
+          <h2 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-300 bg-clip-text text-transparent">
+            Competitor Identity & Token Passport
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-md mx-auto leading-relaxed">
+            Sign in with your Google account to mint your personal Arena Token. Link your local laptop cluster to stream telemetry and compete on the live leaderboard.
+          </p>
+
+          <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={onLogin}
+              className="w-full sm:w-auto px-7 py-3 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-xl shadow-cyan-500/25 hover:shadow-[0_0_25px_rgba(0,240,255,0.4)] transition-all duration-300 transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2.5"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>Sign in with Google</span>
+            </button>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              onClick={() => setShowCertModal(true)}
-              className="shimmer-badge px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-sky-500/20 hover:from-amber-500/30 hover:to-sky-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-2 transition-all duration-200 shadow-md shadow-amber-500/10 hover:shadow-amber-500/25 hover:scale-[1.02] active:scale-95"
-            >
-              <Award className="w-4 h-4 text-amber-400 animate-pulseGlow" />
-              <span>SRE Certificate & Badge</span>
-            </button>
-            <div className="px-3.5 py-2 rounded-xl bg-emerald-950/70 border border-emerald-500/40 flex items-center gap-2 text-xs font-bold text-emerald-300 shadow-sm shadow-emerald-500/20">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span>Passport Armed</span>
+          <div className="mt-6 pt-5 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+            <div className="bg-slate-950/60 p-3.5 rounded-2xl border border-cyan-500/20 hover:border-cyan-400/40 transition-all">
+              <div className="text-cyan-400 font-bold text-xs uppercase mono mb-1 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                01. Zero Cost
+              </div>
+              <div className="text-[11px] text-slate-400">Sandboxed 3-node cluster runs locally on your laptop via k3d.</div>
+            </div>
+            <div className="bg-slate-950/60 p-3.5 rounded-2xl border border-indigo-500/20 hover:border-indigo-400/40 transition-all">
+              <div className="text-indigo-400 font-bold text-xs uppercase mono mb-1 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                02. Anti-Cheat
+              </div>
+              <div className="text-[11px] text-slate-400">K8s secret nonces and HMAC proofs secure all verified score posts.</div>
+            </div>
+            <div className="bg-slate-950/60 p-3.5 rounded-2xl border border-emerald-500/20 hover:border-emerald-400/40 transition-all">
+              <div className="text-emerald-400 font-bold text-xs uppercase mono mb-1 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                03. AI SRE RCA
+              </div>
+              <div className="text-[11px] text-slate-400">Automated post-mortems and multi-tier progressive hints.</div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        /* Competitor Passport Card (When Logged In) */
+        <div className="bg-[#0b1022]/80 border border-slate-800 hover:border-cyan-500/40 rounded-3xl p-5 sm:p-8 backdrop-blur-xl shadow-2xl relative overflow-hidden transition-all duration-300 group">
+          <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60"></div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+            <div className="flex items-center gap-3.5 sm:gap-4">
+              <div className="relative">
+                <img 
+                  src={user.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80"}
+                  alt={user.displayName}
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ring-2 ring-cyan-400/50 ring-offset-2 ring-offset-[#080d1a] shadow-lg shadow-cyan-500/20 object-cover shrink-0 group-hover:scale-105 transition-transform duration-300"
+                />
+                <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#0b1022] flex items-center justify-center shadow-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                </span>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight group-hover:text-cyan-200 transition-colors">
+                    {user.displayName}
+                  </h2>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono ${
+                    user.role === 'admin' 
+                      ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-sm shadow-purple-500/20' 
+                      : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 shadow-sm shadow-cyan-500/20'
+                  }`}>
+                    {user.role === 'admin' ? 'ORGANIZER' : 'COMPETITOR'}
+                  </span>
+                </div>
+                <div className="text-xs text-slate-400 font-mono mt-0.5 truncate max-w-[240px] sm:max-w-md">
+                  @{user.handle || 'cadet'} • {user.email}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={() => setShowCertModal(true)}
+                className="shimmer-badge px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-sky-500/20 hover:from-amber-500/30 hover:to-sky-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-2 transition-all duration-200 shadow-md shadow-amber-500/10 hover:shadow-amber-500/25 hover:scale-[1.02] active:scale-95"
+              >
+                <Award className="w-4 h-4 text-amber-400 animate-pulseGlow" />
+                <span>SRE Certificate & Badge</span>
+              </button>
+              <div className="px-3.5 py-2 rounded-xl bg-emerald-950/70 border border-emerald-500/40 flex items-center gap-2 text-xs font-bold text-emerald-300 shadow-sm shadow-emerald-500/20">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>Passport Armed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Real-time Continuous Telemetry & Cluster Pulse */}
+      <ContinuousTelemetryMonitor />
 
       {/* Arena Token Hub (Option B) */}
       <div className="bg-gradient-to-b from-[#0b1022]/90 via-[#080d1a]/95 to-[#050811]/95 border border-cyan-500/30 hover:border-cyan-400/50 rounded-3xl p-5 sm:p-8 shadow-2xl shadow-cyan-500/10 space-y-6 transition-all duration-300">
@@ -409,7 +417,7 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
             </div>
           </div>
 
-          {user.team_id && (
+          {user?.team_id && (
             <button
               onClick={handleSquadLeave}
               disabled={squadSubmitting}
@@ -421,7 +429,23 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
           )}
         </div>
 
-        {user.team_id ? (
+        {!user ? (
+          <div className="p-4 sm:p-5 rounded-2xl bg-purple-950/20 border border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-bold text-purple-200">Co-op Squad Mode Enlistment</div>
+              <div className="text-xs text-slate-400 mt-1">
+                Sign in with Google to create or join a squad with your teammates and aggregate scores on the live leaderboard.
+              </div>
+            </div>
+            <button
+              onClick={onLogin}
+              className="shrink-0 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-purple-600/30 transition flex items-center gap-1.5"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Sign In to Enlist</span>
+            </button>
+          </div>
+        ) : user.team_id ? (
           /* Active Squad State */
           <div className="p-4 sm:p-5 rounded-2xl bg-purple-950/40 border border-purple-500/40 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -547,7 +571,7 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
       </div>
 
       {/* Organizer Verification Card */}
-      {user.role !== 'admin' && (
+      {user && user.role !== 'admin' && (
         <div className="p-5 sm:p-6 rounded-3xl bg-[#0b1022]/80 border border-purple-500/30 hover:border-purple-400/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl transition-all duration-300">
           <div className="flex items-center gap-3.5">
             <div className="p-2.5 rounded-2xl bg-purple-500/20 text-purple-300 border border-purple-500/40 shrink-0">
@@ -587,6 +611,9 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
           )}
         </div>
       )}
+
+      {/* Interactive CLI & Chaos Simulator */}
+      <InteractiveTerminalSimulator />
 
       {/* Terminal Battle Protocol Step-by-Step */}
       <div className="bg-[#0b1022]/80 border border-slate-800 hover:border-cyan-500/30 rounded-3xl p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl transition-all duration-300">

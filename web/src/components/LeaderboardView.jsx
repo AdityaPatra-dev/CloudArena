@@ -11,14 +11,55 @@ import {
   Users,
   User,
   Shield,
-  Zap
+  Zap,
+  Radio,
+  Activity,
+  Terminal
 } from 'lucide-react';
 import { subscribeTeamStandings, getSimulatedTeamStandings } from '../firebase';
+
+const TYPING_PHRASES = [
+  "Injecting Wave 1: Rogue CPU Miner Pod into cluster namespace...",
+  "Detecting compute starvation: Node compute throttled at 98.4%...",
+  "Evaluating synthetic probes: http://localhost:8080 latency 14ms...",
+  "Stabilizing mesh: 10.0s verification window PASS [100.0%]...",
+  "Attesting score: Cryptographic HMAC nonce ca_cert_9d8a2 verified...",
+  "AI Mentor RCA: Automated SRE root-cause post-mortem generated..."
+];
 
 export default function LeaderboardView({ standings = [], eventConfig }) {
   const [activeTab, setActiveTab] = useState('solo'); // 'solo' | 'teams'
   const [searchTerm, setSearchTerm] = useState('');
   const [teamStandings, setTeamStandings] = useState([]);
+  const [currentPhraseIdx, setCurrentPhraseIdx] = useState(0);
+  const [typedText, setTypedText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let timer;
+    const currentPhrase = TYPING_PHRASES[currentPhraseIdx];
+
+    if (!isDeleting) {
+      if (typedText.length < currentPhrase.length) {
+        timer = setTimeout(() => {
+          setTypedText(currentPhrase.substring(0, typedText.length + 1));
+        }, 35);
+      } else {
+        timer = setTimeout(() => setIsDeleting(true), 2500);
+      }
+    } else {
+      if (typedText.length > 0) {
+        timer = setTimeout(() => {
+          setTypedText(currentPhrase.substring(0, typedText.length - 1));
+        }, 18);
+      } else {
+        setIsDeleting(false);
+        setCurrentPhraseIdx((prev) => (prev + 1) % TYPING_PHRASES.length);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [typedText, isDeleting, currentPhraseIdx]);
 
   useEffect(() => {
     const unsub = subscribeTeamStandings((data) => {
@@ -78,6 +119,85 @@ export default function LeaderboardView({ standings = [], eventConfig }) {
           </span>
         </div>
       )}
+
+      {/* Live Incident Broadcast & Continuous Marquee */}
+      <div className="bg-[#0b1022]/90 border border-cyan-500/30 rounded-3xl overflow-hidden shadow-2xl shadow-cyan-500/5 backdrop-blur-xl space-y-3 p-4 sm:p-5 relative group">
+        <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-75"></div>
+
+        {/* Typewriter Banner */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-800/80 pb-3">
+          <div className="flex items-center gap-2.5">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span className="text-[11px] font-mono font-black uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 shrink-0">
+              <Activity className="w-3.5 h-3.5 text-cyan-400" />
+              <span>SRE FLIGHT RADAR</span>
+            </span>
+            <span className="text-slate-600 hidden sm:inline">•</span>
+            <div className="text-xs font-mono text-slate-300 flex items-center overflow-x-auto">
+              <span className="text-emerald-400 font-bold">$ </span>
+              <span className="text-cyan-300 ml-1.5 font-medium">{typedText}</span>
+              <span className="w-1.5 h-3.5 bg-cyan-400 inline-block ml-0.5 animate-pulse"></span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-[10px] font-mono self-start sm:self-auto shrink-0">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold flex items-center gap-1">
+              <ShieldCheck className="w-3 h-3 text-emerald-400" />
+              <span>SANDBOXED MESH</span>
+            </span>
+            <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 font-bold">
+              $0 COMPUTE BILL
+            </span>
+          </div>
+        </div>
+
+        {/* Continuous Infinite Marquee Ribbon */}
+        <div className="overflow-hidden whitespace-nowrap text-[11px] font-mono text-slate-400 flex items-center py-0.5">
+          <div className="animate-marquee flex items-center gap-8 text-xs">
+            <span className="flex items-center gap-2">
+              <span className="text-amber-400 font-bold">⚡ 8 Escalating Chaos Waves</span>
+            </span>
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-2">
+              <span className="text-emerald-400 font-bold">🛡️ HMAC-SHA256 Anti-Cheat Active</span>
+            </span>
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-2">
+              <span className="text-sky-400 font-bold">🤖 Gemini SRE AI Post-Mortems</span>
+            </span>
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-2">
+              <span className="text-purple-400 font-bold">⏱️ 10.0s Stabilization Window</span>
+            </span>
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-2">
+              <span className="text-rose-400 font-bold">🔄 Instant Wave Rollback (&lt;3s)</span>
+            </span>
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-2">
+              <span className="text-amber-400 font-bold">⚡ 8 Escalating Chaos Waves</span>
+            </span>
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-2">
+              <span className="text-emerald-400 font-bold">🛡️ HMAC-SHA256 Anti-Cheat Active</span>
+            </span>
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-2">
+              <span className="text-sky-400 font-bold">🤖 Gemini SRE AI Post-Mortems</span>
+            </span>
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-2">
+              <span className="text-purple-400 font-bold">⏱️ 10.0s Stabilization Window</span>
+            </span>
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-2">
+              <span className="text-rose-400 font-bold">🔄 Instant Wave Rollback (&lt;3s)</span>
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* Solo vs Squad View Toggle */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
