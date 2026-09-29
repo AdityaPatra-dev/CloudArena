@@ -104,42 +104,51 @@ export default function ReplayViewer({ sampleReplayData }) {
   const traffic = currentEvent.traffic_pct !== undefined ? currentEvent.traffic_pct : 0;
   const healthStatus = currentEvent.health_status || "CRITICAL";
 
-  let statusColor = "text-rose-400 border-rose-500/40 bg-rose-950/30";
-  let statusBadge = "🔴 OUTAGE";
+  let statusColor = "text-rose-300 border-rose-500/50 bg-rose-950/40 shadow-glow-rose";
+  let statusBeacon = "bg-rose-500";
+  let statusBadge = "OUTAGE ACTIVE";
   if (healthStatus === "DEGRADED") {
-    statusColor = "text-amber-400 border-amber-500/40 bg-amber-950/30";
-    statusBadge = "🟡 REMEDIATING";
+    statusColor = "text-amber-300 border-amber-500/50 bg-amber-950/40 shadow-glow-amber";
+    statusBeacon = "bg-amber-500";
+    statusBadge = "REMEDIATING CHAOS";
   } else if (healthStatus === "STABILIZING") {
-    statusColor = "text-sky-400 border-sky-500/40 bg-sky-950/30";
-    statusBadge = "🔵 STABILIZING (10s)";
+    statusColor = "text-cyan-300 border-cyan-500/50 bg-cyan-950/40 shadow-glow-cyan";
+    statusBeacon = "bg-cyan-500";
+    statusBadge = "STABILIZING (10s)";
   } else if (healthStatus === "HEALTHY") {
-    statusColor = "text-emerald-400 border-emerald-500/40 bg-emerald-950/30";
-    statusBadge = "🟢 INCIDENT RESOLVED";
+    statusColor = "text-emerald-300 border-emerald-500/50 bg-emerald-950/40 shadow-glow-emerald";
+    statusBeacon = "bg-emerald-500";
+    statusBadge = "INCIDENT RESOLVED";
   }
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn pb-16 md:pb-0">
       {/* Header Info */}
-      <div className="bg-gradient-to-r from-indigo-950/40 via-slate-900/80 to-purple-950/40 border border-indigo-500/30 rounded-3xl p-5 sm:p-7 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-[#0b1022]/90 via-[#080d1a]/95 to-[#060a15]/95 border border-indigo-500/30 rounded-3xl p-5 sm:p-7 shadow-2xl shadow-indigo-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
+        <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-indigo-400 to-transparent opacity-60"></div>
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1">
-              <Film className="w-3 h-3 text-indigo-400" />
+            <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5 shadow-sm shadow-indigo-500/20">
+              <Film className="w-3.5 h-3.5 text-indigo-400" />
               FLIGHT RECORDER REPLAY
             </span>
             <span className="text-xs text-slate-400 font-mono">
               Wave {replay.wave_number} • {replay.duration_seconds}s Runtime
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white mt-1 tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-black text-white mt-1 tracking-tight bg-gradient-to-r from-white via-indigo-100 to-sky-300 bg-clip-text text-transparent">
             {replay.wave_name || `Wave ${replay.wave_number} Incident Replay`}
           </h2>
           <p className="text-xs text-slate-300 font-mono mt-0.5">
-            Cadet: <span className="text-sky-400 font-bold">@{replay.player_handle}</span> • Event: {replay.event_id} • Verified Score: <span className="text-emerald-400 font-bold">+{replay.final_score} pts</span>
+            Cadet: <span className="text-cyan-400 font-bold">@{replay.player_handle}</span> • Event: {replay.event_id} • Verified Score: <span className="text-emerald-400 font-bold">+{replay.final_score} pts</span>
           </p>
         </div>
 
-        <div className={`px-4 py-2 rounded-2xl border font-mono font-bold text-xs sm:text-sm flex items-center gap-2 ${statusColor}`}>
+        <div className={`px-4 py-2 rounded-2xl border font-mono font-bold text-xs sm:text-sm flex items-center gap-2.5 transition-all duration-300 ${statusColor}`}>
+          <span className="relative flex h-2 w-2">
+            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${statusBeacon}`}></span>
+            <span className={`relative inline-flex rounded-full h-2 w-2 ${statusBeacon}`}></span>
+          </span>
           <span>{statusBadge}</span>
         </div>
       </div>
@@ -148,84 +157,87 @@ export default function ReplayViewer({ sampleReplayData }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         
         {/* Gauge 1: Synthetic Traffic Ingress */}
-        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 sm:p-5 backdrop-blur space-y-3">
+        <div className="bg-[#0b1022]/80 border border-slate-800 hover:border-cyan-500/40 rounded-2xl p-4 sm:p-5 backdrop-blur-xl space-y-3 shadow-lg hover:-translate-y-1 transition-all duration-300">
           <div className="flex items-center justify-between text-xs font-mono">
-            <span className="text-slate-400 flex items-center gap-1.5">
-              <Activity className="w-4 h-4 text-sky-400" />
+            <span className="text-slate-300 font-semibold flex items-center gap-1.5">
+              <Activity className="w-4 h-4 text-cyan-400" />
               Traffic Success Rate
             </span>
             <span className={`font-black text-base ${traffic >= 95 ? 'text-emerald-400' : traffic > 0 ? 'text-amber-400' : 'text-rose-400'}`}>
               {traffic.toFixed(1)}%
             </span>
           </div>
-          <div className="w-full bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-800">
+          <div className="w-full bg-[#050811] h-3 rounded-full overflow-hidden border border-slate-800 shadow-inner">
             <div 
-              className={`h-full transition-all duration-300 ${traffic >= 95 ? 'bg-emerald-500' : traffic > 0 ? 'bg-amber-500' : 'bg-rose-500'}`}
+              className={`h-full transition-all duration-300 ${traffic >= 95 ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-glow-emerald' : traffic > 0 ? 'bg-gradient-to-r from-amber-500 to-orange-400 shadow-glow-amber' : 'bg-gradient-to-r from-rose-600 to-red-500 shadow-glow-rose'}`}
               style={{ width: `${Math.max(4, traffic)}%` }}
             />
           </div>
-          <div className="text-[11px] text-slate-500 font-mono flex justify-between">
+          <div className="text-[11px] text-slate-400 font-mono flex justify-between">
             <span>0% (Blackout)</span>
-            <span>Target: &gt;= 95%</span>
+            <span className="text-emerald-400 font-semibold">Target: &gt;= 95%</span>
           </div>
         </div>
 
         {/* Gauge 2: Microservice Cluster Pods */}
-        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 sm:p-5 backdrop-blur space-y-2.5">
-          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-            <span className="flex items-center gap-1.5">
+        <div className="bg-[#0b1022]/80 border border-slate-800 hover:border-cyan-500/40 rounded-2xl p-4 sm:p-5 backdrop-blur-xl space-y-2.5 shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-300">
+            <span className="flex items-center gap-1.5 font-semibold">
               <Server className="w-4 h-4 text-indigo-400" />
               Target Microservices
             </span>
-            <span className="text-[11px] text-slate-500">Namespace: cloudarena-app</span>
+            <span className="text-[11px] text-slate-400 font-mono">Namespace: cloudarena-app</span>
           </div>
 
           <div className="grid grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
-            <div className="p-2 rounded-xl bg-slate-950 border border-slate-800/80 text-center">
-              <div className="text-slate-400 text-[10px]">Frontend</div>
-              <div className={`font-bold mt-0.5 ${currentEvent.pods?.frontend === 'Running' ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {currentEvent.pods?.frontend || 'Running'}
+            <div className="p-2.5 rounded-xl bg-[#050811] border border-slate-800 text-center">
+              <div className="text-slate-400 text-[10px] uppercase font-bold">Frontend</div>
+              <div className={`font-black mt-0.5 flex items-center justify-center gap-1 ${currentEvent.pods?.frontend === 'Running' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${currentEvent.pods?.frontend === 'Running' ? 'bg-emerald-400' : 'bg-rose-500'}`}></span>
+                <span>{currentEvent.pods?.frontend || 'Running'}</span>
               </div>
             </div>
-            <div className="p-2 rounded-xl bg-slate-950 border border-slate-800/80 text-center">
-              <div className="text-slate-400 text-[10px]">Backend</div>
-              <div className={`font-bold mt-0.5 ${currentEvent.pods?.backend === 'Running' ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {currentEvent.pods?.backend || 'Running'}
+            <div className="p-2.5 rounded-xl bg-[#050811] border border-slate-800 text-center">
+              <div className="text-slate-400 text-[10px] uppercase font-bold">Backend</div>
+              <div className={`font-black mt-0.5 flex items-center justify-center gap-1 ${currentEvent.pods?.backend === 'Running' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${currentEvent.pods?.backend === 'Running' ? 'bg-emerald-400' : 'bg-rose-500'}`}></span>
+                <span>{currentEvent.pods?.backend || 'Running'}</span>
               </div>
             </div>
-            <div className="p-2 rounded-xl bg-slate-950 border border-slate-800/80 text-center">
-              <div className="text-slate-400 text-[10px]">Cache/DB</div>
-              <div className={`font-bold mt-0.5 ${currentEvent.pods?.cache === 'Running' ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {currentEvent.pods?.cache || 'Running'}
+            <div className="p-2.5 rounded-xl bg-[#050811] border border-slate-800 text-center">
+              <div className="text-slate-400 text-[10px] uppercase font-bold">Cache/DB</div>
+              <div className={`font-black mt-0.5 flex items-center justify-center gap-1 ${currentEvent.pods?.cache === 'Running' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${currentEvent.pods?.cache === 'Running' ? 'bg-emerald-400' : 'bg-rose-500'}`}></span>
+                <span>{currentEvent.pods?.cache || 'Running'}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Gauge 3: Current Time & Step Info */}
-        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 sm:p-5 backdrop-blur flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-            <span>Incident Clock</span>
-            <span className="text-purple-400 font-bold">{currentIndex + 1} / {totalEvents} Events</span>
+        <div className="bg-[#0b1022]/80 border border-slate-800 hover:border-cyan-500/40 rounded-2xl p-4 sm:p-5 backdrop-blur-xl flex flex-col justify-between shadow-lg hover:-translate-y-1 transition-all duration-300">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-300">
+            <span className="font-semibold">Incident Clock</span>
+            <span className="text-purple-400 font-bold bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">{currentIndex + 1} / {totalEvents} Events</span>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-white font-mono mt-1">
+          <div className="text-2xl sm:text-3xl font-black text-white font-mono mt-1 tracking-tight">
             {formatOffset(currentEvent.offset_seconds || 0)}
           </div>
           <div className="text-[11px] text-slate-400 font-mono mt-1">
-            Event: <span className="text-slate-200 font-bold">{currentEvent.event_type}</span>
+            Event: <span className="text-cyan-300 font-bold">{currentEvent.event_type}</span>
           </div>
         </div>
 
       </div>
 
       {/* Visual Scrubber & Playback Controls */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-6 backdrop-blur space-y-4">
+      <div className="bg-[#0b1022]/90 border border-slate-800 hover:border-indigo-500/40 rounded-2xl p-4 sm:p-6 backdrop-blur-xl space-y-4 shadow-xl transition-all duration-300">
         
         {/* Scrubber slider */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs font-mono text-slate-400">
             <span>T+00:00.0s</span>
-            <span className="text-sky-400 font-bold">{formatOffset(currentEvent.offset_seconds || 0)}</span>
+            <span className="text-cyan-400 font-bold px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">{formatOffset(currentEvent.offset_seconds || 0)}</span>
             <span>{formatOffset(replay.duration_seconds)}</span>
           </div>
           <input
@@ -234,7 +246,7 @@ export default function ReplayViewer({ sampleReplayData }) {
             max={totalEvents - 1}
             value={currentIndex}
             onChange={handleSeek}
-            className="w-full accent-indigo-500 cursor-pointer h-2 bg-slate-950 rounded-lg"
+            className="w-full accent-cyan-400 cursor-pointer h-2 bg-[#050811] rounded-lg border border-slate-800"
           />
         </div>
 
@@ -243,7 +255,7 @@ export default function ReplayViewer({ sampleReplayData }) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-sky-500/20 transition"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-[1.02] active:scale-95 transition-all duration-200"
             >
               {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}
               <span>{isPlaying ? "Pause" : "Play Timeline"}</span>
@@ -251,20 +263,20 @@ export default function ReplayViewer({ sampleReplayData }) {
 
             <button
               onClick={handleReset}
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+              className="p-2.5 rounded-xl bg-[#050811] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 hover:border-slate-700 transition"
               title="Reset Timeline"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-mono font-bold">
-            <span className="text-[10px] text-slate-500 px-2 uppercase">Speed:</span>
+          <div className="flex items-center gap-1.5 bg-[#050811] p-1.5 rounded-xl border border-slate-800 text-xs font-mono font-bold">
+            <span className="text-[10px] text-slate-400 px-2 uppercase">Speed:</span>
             {[1, 2, 4].map(s => (
               <button
                 key={s}
                 onClick={() => setPlaybackSpeed(s)}
-                className={`px-2.5 py-1 rounded-lg transition ${playbackSpeed === s ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1 rounded-lg transition-all duration-200 ${playbackSpeed === s ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-400 hover:text-white'}`}
               >
                 {s}x
               </button>
@@ -274,29 +286,30 @@ export default function ReplayViewer({ sampleReplayData }) {
       </div>
 
       {/* Terminal Audit Log Console */}
-      <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5 font-mono text-xs shadow-2xl space-y-2">
-        <div className="flex items-center justify-between text-[11px] text-slate-400 pb-2 border-b border-slate-900">
-          <span className="flex items-center gap-1.5 text-slate-300 font-bold">
+      <div className="bg-[#050811] border border-slate-800 rounded-2xl p-4 sm:p-5 font-mono text-xs shadow-2xl space-y-2">
+        <div className="flex items-center justify-between text-[11px] text-slate-400 pb-2 border-b border-slate-800/80">
+          <span className="flex items-center gap-2 text-slate-200 font-bold">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <Terminal className="w-4 h-4 text-emerald-400" />
-            Incident Event Stream
+            <span>Incident Telemetry Feed</span>
           </span>
-          <span className="text-[10px] text-slate-500">Auto-scrolling with playback</span>
+          <span className="text-[10px] text-slate-500 font-mono">Real-time event playback</span>
         </div>
 
-        <div className="space-y-2 max-h-60 overflow-y-auto pt-2">
+        <div className="space-y-2 max-h-64 overflow-y-auto pt-2 pr-1">
           {timeline.slice(0, currentIndex + 1).map((ev, i) => (
             <div 
               key={i} 
-              className={`p-2 rounded-lg flex items-start gap-2.5 transition ${i === currentIndex ? 'bg-indigo-950/40 border border-indigo-500/40' : 'bg-slate-900/30'}`}
+              className={`p-2.5 rounded-xl flex items-start gap-2.5 transition-all duration-200 ${i === currentIndex ? 'bg-indigo-950/60 border border-indigo-500/50 shadow-md shadow-indigo-500/20 translate-x-1' : 'bg-[#090e1c]/60 border border-transparent'}`}
             >
-              <span className="text-slate-500 shrink-0 font-bold text-[11px]">
+              <span className="text-cyan-400/80 shrink-0 font-bold text-[11px]">
                 {formatOffset(ev.offset_seconds)}
               </span>
-              <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${
-                ev.event_type.includes('STARTED') ? 'bg-rose-950 text-rose-300 border border-rose-800' :
-                ev.event_type.includes('RESOLVED') || ev.event_type.includes('SYNCED') ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' :
-                ev.event_type.includes('STABILIZATION') ? 'bg-sky-950 text-sky-300 border border-sky-800' :
-                'bg-slate-800 text-slate-300'
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono shrink-0 ${
+                ev.event_type.includes('STARTED') ? 'bg-rose-950/80 text-rose-300 border border-rose-800/60' :
+                ev.event_type.includes('RESOLVED') || ev.event_type.includes('SYNCED') ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60' :
+                ev.event_type.includes('STABILIZATION') ? 'bg-sky-950/80 text-sky-300 border border-sky-800/60' :
+                'bg-slate-800/80 text-slate-300 border border-slate-700/60'
               }`}>
                 {ev.event_type}
               </span>

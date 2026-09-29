@@ -135,24 +135,25 @@ export default function CredentialVerifier({ initialProof }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
+    <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn pb-16 md:pb-0">
       {/* Header Banner */}
-      <div className="text-center space-y-2">
-        <Logo className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-2" />
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20">
-          <Lock className="w-3.5 h-3.5 text-sky-400" />
-          PUBLIC CREDENTIAL & SRE BADGE VERIFIER
+      <div className="text-center space-y-2.5">
+        <Logo className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-2 animate-floatSlow filter drop-shadow-[0_0_15px_rgba(0,212,255,0.4)]" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 shadow-sm shadow-cyan-500/20">
+          <Lock className="w-3.5 h-3.5 text-cyan-400" />
+          <span>PUBLIC CREDENTIAL & SRE BADGE VERIFIER</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-300 bg-clip-text text-transparent">
           Verify SRE Attestation Proofs
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
+        <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
           Every CloudArena certification badge is secured with an HMAC-SHA256 cryptographic proof derived from real cluster recovery telemetry.
         </p>
       </div>
 
       {/* Proof Lookup Bar */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur">
+      <div className="bg-[#0b1022]/90 border border-cyan-500/30 rounded-3xl p-5 sm:p-7 shadow-2xl shadow-cyan-500/10 backdrop-blur-xl relative overflow-hidden group">
+        <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60"></div>
         <form 
           onSubmit={(e) => {
             e.preventDefault();
@@ -161,27 +162,27 @@ export default function CredentialVerifier({ initialProof }) {
           className="flex flex-col sm:flex-row gap-3"
         >
           <div className="relative flex-grow">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-cyan-400/70 absolute left-4 top-1/2 -translate-y-1/2" />
             <input 
               type="text"
               value={proofInput}
               onChange={(e) => setProofInput(e.target.value)}
               placeholder="Paste Proof Hash (e.g., ca_cert_7f8a9b2c3d4e...)"
-              className="w-full bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-2xl pl-10 pr-4 py-3 text-xs sm:text-sm font-mono text-white placeholder-slate-500 focus:outline-none transition"
+              className="w-full bg-[#050811] border border-cyan-500/30 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 rounded-2xl pl-11 pr-4 py-3.5 text-xs sm:text-sm font-mono text-cyan-300 placeholder-slate-500 focus:outline-none transition shadow-inner"
             />
           </div>
           <button
             type="submit"
             disabled={isLoading || !proofInput.trim()}
-            className="px-6 py-3 rounded-2xl font-bold text-xs sm:text-sm bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white shadow-lg shadow-sky-500/20 disabled:opacity-50 transition flex items-center justify-center gap-2"
+            className="px-7 py-3.5 rounded-2xl font-bold text-xs sm:text-sm bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-[1.02] active:scale-95 disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2"
           >
             {isLoading ? "Verifying..." : "Verify Proof"}
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 
-        <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500 font-mono">
-          <span>Supported format: <code className="text-sky-400">ca_cert_[a-f0-9]...</code></span>
+        <div className="mt-3.5 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+          <span>Supported format: <code className="text-cyan-400">ca_cert_[a-f0-9]...</code></span>
           <button
             type="button"
             onClick={() => {
@@ -189,9 +190,10 @@ export default function CredentialVerifier({ initialProof }) {
               setProofInput(sample);
               performVerification(sample);
             }}
-            className="text-sky-400 hover:underline cursor-pointer"
+            className="text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer flex items-center gap-1 font-semibold"
           >
-            Try sample proof
+            <Sparkles className="w-3 h-3 text-cyan-400" />
+            <span>Try sample proof</span>
           </button>
         </div>
       </div>
@@ -199,7 +201,8 @@ export default function CredentialVerifier({ initialProof }) {
       {/* Verification Result Card */}
       {verificationResult && (
         verificationResult.valid ? (
-          <div className="bg-gradient-to-b from-slate-900 to-slate-950 border border-emerald-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+          <div className="bg-gradient-to-b from-[#0b1022]/95 via-[#080d1a]/95 to-[#050811]/98 border border-emerald-500/50 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-emerald-500/10 relative overflow-hidden animate-fadeIn">
+            <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></div>
             {/* Background ambient glow */}
             <div 
               className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none"
@@ -207,13 +210,14 @@ export default function CredentialVerifier({ initialProof }) {
             />
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-800/80">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400">
+              <div className="flex items-center gap-3.5">
+                <div className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shadow-sm shadow-emerald-500/20">
                   <ShieldCheck className="w-8 h-8" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-emerald-400">
+                    <span className="text-xs font-mono font-bold text-emerald-400 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                       AUTHENTICATED & VERIFIED
                     </span>
                     <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-mono">
@@ -228,9 +232,9 @@ export default function CredentialVerifier({ initialProof }) {
 
               <button
                 onClick={handleDownloadSvg}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center gap-2 transition border border-slate-700 shadow"
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md shadow-cyan-600/30 hover:scale-105 active:scale-95"
               >
-                <Download className="w-4 h-4 text-sky-400" />
+                <Download className="w-4 h-4 text-white" />
                 <span>Export SVG Certificate</span>
               </button>
             </div>
@@ -238,16 +242,16 @@ export default function CredentialVerifier({ initialProof }) {
             {/* Credential Data Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
               
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
-                <div className="text-[11px] font-mono text-slate-400">Certified Cadet</div>
+              <div className="p-4 rounded-2xl bg-[#060a16] border border-slate-800 hover:border-cyan-500/40 transition-all space-y-1">
+                <div className="text-[11px] font-mono text-cyan-400 font-semibold">Certified Cadet</div>
                 <div className="text-lg font-black text-white font-mono flex items-center gap-1.5">
-                  <span className="text-sky-400">@{verificationResult.handle}</span>
+                  <span className="text-cyan-300">@{verificationResult.handle}</span>
                 </div>
-                <div className="text-[11px] text-slate-500">Event: {verificationResult.event_id}</div>
+                <div className="text-[11px] text-slate-400">Event: {verificationResult.event_id}</div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
-                <div className="text-[11px] font-mono text-slate-400">Awarded Distinction</div>
+              <div className="p-4 rounded-2xl bg-[#060a16] border border-slate-800 hover:border-amber-500/40 transition-all space-y-1">
+                <div className="text-[11px] font-mono text-amber-400 font-semibold">Awarded Distinction</div>
                 <div className="text-base font-bold text-white flex items-center gap-1.5">
                   <span>{verificationResult.tier?.icon}</span>
                   <span className="truncate">{verificationResult.tier?.title}</span>
@@ -257,8 +261,8 @@ export default function CredentialVerifier({ initialProof }) {
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
-                <div className="text-[11px] font-mono text-slate-400">Incident Resilience Metric</div>
+              <div className="p-4 rounded-2xl bg-[#060a16] border border-slate-800 hover:border-emerald-500/40 transition-all space-y-1">
+                <div className="text-[11px] font-mono text-emerald-400 font-semibold">Incident Resilience Metric</div>
                 <div className="text-lg font-black text-emerald-400 font-mono">
                   +{verificationResult.score} pts
                 </div>
@@ -270,22 +274,22 @@ export default function CredentialVerifier({ initialProof }) {
             </div>
 
             {/* Cryptographic Signature Box */}
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80 font-mono space-y-2">
+            <div className="p-4 sm:p-5 rounded-2xl bg-[#050811] border border-emerald-500/30 font-mono space-y-2.5">
               <div className="flex items-center justify-between text-xs text-slate-400">
-                <span className="flex items-center gap-1.5 font-bold text-slate-300">
+                <span className="flex items-center gap-1.5 font-bold text-slate-200">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   Proof Signature Hash
                 </span>
                 <button
                   onClick={() => handleCopyProof(verificationResult.proof)}
-                  className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1 transition"
+                  className="text-xs text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition"
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copied ? "Copied Proof" : "Copy Proof"}</span>
+                  <span>{copied ? "Copied Proof!" : "Copy Proof"}</span>
                 </button>
               </div>
 
-              <div className="text-xs text-slate-400 break-all bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 selection:bg-sky-500">
+              <div className="text-xs text-emerald-300/90 break-all bg-[#03060c] p-3 rounded-xl border border-emerald-500/20 selection:bg-emerald-500">
                 {verificationResult.proof}
               </div>
 

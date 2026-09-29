@@ -122,77 +122,80 @@ export default function LeaderboardView({ standings = [], eventConfig }) {
       {/* ===================== SOLO CADETS VIEW ===================== */}
       {activeTab === 'solo' && (
         <>
-          {/* Top Podium Showcase */}
+          {/* Top Podium Showcase with Elevated Neon Styling */}
           {standings.length >= 3 && !eventConfig?.is_frozen && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 pt-1 sm:pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-5 pt-1 sm:pt-4">
               
               {/* 1st Place - Gold Champion */}
-              <div className="order-1 md:order-2 bg-gradient-to-b from-amber-950/40 via-slate-900/80 to-slate-900/80 border-2 border-amber-500/60 rounded-2xl p-4 sm:p-6 relative overflow-hidden backdrop-blur shadow-2xl shadow-amber-500/10 flex flex-col justify-between transform md:-translate-y-2 hover:border-amber-400 transition">
-                <div className="absolute -right-3 -bottom-3 text-7xl sm:text-8xl opacity-15">🥇</div>
+              <div className="order-1 md:order-2 bg-gradient-to-b from-amber-950/50 via-slate-900/90 to-slate-950/90 border-2 border-amber-400/70 rounded-3xl p-5 sm:p-7 relative overflow-hidden backdrop-blur-xl shadow-2xl shadow-amber-500/20 flex flex-col justify-between transform md:-translate-y-3 hover:-translate-y-4 hover:border-amber-300 hover:shadow-[0_0_45px_rgba(245,158,11,0.35)] transition-all duration-300 group">
+                <div className="absolute -right-3 -bottom-3 text-7xl sm:text-8xl opacity-15 select-none pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">🥇</div>
+                <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
                 <div>
-                  <div className="flex items-center justify-between mb-2 sm:mb-3">
-                    <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                      TOURNAMENT LEADER
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <span className="shimmer-badge px-3 py-1 rounded-full text-[11px] sm:text-xs font-black bg-amber-500/25 text-amber-300 border border-amber-400/60 flex items-center gap-1.5 shadow-sm shadow-amber-500/30">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" style={{ animationDuration: '6s' }} />
+                      TOURNAMENT CHAMPION
                     </span>
-                    <span className="text-2xl sm:text-3xl">🥇</span>
+                    <span className="text-3xl sm:text-4xl animate-floatSlow filter drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]">🥇</span>
                   </div>
-                  <div className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 tracking-tight">
+                  <div className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2 tracking-tight group-hover:text-amber-200 transition-colors">
                     @{top1Solo.handle}
                   </div>
-                  <div className="text-xs text-amber-200/80 mt-1 font-mono">
-                    {top1Solo.waves_cleared}/8 Waves • Clock: {formatTime(top1Solo.total_time)}
+                  <div className="text-xs text-amber-200/80 mt-1.5 font-mono flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 font-bold">{top1Solo.waves_cleared}/8 Waves</span>
+                    <span>•</span>
+                    <span>Clock: {formatTime(top1Solo.total_time)}</span>
                   </div>
                 </div>
-                <div className="mt-4 pt-3 border-t border-amber-500/20 flex items-baseline justify-between">
-                  <span className="text-xs text-amber-400/80 uppercase font-mono font-bold">Verified Score</span>
-                  <span className="text-2xl sm:text-3xl font-black text-amber-400 mono">{top1Solo.total_score} pts</span>
+                <div className="mt-5 pt-3.5 border-t border-amber-500/25 flex items-baseline justify-between">
+                  <span className="text-xs text-amber-400/90 uppercase font-mono font-bold tracking-wider">Verified Score</span>
+                  <span className="text-2xl sm:text-3xl font-black text-amber-300 mono drop-shadow-[0_0_10px_rgba(245,158,11,0.4)]">{top1Solo.total_score} pts</span>
                 </div>
               </div>
 
               {/* 2nd Place - Silver */}
-              <div className="order-2 md:order-1 bg-slate-900/60 border border-slate-700/60 rounded-2xl p-4 sm:p-5 relative overflow-hidden backdrop-blur flex flex-col justify-between hover:border-slate-500 transition">
-                <div className="absolute -right-3 -bottom-3 text-6xl sm:text-7xl opacity-10">🥈</div>
+              <div className="order-2 md:order-1 bg-gradient-to-b from-slate-800/40 via-slate-900/80 to-slate-950/80 border border-slate-600/60 rounded-3xl p-4 sm:p-6 relative overflow-hidden backdrop-blur-xl flex flex-col justify-between hover:-translate-y-2 hover:border-cyan-400/50 hover:shadow-2xl hover:shadow-cyan-500/15 transition-all duration-300 group">
+                <div className="absolute -right-3 -bottom-3 text-6xl sm:text-7xl opacity-10 select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">🥈</div>
                 <div>
-                  <div className="flex items-center justify-between mb-2 sm:mb-3">
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold bg-slate-800 text-slate-300 border border-slate-600">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-slate-800/80 text-slate-200 border border-slate-500/50 flex items-center gap-1.5 shadow-sm">
                       RANK #2 • SILVER
                     </span>
-                    <span className="text-xl sm:text-2xl">🥈</span>
+                    <span className="text-2xl sm:text-3xl filter drop-shadow-[0_0_8px_rgba(148,163,184,0.4)]">🥈</span>
                   </div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-100">
+                  <div className="text-xl sm:text-2xl font-bold text-slate-100 group-hover:text-cyan-200 transition-colors">
                     @{top2Solo.handle}
                   </div>
                   <div className="text-xs text-slate-400 mt-1 font-mono">
                     {top2Solo.waves_cleared}/8 Waves • {formatTime(top2Solo.total_time)}
                   </div>
                 </div>
-                <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-baseline justify-between">
-                  <span className="text-xs text-slate-500 uppercase font-mono">Net Score</span>
-                  <span className="text-xl sm:text-2xl font-black text-slate-200 mono">{top2Solo.total_score} pts</span>
+                <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-baseline justify-between">
+                  <span className="text-xs text-slate-400 uppercase font-mono font-medium">Net Score</span>
+                  <span className="text-xl sm:text-2xl font-black text-slate-100 mono">{top2Solo.total_score} pts</span>
                 </div>
               </div>
 
               {/* 3rd Place - Bronze */}
-              <div className="order-3 md:order-3 bg-slate-900/60 border border-amber-900/50 rounded-2xl p-4 sm:p-5 relative overflow-hidden backdrop-blur flex flex-col justify-between hover:border-amber-700/60 transition">
-                <div className="absolute -right-3 -bottom-3 text-6xl sm:text-7xl opacity-10">🥉</div>
+              <div className="order-3 md:order-3 bg-gradient-to-b from-amber-950/30 via-slate-900/80 to-slate-950/80 border border-amber-800/40 rounded-3xl p-4 sm:p-6 relative overflow-hidden backdrop-blur-xl flex flex-col justify-between hover:-translate-y-2 hover:border-amber-600/60 hover:shadow-2xl hover:shadow-amber-600/15 transition-all duration-300 group">
+                <div className="absolute -right-3 -bottom-3 text-6xl sm:text-7xl opacity-10 select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">🥉</div>
                 <div>
-                  <div className="flex items-center justify-between mb-2 sm:mb-3">
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold bg-amber-950/60 text-amber-400 border border-amber-800/60">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-amber-950/60 text-amber-300 border border-amber-700/50 flex items-center gap-1.5 shadow-sm">
                       RANK #3 • BRONZE
                     </span>
-                    <span className="text-xl sm:text-2xl">🥉</span>
+                    <span className="text-2xl sm:text-3xl filter drop-shadow-[0_0_8px_rgba(217,119,6,0.4)]">🥉</span>
                   </div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-100">
+                  <div className="text-xl sm:text-2xl font-bold text-slate-100 group-hover:text-amber-200 transition-colors">
                     @{top3Solo.handle}
                   </div>
                   <div className="text-xs text-slate-400 mt-1 font-mono">
                     {top3Solo.waves_cleared}/8 Waves • {formatTime(top3Solo.total_time)}
                   </div>
                 </div>
-                <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-baseline justify-between">
-                  <span className="text-xs text-slate-500 uppercase font-mono">Net Score</span>
-                  <span className="text-xl sm:text-2xl font-black text-amber-500/90 mono">{top3Solo.total_score} pts</span>
+                <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-baseline justify-between">
+                  <span className="text-xs text-slate-400 uppercase font-mono font-medium">Net Score</span>
+                  <span className="text-xl sm:text-2xl font-black text-amber-400 mono">{top3Solo.total_score} pts</span>
                 </div>
               </div>
 
@@ -304,49 +307,50 @@ export default function LeaderboardView({ standings = [], eventConfig }) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 pt-1 sm:pt-4">
               
               {/* 1st Place Squad */}
-              <div className="order-1 md:order-2 bg-gradient-to-b from-purple-950/50 via-slate-900/80 to-slate-900/80 border-2 border-purple-500/60 rounded-2xl p-4 sm:p-6 relative overflow-hidden backdrop-blur shadow-2xl shadow-purple-500/10 flex flex-col justify-between transform md:-translate-y-2 hover:border-purple-400 transition">
-                <div className="absolute -right-3 -bottom-3 text-7xl sm:text-8xl opacity-15">👑</div>
+              <div className="order-1 md:order-2 bg-gradient-to-b from-purple-950/60 via-slate-900/90 to-slate-950/90 border-2 border-purple-400/80 rounded-3xl p-5 sm:p-7 relative overflow-hidden backdrop-blur-xl shadow-2xl shadow-purple-500/20 flex flex-col justify-between transform md:-translate-y-3 hover:-translate-y-4 hover:border-purple-300 hover:shadow-[0_0_45px_rgba(168,85,247,0.35)] transition-all duration-300 group">
+                <div className="absolute -right-3 -bottom-3 text-7xl sm:text-8xl opacity-15 select-none pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">👑</div>
+                <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent"></div>
                 <div>
-                  <div className="flex items-center justify-between mb-2 sm:mb-3">
-                    <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-black bg-purple-500/20 text-purple-300 border border-purple-500/40 flex items-center gap-1.5">
-                      <Trophy className="w-3.5 h-3.5 text-purple-400" />
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="shimmer-badge px-3 py-1 rounded-full text-[11px] sm:text-xs font-black bg-purple-500/25 text-purple-200 border border-purple-400/60 flex items-center gap-1.5 shadow-sm shadow-purple-500/30">
+                      <Trophy className="w-3.5 h-3.5 text-purple-300 animate-spin" style={{ animationDuration: '6s' }} />
                       CHAMPION SQUAD
                     </span>
-                    <span className="text-2xl sm:text-3xl">🥇</span>
+                    <span className="text-3xl sm:text-4xl animate-floatSlow filter drop-shadow-[0_0_12px_rgba(168,85,247,0.5)]">👑</span>
                   </div>
-                  <div className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 tracking-tight">
+                  <div className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 tracking-tight group-hover:text-purple-200 transition-colors">
                     {top1Team.team_name}
                   </div>
                   <div className="text-xs text-purple-300/80 mt-1 font-mono">
                     {top1Team.waves_cleared || 0}/8 Waves Cleared • {top1Team.member_count || (top1Team.members?.length || 1)} Operators
                   </div>
                   {top1Team.members && (
-                    <div className="flex flex-wrap gap-1.5 mt-2.5">
+                    <div className="flex flex-wrap gap-1.5 mt-3">
                       {top1Team.members.map(m => (
-                        <span key={m.handle} className="px-2 py-0.5 rounded-md bg-purple-950/80 text-[10px] text-purple-200 border border-purple-800/60 font-mono">
-                          @{m.handle} <span className="opacity-75">({m.role})</span>
+                        <span key={m.handle} className="px-2.5 py-0.5 rounded-lg bg-purple-950/80 text-[10px] text-purple-200 border border-purple-700/60 font-mono shadow-sm">
+                          @{m.handle} <span className="text-purple-400">({m.role})</span>
                         </span>
                       ))}
                     </div>
                   )}
                 </div>
-                <div className="mt-4 pt-3 border-t border-purple-500/20 flex items-baseline justify-between">
-                  <span className="text-xs text-purple-400 uppercase font-mono font-bold">Squad Score</span>
-                  <span className="text-2xl sm:text-3xl font-black text-purple-300 mono">{top1Team.total_score} pts</span>
+                <div className="mt-5 pt-3.5 border-t border-purple-500/25 flex items-baseline justify-between">
+                  <span className="text-xs text-purple-400 uppercase font-mono font-bold tracking-wider">Squad Score</span>
+                  <span className="text-2xl sm:text-3xl font-black text-purple-300 mono drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]">{top1Team.total_score} pts</span>
                 </div>
               </div>
 
               {/* 2nd Place Squad */}
-              <div className="order-2 md:order-1 bg-slate-900/60 border border-slate-700/60 rounded-2xl p-4 sm:p-5 relative overflow-hidden backdrop-blur flex flex-col justify-between hover:border-slate-500 transition">
-                <div className="absolute -right-3 -bottom-3 text-6xl sm:text-7xl opacity-10">🥈</div>
+              <div className="order-2 md:order-1 bg-gradient-to-b from-slate-800/40 via-slate-900/80 to-slate-950/80 border border-slate-600/60 rounded-3xl p-4 sm:p-6 relative overflow-hidden backdrop-blur-xl flex flex-col justify-between hover:-translate-y-2 hover:border-cyan-400/50 hover:shadow-2xl hover:shadow-cyan-500/15 transition-all duration-300 group">
+                <div className="absolute -right-3 -bottom-3 text-6xl sm:text-7xl opacity-10 select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">🥈</div>
                 <div>
-                  <div className="flex items-center justify-between mb-2 sm:mb-3">
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold bg-slate-800 text-slate-300 border border-slate-600">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-slate-800/80 text-slate-200 border border-slate-500/50 flex items-center gap-1.5 shadow-sm">
                       RANK #2 • SILVER
                     </span>
-                    <span className="text-xl sm:text-2xl">🥈</span>
+                    <span className="text-2xl sm:text-3xl filter drop-shadow-[0_0_8px_rgba(148,163,184,0.4)]">🥈</span>
                   </div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-100">
+                  <div className="text-lg sm:text-xl font-bold text-slate-100 group-hover:text-cyan-200 transition-colors">
                     {top2Team.team_name}
                   </div>
                   <div className="text-xs text-slate-400 mt-1 font-mono">
@@ -355,30 +359,30 @@ export default function LeaderboardView({ standings = [], eventConfig }) {
                   {top2Team.members && (
                     <div className="flex flex-wrap gap-1.5 mt-2.5">
                       {top2Team.members.map(m => (
-                        <span key={m.handle} className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-300 border border-slate-700 font-mono">
+                        <span key={m.handle} className="px-2 py-0.5 rounded-lg bg-slate-800 text-[10px] text-slate-300 border border-slate-700 font-mono">
                           @{m.handle}
                         </span>
                       ))}
                     </div>
                   )}
                 </div>
-                <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-baseline justify-between">
-                  <span className="text-xs text-slate-500 uppercase font-mono">Squad Score</span>
-                  <span className="text-xl sm:text-2xl font-black text-slate-200 mono">{top2Team.total_score} pts</span>
+                <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-baseline justify-between">
+                  <span className="text-xs text-slate-400 uppercase font-mono font-medium">Squad Score</span>
+                  <span className="text-xl sm:text-2xl font-black text-slate-100 mono">{top2Team.total_score} pts</span>
                 </div>
               </div>
 
               {/* 3rd Place Squad */}
-              <div className="order-3 md:order-3 bg-slate-900/60 border border-amber-900/50 rounded-2xl p-4 sm:p-5 relative overflow-hidden backdrop-blur flex flex-col justify-between hover:border-amber-700/60 transition">
-                <div className="absolute -right-3 -bottom-3 text-6xl sm:text-7xl opacity-10">🥉</div>
+              <div className="order-3 md:order-3 bg-gradient-to-b from-amber-950/30 via-slate-900/80 to-slate-950/80 border border-amber-800/40 rounded-3xl p-4 sm:p-6 relative overflow-hidden backdrop-blur-xl flex flex-col justify-between hover:-translate-y-2 hover:border-amber-600/60 hover:shadow-2xl hover:shadow-amber-600/15 transition-all duration-300 group">
+                <div className="absolute -right-3 -bottom-3 text-6xl sm:text-7xl opacity-10 select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">🥉</div>
                 <div>
-                  <div className="flex items-center justify-between mb-2 sm:mb-3">
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold bg-amber-950/60 text-amber-400 border border-amber-800/60">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-amber-950/60 text-amber-300 border border-amber-700/50 flex items-center gap-1.5 shadow-sm">
                       RANK #3 • BRONZE
                     </span>
-                    <span className="text-xl sm:text-2xl">🥉</span>
+                    <span className="text-2xl sm:text-3xl filter drop-shadow-[0_0_8px_rgba(217,119,6,0.4)]">🥉</span>
                   </div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-100">
+                  <div className="text-lg sm:text-xl font-bold text-slate-100 group-hover:text-amber-200 transition-colors">
                     {top3Team.team_name}
                   </div>
                   <div className="text-xs text-slate-400 mt-1 font-mono">
@@ -387,16 +391,16 @@ export default function LeaderboardView({ standings = [], eventConfig }) {
                   {top3Team.members && (
                     <div className="flex flex-wrap gap-1.5 mt-2.5">
                       {top3Team.members.map(m => (
-                        <span key={m.handle} className="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-300 border border-slate-700 font-mono">
+                        <span key={m.handle} className="px-2 py-0.5 rounded-lg bg-slate-800 text-[10px] text-slate-300 border border-slate-700 font-mono">
                           @{m.handle}
                         </span>
                       ))}
                     </div>
                   )}
                 </div>
-                <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-baseline justify-between">
-                  <span className="text-xs text-slate-500 uppercase font-mono">Squad Score</span>
-                  <span className="text-xl sm:text-2xl font-black text-amber-400/90 mono">{top3Team.total_score} pts</span>
+                <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-baseline justify-between">
+                  <span className="text-xs text-slate-400 uppercase font-mono font-medium">Squad Score</span>
+                  <span className="text-xl sm:text-2xl font-black text-amber-400 mono">{top3Team.total_score} pts</span>
                 </div>
               </div>
 

@@ -98,8 +98,15 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen flex flex-col justify-between relative overflow-x-hidden cyber-grid selection:bg-cyan-500 selection:text-black">
       
+      {/* Dynamic Ambient Background Glow Orbs */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-cyan-500/10 blur-[130px] animate-floatSlow"></div>
+        <div className="absolute top-1/4 -right-40 w-[30rem] h-[30rem] rounded-full bg-purple-600/10 blur-[150px] animate-floatReverse"></div>
+        <div className="absolute bottom-10 left-1/3 w-80 h-80 rounded-full bg-emerald-500/8 blur-[120px] animate-pulseGlow"></div>
+      </div>
+
       {/* Top Navbar */}
       <Navbar 
         activeTab={activeTab}
@@ -112,72 +119,84 @@ export default function App() {
         setIsProjector={setIsProjector}
       />
 
-      {/* Main Tab Body */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full flex-grow">
+      {/* Main Tab Body with animated view transitions */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full flex-grow relative z-10">
         
         {/* Firebase Config Notice banner only if running in mock dev mode */}
         {!isFirebaseConfigured && (
-          <div className="mb-4 sm:mb-6 p-3 sm:p-3.5 rounded-2xl bg-sky-950/40 border border-sky-500/30 flex items-center justify-between text-xs text-sky-200">
+          <div className="mb-4 sm:mb-6 p-3 sm:p-3.5 rounded-2xl bg-sky-950/40 border border-sky-500/30 flex items-center justify-between text-xs text-sky-200 backdrop-blur shadow-lg shadow-sky-500/5 animate-fadeIn">
             <div className="flex items-center gap-2">
-              <span className="p-1 rounded-lg bg-sky-500/20 text-sky-400">
+              <span className="p-1 rounded-lg bg-sky-500/20 text-sky-400 animate-pulse">
                 <Sparkles className="w-3.5 h-3.5" />
               </span>
-              <span>Running in <strong>Local Development Sandbox Mode</strong></span>
+              <span>Running in <strong className="text-white">Local Development Sandbox Mode</strong></span>
             </div>
-            <span className="font-mono text-[10px] text-sky-400 font-bold hidden sm:inline">
+            <span className="font-mono text-[10px] text-sky-400 font-bold hidden sm:inline px-2 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/20">
               Option B Active
             </span>
           </div>
         )}
 
-        {activeTab === 'leaderboard' && (
-          <LeaderboardView 
-            standings={standings} 
-            eventConfig={eventConfig} 
-          />
-        )}
+        <div key={activeTab} className="animate-fadeInUp">
+          {activeTab === 'leaderboard' && (
+            <LeaderboardView 
+              standings={standings} 
+              eventConfig={eventConfig} 
+            />
+          )}
 
-        {activeTab === 'hub' && (
-          <CompetitorHub 
-            user={user} 
-            onLogin={handleLogin}
-            onUserUpdated={(updated) => setUser(updated)}
-            eventConfig={eventConfig}
-          />
-        )}
+          {activeTab === 'hub' && (
+            <CompetitorHub 
+              user={user} 
+              onLogin={handleLogin}
+              onUserUpdated={(updated) => setUser(updated)}
+              eventConfig={eventConfig}
+            />
+          )}
 
-        {activeTab === 'docs' && (
-          <DocsFieldGuide />
-        )}
+          {activeTab === 'docs' && (
+            <DocsFieldGuide />
+          )}
 
-        {activeTab === 'replay' && (
-          <ReplayViewer />
-        )}
+          {activeTab === 'replay' && (
+            <ReplayViewer />
+          )}
 
-        {activeTab === 'verify' && (
-          <CredentialVerifier />
-        )}
+          {activeTab === 'verify' && (
+            <CredentialVerifier />
+          )}
 
-        {activeTab === 'admin' && user?.role === 'admin' && (
-          <AdminCommandCenter 
-            eventConfig={eventConfig}
-            standings={standings}
-            user={user}
-          />
-        )}
+          {activeTab === 'admin' && user?.role === 'admin' && (
+            <AdminCommandCenter 
+              eventConfig={eventConfig}
+              standings={standings}
+              user={user}
+            />
+          )}
+        </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 bg-slate-950/60 py-5 text-center text-xs text-slate-500 font-mono hidden md:block">
+      {/* Futuristic Cyber Footer */}
+      <footer className="border-t border-slate-800/80 bg-slate-950/70 backdrop-blur-md py-4 sm:py-5 text-xs text-slate-500 font-mono relative z-10 hidden md:block">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Logo className="w-5 h-5 inline-block" />
-            <span>CloudArena v2.0 • AI-Powered Sandboxed Kubernetes Incident Simulator</span>
+          <div className="flex items-center gap-2.5">
+            <Logo className="w-5 h-5 inline-block hover:rotate-12 transition-transform duration-300" />
+            <span className="text-slate-300 font-medium">CloudArena v2.0</span>
+            <span className="text-slate-600">•</span>
+            <span className="text-slate-400">AI-Powered Sandboxed Kubernetes Incident Simulator</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-400">
+          <div className="flex items-center gap-4 text-slate-400 text-[11px]">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-semibold">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span>Telemetry Online</span>
+            </div>
+            <span>•</span>
             <span>2,000+ Concurrent Scale</span>
             <span>•</span>
-            <span>HMAC Anti-Cheat Verified</span>
+            <span className="text-sky-400">HMAC Anti-Cheat Verified 🛡️</span>
           </div>
         </div>
       </footer>

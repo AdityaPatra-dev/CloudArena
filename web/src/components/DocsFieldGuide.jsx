@@ -45,21 +45,24 @@ export default function DocsFieldGuide() {
     <div className="space-y-6 sm:space-y-8 animate-fadeIn max-w-7xl mx-auto pb-16 md:pb-0">
       
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-sky-950/60 via-slate-900/80 to-slate-900/80 border border-sky-500/30 rounded-3xl p-5 sm:p-8 backdrop-blur shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+      <div className="bg-gradient-to-r from-[#0b1022]/90 via-[#080d1a]/95 to-[#060a15]/95 border border-cyan-500/30 rounded-3xl p-5 sm:p-8 backdrop-blur-xl shadow-2xl shadow-cyan-500/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 relative overflow-hidden">
+        <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60"></div>
         <div>
           <div className="flex items-center gap-3">
-            <Logo className="w-9 h-9 sm:w-10 sm:h-10 shrink-0" />
+            <Logo className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 filter drop-shadow-[0_0_10px_rgba(0,212,255,0.4)]" />
             <div>
-              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">Competitor Field Guide & Documentation</h2>
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-300 bg-clip-text text-transparent">
+                Competitor Field Guide & Documentation
+              </h2>
             </div>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-300 mt-1 max-w-xl">
             Master the arena: Kubernetes triage commands, chaos troubleshooting, scoring rules, and clean laptop teardown.
           </p>
         </div>
 
         {/* Navigation Pills */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800 w-full md:w-auto">
+        <div className="flex flex-wrap items-center gap-1.5 bg-[#050811] p-1.5 rounded-2xl border border-slate-800 w-full md:w-auto shadow-inner">
           {sections.map((sec) => {
             const Icon = sec.icon;
             const isActive = activeSection === sec.id;
@@ -67,13 +70,13 @@ export default function DocsFieldGuide() {
               <button
                 key={sec.id}
                 onClick={() => setActiveSection(sec.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
                   isActive 
-                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30 font-bold' 
+                    ? 'bg-gradient-to-r from-cyan-500 to-sky-600 text-white shadow-lg shadow-cyan-500/30 font-bold scale-[1.02]' 
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                 <span>{sec.label}</span>
               </button>
             );
