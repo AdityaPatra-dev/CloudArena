@@ -70,4 +70,16 @@ def apply_yaml_string(yaml_content: str) -> list[Any]:
                 pass
             else:
                 raise
+        except utils.FailToCreateError as e:
+            # If all sub-exceptions are 409 Conflict (AlreadyExists), safely ignore
+            is_all_409 = all(
+                getattr(exc, "status", None) == 409 or 
+                "already exists" in str(exc).lower() or 
+                "409" in str(exc)
+                for exc in e.api_exceptions
+            )
+            if is_all_409:
+                pass
+            else:
+                raise
     return applied

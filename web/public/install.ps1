@@ -110,10 +110,27 @@ if (Test-Path $kubectlTarget) {
 
 # 6. Install CloudArena CLI Package via pip
 Write-Host "`n[5/5] Installing CloudArena Platform..." -ForegroundColor White
-& python -m pip install --upgrade --user https://github.com/AdityaPatra-dev/CloudArena/archive/refs/heads/main.zip
+$wheelUrl = "https://gdg-cloudarena.web.app/cloudarena-latest-py3-none-any.whl"
+$archiveUrl = "https://github.com/AdityaPatra-dev/CloudArena/archive/refs/heads/main.zip"
+
+& python -m pip install --upgrade --force-reinstall --user $wheelUrl
 if ($LASTEXITCODE -ne 0) {
-    & python -m pip install --upgrade --user git+https://github.com/AdityaPatra-dev/CloudArena.git
+    & python -m pip install --upgrade --user $archiveUrl
 }
+
+# Ensure manifests exist in ~/.cloudarena/manifests
+$manifestsDir = Join-Path $homeDir "manifests"
+if (-not (Test-Path $manifestsDir)) {
+    New-Item -ItemType Directory -Path $manifestsDir -Force | Out-Null
+}
+$manifestFiles = @("00_namespaces.yaml", "01_cache.yaml", "02_backend.yaml", "03_frontend.yaml", "04_traffic_gen.yaml")
+foreach ($mf in $manifestFiles) {
+    $mfPath = Join-Path $manifestsDir $mf
+    if (-not (Test-Path $mfPath)) {
+        Invoke-WebRequest -Uri "https://gdg-cloudarena.web.app/manifests/$mf" -OutFile $mfPath -UseBasicParsing -ErrorAction SilentlyContinue
+    }
+}
+
 
 # 7. Configure PATH Environment Variables
 $userPath = [System.Environment]::GetEnvironmentVariable("PATH", "User")
@@ -149,11 +166,3 @@ Write-Host "  3. Spin up local cluster:  " -NoNewline
 Write-Host "cloudarena start" -ForegroundColor Cyan
 Write-Host "  4. Enter Wave 1 battle:    " -NoNewline
 Write-Host "cloudarena wave start 1`n" -ForegroundColor Cyan
-
-Write-Host "----------------------------------------------------------------" -ForegroundColor DarkGray
-Write-Host "💡 NOTE IF COMMAND IS NOT RECOGNIZED IN THIS TERMINAL:" -ForegroundColor Yellow
-Write-Host "   If PowerShell shows 'The term cloudarena is not recognized', either:" -ForegroundColor Yellow
-Write-Host "   1. Restart PowerShell to load updated PATH environment variables, OR" -ForegroundColor Yellow
-Write-Host "   2. Refresh PATH in current session: `$$env:Path = [System.Environment]::GetEnvironmentVariable('Path','User') + ';' + [System.Environment]::GetEnvironmentVariable('Path','Machine'), OR" -ForegroundColor Yellow
-Write-Host "   3. Run directly with Python (no PATH needed): python -m cloudarena <command>`n" -ForegroundColor Yellow
-

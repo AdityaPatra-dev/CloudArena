@@ -18,12 +18,7 @@ import {
   Users,
   UserPlus,
   LogOut,
-  Award,
-  ChevronDown,
-  ChevronUp,
-  AlertTriangle,
-  RefreshCw,
-  Zap
+  Award
 } from 'lucide-react';
 import { elevateToAdmin, createOrJoinSquad, leaveSquad } from '../firebase';
 import CertificateModal from './CertificateModal';
@@ -46,9 +41,6 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
   const [copiedSquadCmd, setCopiedSquadCmd] = useState(false);
   const [squadSubmitting, setSquadSubmitting] = useState(false);
   const [showCertModal, setShowCertModal] = useState(false);
-  const [usePythonModule, setUsePythonModule] = useState(false);
-  const [showPathTroubleshoot, setShowPathTroubleshoot] = useState(false);
-  const [copiedRefresh, setCopiedRefresh] = useState(false);
 
 
 
@@ -93,17 +85,11 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
 
   const token = user.arena_token || "ca_live_150ef255423a93be2c522417fa8209e4";
   const eventId = eventConfig?.event_id || "HACKATHON_2026";
-  const pythonCmd = selectedOs === 'windows' ? 'python -m cloudarena' : 'python3 -m cloudarena';
-  const activeCli = usePythonModule ? pythonCmd : 'cloudarena';
-  const linkCommand = `${activeCli} link ${token} --event ${eventId}`;
+  const linkCommand = `cloudarena link ${token} --event ${eventId}`;
 
   const installCommand = selectedOs === 'windows' 
-    ? "irm https://gdg-cloudarena.web.app/install.ps1 | iex"
+    ? "pip install https://github.com/AdityaPatra-dev/CloudArena/archive/refs/heads/main.zip"
     : "curl -sSL https://gdg-cloudarena.web.app/install.sh | bash";
-
-  const refreshSessionCmd = selectedOs === 'windows'
-    ? '$env:Path = [System.Environment]::GetEnvironmentVariable("Path","User")'
-    : 'source ~/.bashrc';
 
   const copyToClipboard = (text, setCopied) => {
     navigator.clipboard.writeText(text);
@@ -294,53 +280,22 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
             </div>
 
             {selectedOs === 'windows' ? (
-              <div className="text-[11px] text-slate-400 leading-relaxed flex flex-col gap-1">
-                <div>💡 <strong>Windows 1-Liner:</strong> Automatically installs k3d, kubectl, and CloudArena into PowerShell.</div>
-                <div>Alternative (pip): <code className="text-indigo-300">pip install https://github.com/AdityaPatra-dev/CloudArena/archive/refs/heads/main.zip</code></div>
+              <div className="text-[11px] text-slate-400 leading-relaxed">
+                💡 <strong>Windows:</strong> Run in PowerShell. Make sure Docker Desktop is running with WSL2 enabled.
               </div>
             ) : (
-              <div className="text-[11px] text-slate-400 leading-relaxed flex flex-col gap-1">
-                <div>💡 <strong>Linux / macOS:</strong> Automatically installs k3d, kubectl, sets up PATH in shell profiles, and configures symlinks.</div>
-                <div>Alternative (pip): <code className="text-sky-300">pip install --user https://github.com/AdityaPatra-dev/CloudArena/archive/refs/heads/main.zip</code></div>
+              <div className="text-[11px] text-slate-400 leading-relaxed">
+                💡 If you encounter <code className="text-amber-300">command not found: cloudarena</code>, ensure <code className="text-sky-300">~/.local/bin</code> is in your PATH.
               </div>
             )}
           </div>
         </div>
 
         {/* 1-Click Terminal Snippet */}
-        <div className="pt-2 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider font-mono">
-              Step 2: Link Your Terminal to the Tournament
-            </span>
-
-            {/* CLI Mode Switcher */}
-            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] font-semibold w-fit">
-              <button
-                type="button"
-                onClick={() => setUsePythonModule(false)}
-                className={`px-2.5 py-1 rounded-lg transition ${
-                  !usePythonModule 
-                    ? 'bg-sky-600 text-white shadow' 
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                cloudarena
-              </button>
-              <button
-                type="button"
-                onClick={() => setUsePythonModule(true)}
-                className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1 ${
-                  usePythonModule 
-                    ? 'bg-emerald-600 text-white shadow' 
-                    : 'text-slate-400 hover:text-white'
-                }`}
-                title="Bypass PATH - run directly with python"
-              >
-                <Zap className="w-3 h-3 text-amber-300" />
-                <span>⚡ Zero-PATH ({selectedOs === 'windows' ? 'python -m' : 'python3 -m'})</span>
-              </button>
-            </div>
+        <div className="pt-2">
+          <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider font-mono mb-2 flex items-center justify-between">
+            <span>Step 2: Link Your Terminal to the Tournament</span>
+            <span className="text-slate-500 text-[11px] normal-case hidden sm:inline">Paste into terminal</span>
           </div>
 
           <div className="relative group">
@@ -363,86 +318,6 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
                 )}
               </button>
             </div>
-          </div>
-
-          {/* PATH Troubleshooting & Command Not Found Callout */}
-          <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-3.5 sm:p-4 text-xs space-y-3">
-            <div className="flex items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                <span className="font-bold text-amber-300 text-xs sm:text-sm">
-                  Terminal says &quot;command not found: cloudarena&quot; or &quot;&apos;cloudarena&apos; is not recognized&quot;?
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowPathTroubleshoot(!showPathTroubleshoot)}
-                className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[11px] font-semibold flex items-center gap-1 transition shrink-0 border border-amber-500/40"
-              >
-                <span>{showPathTroubleshoot ? 'Hide Solutions' : 'View 3 Fixes'}</span>
-                {showPathTroubleshoot ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              </button>
-            </div>
-
-            {/* Quick 1-liner hint always visible */}
-            <p className="text-[11px] text-slate-300 leading-relaxed">
-              <strong>Quickest Fix:</strong> Click the <span className="text-emerald-400 font-bold">⚡ Zero-PATH</span> button above to switch your commands to <code className="text-sky-300 font-mono">{selectedOs === 'windows' ? 'python -m cloudarena' : 'python3 -m cloudarena'}</code>. This bypasses PATH completely and works right now!
-            </p>
-
-            {/* Expandable detailed 3-tier troubleshooting */}
-            {showPathTroubleshoot && (
-              <div className="pt-2 border-t border-amber-500/20 space-y-3 text-[11px] text-slate-300">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-                  <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
-                    <div className="text-emerald-400 font-bold uppercase font-mono text-[10px]">
-                      Fix 1: Run via Python Module
-                    </div>
-                    <p className="text-slate-400 text-[11px]">
-                      No PATH changes needed. Python directly executes the installed package:
-                    </p>
-                    <code className="block p-1.5 rounded bg-slate-900 text-emerald-300 font-mono text-[10px] select-all">
-                      {selectedOs === 'windows' ? 'python -m cloudarena start' : 'python3 -m cloudarena start'}
-                    </code>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
-                    <div className="text-sky-400 font-bold uppercase font-mono text-[10px]">
-                      Fix 2: Refresh Open Terminal
-                    </div>
-                    <p className="text-slate-400 text-[11px]">
-                      New path variables only load in freshly opened terminals or after running:
-                    </p>
-                    <div className="flex items-center justify-between gap-1 p-1.5 rounded bg-slate-900 border border-slate-800">
-                      <code className="text-sky-300 font-mono text-[10px] truncate select-all">{refreshSessionCmd}</code>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard(refreshSessionCmd, setCopiedRefresh)}
-                        className="text-slate-400 hover:text-white shrink-0 p-0.5"
-                        title="Copy refresh command"
-                      >
-                        {copiedRefresh ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
-                    <div className="text-indigo-400 font-bold uppercase font-mono text-[10px]">
-                      Fix 3: Permanent Shell Profile
-                    </div>
-                    <p className="text-slate-400 text-[11px]">
-                      {selectedOs === 'windows' 
-                        ? 'Restart your PowerShell window or VS Code terminal so Windows environment updates take effect.'
-                        : 'Append to your ~/.bashrc or ~/.zshrc:'}
-                    </p>
-                    {selectedOs !== 'windows' && (
-                      <code className="block p-1.5 rounded bg-slate-900 text-indigo-300 font-mono text-[10px] select-all">
-                        export PATH=&quot;$HOME/.local/bin:$PATH&quot;
-                      </code>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

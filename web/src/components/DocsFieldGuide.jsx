@@ -196,62 +196,6 @@ cloudarena wave start 1
                 <div className="text-[11px] text-slate-500">Injects the outage into your cluster. You now investigate, repair, and verify!</div>
               </div>
             </div>
-
-            {/* PATH & Command Recognition Troubleshooting Box */}
-            <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-4 sm:p-5 space-y-3">
-              <div className="flex items-center gap-2.5">
-                <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
-                <h4 className="font-bold text-amber-300 text-sm">
-                  Troubleshooting: Terminal says &quot;cloudarena: command not found&quot; or &quot;not recognized&quot;?
-                </h4>
-              </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                When tools are installed via user pip or shell scripts, the binaries are placed in <code className="text-sky-300">~/.local/bin</code> (Linux/macOS) or Python <code className="text-indigo-300">Scripts</code> (Windows). Already-open terminals do not automatically reload PATH variables. Here is how to fix it immediately:
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-                <div className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-1.5">
-                  <div className="text-emerald-400 font-bold uppercase font-mono text-[11px]">
-                    Method 1: Run via Python (Instant)
-                  </div>
-                  <p className="text-slate-400 text-xs">
-                    Completely bypasses PATH. Runs directly using Python on any platform:
-                  </p>
-                  <pre className="p-2 rounded bg-slate-900 text-emerald-300 font-mono text-xs overflow-x-auto border border-slate-800">
-python3 -m cloudarena start
-# Windows PowerShell:
-python -m cloudarena start
-                  </pre>
-                </div>
-
-                <div className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-1.5">
-                  <div className="text-sky-400 font-bold uppercase font-mono text-[11px]">
-                    Method 2: Refresh Your Terminal
-                  </div>
-                  <p className="text-slate-400 text-xs">
-                    Reload your shell configuration without restarting your terminal:
-                  </p>
-                  <pre className="p-2 rounded bg-slate-900 text-sky-300 font-mono text-xs overflow-x-auto border border-slate-800">
-source ~/.bashrc  # Linux/macOS
-# Windows PowerShell:
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","User")
-                  </pre>
-                </div>
-
-                <div className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-1.5">
-                  <div className="text-indigo-400 font-bold uppercase font-mono text-[11px]">
-                    Method 3: Permanent Shell Export
-                  </div>
-                  <p className="text-slate-400 text-xs">
-                    Ensure ~/.local/bin is in your profile permanently:
-                  </p>
-                  <pre className="p-2 rounded bg-slate-900 text-indigo-300 font-mono text-xs overflow-x-auto border border-slate-800">
-echo 'export PATH="$HOME/.local/bin:$PATH"' &gt;&gt; ~/.bashrc
-source ~/.bashrc
-                  </pre>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       )}

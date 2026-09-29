@@ -118,19 +118,45 @@ fi
 
 # 5. Install CloudArena CLI via pip
 echo -e "\n${WHITE}[5/5] Installing CloudArena Platform...${RESET}"
+WHEEL_URL="https://gdg-cloudarena.web.app/cloudarena-latest-py3-none-any.whl"
 ARCHIVE_URL="https://github.com/AdityaPatra-dev/CloudArena/archive/refs/heads/main.zip"
-python3 -m pip install --upgrade --user "$ARCHIVE_URL" > /dev/null 2>&1 || {
-    if command -v pipx &> /dev/null; then
-        pipx install "$ARCHIVE_URL" --force
-    else
-        python3 -m pip install --upgrade --user --break-system-packages "$ARCHIVE_URL"
-    fi
-}
 
-# Symlink CLI
+INSTALL_SUCCESS=0
+if python3 -m pip install --upgrade --force-reinstall --user "$WHEEL_URL" > /dev/null 2>&1; then
+    INSTALL_SUCCESS=1
+elif python3 -m pip install --upgrade --force-reinstall --user --break-system-packages "$WHEEL_URL" > /dev/null 2>&1; then
+    INSTALL_SUCCESS=1
+elif python3 -m pip install --upgrade --user "$ARCHIVE_URL" > /dev/null 2>&1; then
+    INSTALL_SUCCESS=1
+elif python3 -m pip install --upgrade --user --break-system-packages "$ARCHIVE_URL" > /dev/null 2>&1; then
+    INSTALL_SUCCESS=1
+fi
+
+if [ $INSTALL_SUCCESS -eq 0 ] && command -v pipx &> /dev/null; then
+    pipx install "$WHEEL_URL" --force > /dev/null 2>&1 || pipx install "$ARCHIVE_URL" --force > /dev/null 2>&1
+fi
+
+# Symlink CLI if not in the same directory
 CLI_SOURCE="$(python3 -m site --user-base 2>/dev/null)/bin/cloudarena"
-if [ -f "$CLI_SOURCE" ]; then
-    ln -sf "$CLI_SOURCE" "$HOME/.local/bin/cloudarena"
+TARGET_LINK="$HOME/.local/bin/cloudarena"
+if [ -f "$CLI_SOURCE" ] && [ "$CLI_SOURCE" != "$TARGET_LINK" ]; then
+    ln -sf "$CLI_SOURCE" "$TARGET_LINK"
+fi
+
+# Bulletproof Workload Manifest Provisioning
+MANIFESTS_DIR="$HOME/.cloudarena/manifests"
+mkdir -p "$MANIFESTS_DIR"
+for MANIFEST in "00_namespaces.yaml" "01_cache.yaml" "02_backend.yaml" "03_frontend.yaml" "04_traffic_gen.yaml"; do
+    if [ ! -s "$MANIFESTS_DIR/$MANIFEST" ]; then
+        curl -sSL "https://gdg-cloudarena.web.app/manifests/$MANIFEST" -o "$MANIFESTS_DIR/$MANIFEST" 2>/dev/null || true
+    fi
+done
+
+# Ensure package manifests directory also contains the manifests
+SITE_PKG="$(python3 -c "import cloudarena, pathlib; print(pathlib.Path(cloudarena.__file__).parent)" 2>/dev/null)"
+if [ -n "$SITE_PKG" ] && [ -d "$SITE_PKG" ]; then
+    mkdir -p "$SITE_PKG/manifests"
+    cp -n "$MANIFESTS_DIR/"*.yaml "$SITE_PKG/manifests/" 2>/dev/null || true
 fi
 
 # Ensure ~/.cloudarena/bin and ~/.local/bin are in PATH across all shell configurations
