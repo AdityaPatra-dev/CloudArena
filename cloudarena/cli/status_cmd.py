@@ -25,7 +25,11 @@ def run_status():
     summary_table.add_row("Player Handle:", config.player.handle)
     summary_table.add_row("Mode:", "Solo Practice" if config.player.solo_mode else f"Arena Event ({config.player.event_id})")
     summary_table.add_row("Total Score:", f"[bold green]{config.game.total_score} pts[/bold green]")
-    summary_table.add_row("Current Wave:", f"Wave {config.game.current_wave}" if config.game.current_wave > 0 else "Not Started")
+
+    current_wave_str = f"Wave {config.game.current_wave}" if config.game.current_wave > 0 else "Not Started"
+    if config.game.current_wave > 0 and config.game.current_wave not in config.game.completed_waves:
+        current_wave_str += " [yellow](In Progress)[/yellow]"
+    summary_table.add_row("Current Wave:", current_wave_str)
     summary_table.add_row("Completed Waves:", ", ".join(f"Wave {w}" for w in config.game.completed_waves) or "None")
 
     console.print(Panel(summary_table, title="[bold]Session Info[/bold]", border_style="blue"))
@@ -42,3 +46,8 @@ def run_status():
     infra_table.add_row("Arena Cluster", "[green]Active[/green]" if config.cluster.is_created else "[dim]Not Provisioned[/dim]", config.cluster.cluster_name)
 
     console.print(Panel(infra_table, title="[bold]Infrastructure State[/bold]", border_style="magenta"))
+
+    if config.game.current_wave > 0 and config.game.current_wave not in config.game.completed_waves:
+        console.print(
+            f"[dim]💡 Active incident in progress: Run [bold cyan]cloudarena wave status[/bold cyan] to verify resolution & claim points.[/dim]\n"
+        )
