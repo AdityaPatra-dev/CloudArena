@@ -620,11 +620,20 @@ export default function CompetitorHub({ user, onLogin, onUserUpdated, eventConfi
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h3 className="font-extrabold text-white text-sm sm:text-base flex items-center gap-2">
             <Terminal className="w-4 h-4 text-cyan-400" />
-            <span>Complete 4-Step Hackathon Battle Guide</span>
+            <span>Complete 4-Step Hackathon Battle Guide (3D Pipeline)</span>
           </h3>
           <span className="text-[11px] font-mono text-cyan-400/90 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-full">
             {cliMode === 'zeropath' ? 'Mode: Zero-PATH Direct' : 'Mode: Standard CLI'}
           </span>
+        </div>
+
+        {/* 3D Animated Battle Pipeline Showcase */}
+        <div className="w-full rounded-2xl overflow-hidden border border-cyan-500/30 shadow-2xl shadow-cyan-500/10 bg-[#040711] group">
+          <img 
+            src="/assets/battle_loop_3d.svg" 
+            alt="3D Animated Battle Loop Pipeline" 
+            className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.01]"
+          />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">

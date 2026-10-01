@@ -1,8 +1,10 @@
 <div align="center">
 
-<!-- Animated Header Banner SVG -->
+<!-- Animated Cyber Header Banner SVG -->
 <p align="center">
-  <img src="assets/header_animation.svg" alt="CloudArena Cyber Header Banner" width="100%" />
+  <a href="https://gdg-cloudarena.web.app">
+    <img src="./assets/header_animation.svg" alt="CloudArena Cyber Header Banner" width="100%" style="max-width: 100%; height: auto;" />
+  </a>
 </p>
 
 <!-- Live Typewriter Animation via SVG -->
@@ -73,45 +75,74 @@ irm https://gdg-cloudarena.web.app/install.ps1 | iex
 
 ---
 
+## 🎮 The 4-Step Hackathon Battle Loop (3D Isometric Pipeline)
+
+> Every competitor journeys through 4 continuous operational phases—from cryptographic handshake to 3-node cluster orchestration, chaos triage, and live score attestation.
+
+<p align="center">
+  <img src="./assets/battle_loop_3d.svg" alt="The 4-Step Hackathon Battle Loop - 3D Isometric Animated Pipeline" width="100%" style="max-width: 100%; height: auto;" />
+</p>
+
+<table width="100%">
+<tr>
+<td width="50%" valign="top">
+
+### 01 • 🔑 AUTHENTICATE & LINK
+**Terminal Handshake & Telemetry Binding**
+Connects your laptop environment to this tournament account and enables cryptographic anti-cheat attestation.
+```bash
+cloudarena link <ARENA_TOKEN> --event HACKATHON_2026
+```
+*💡 Mint your personal token at [gdg-cloudarena.web.app](https://gdg-cloudarena.web.app).*
+
+</td>
+<td width="50%" valign="top">
+
+### 02 • 🚀 LAUNCH 3-NODE MESH
+**Spin Up Sandboxed Cluster ($0 Cost)**
+Launches a 3-node k3d mesh (1 server + 2 agents) inside Docker with frontend, API, and Redis microservices ready.
+```bash
+cloudarena start
+```
+*💡 Verified [3/3 Pods Ready] in isolated user space.*
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 03 • ⚔️ INJECT CHAOS OUTAGE
+**Trigger SRE Incident & Nonce Challenge**
+Injects a progressive real-world failure alongside an encrypted HMAC nonce stored directly inside cluster secrets.
+```bash
+cloudarena wave start 1
+```
+*💡 Triage pods via `cloudarena kubectl get pods -A`.*
+
+</td>
+<td width="50%" valign="top">
+
+### 04 • 🏆 WATCH & ATTEST SCORE
+**10s Stabilization & Anti-Cheat Sync**
+Monitors live synthetic traffic. Requires 10 consecutive seconds at $\ge 95\%$ success before certifying recovery proof.
+```bash
+cloudarena wave watch
+```
+*💡 Posts HMAC attestation proof & syncs +500 pts.*
+
+</td>
+</tr>
+</table>
+
+---
+
 ## 🖥️ Live Terminal Battle Simulation
 
 Watch the complete incident survival loop below—from spinning up the 3-node cluster, injecting chaos, and stabilizing synthetic traffic, to cryptographic score attestation:
 
 <p align="center">
-  <img src="assets/terminal_animation.svg" alt="Animated Terminal Battle Loop" width="100%" />
+  <img src="./assets/terminal_animation.svg" alt="Animated Terminal Battle Loop" width="100%" style="max-width: 100%; height: auto;" />
 </p>
-
----
-
-## 🎮 The 4-Step Hackathon Battle Loop
-
-```text
-  ┌───────────────────────┐       ┌───────────────────────┐       ┌───────────────────────┐       ┌───────────────────────┐
-  │  1. Link Token        │ ────> │ 2. Start Mesh         │ ────> │ 3. Enter Chaos Wave   │ ────> │ 4. Watch & Attest     │
-  │  cloudarena link ...  │       │  cloudarena start     │       │  wave start <id>      │       │  cloudarena wave watch│
-  └───────────────────────┘       └───────────────────────┘       └───────────────────────┘       └───────────────────────┘
-```
-
-```bash
-# 1. Connect local terminal to live tournament leaderboard
-cloudarena link <YOUR_ARENA_TOKEN> --event HACKATHON_2026
-
-# 2. Spin up isolated 3-node k3d cluster ($0 compute cost)
-cloudarena start
-
-# 3. Inject incident chaos into the cluster
-cloudarena wave start 1
-
-# 4. Investigate & resolve with isolated kubectl proxy
-cloudarena kubectl get pods -A
-cloudarena kubectl delete pod rogue-crypto-miner -n cloudarena-system
-
-# 5. Continuous traffic stabilization watch & cryptographic HMAC attestation
-cloudarena wave watch
-
-# 6. Unlock Gemini AI SRE Root Cause Analysis
-cloudarena postmortem 1
-```
 
 ---
 
@@ -139,7 +170,7 @@ Every wave injects an authentic SRE disaster into your cluster alongside an encr
 Live animated topology illustrating the local sandboxed cluster, cryptographic nonce verification, and the Google Gemini AI cloud platform:
 
 <p align="center">
-  <img src="assets/architecture_flow.svg" alt="CloudArena Animated Architecture Flow" width="100%" />
+  <img src="./assets/architecture_flow.svg" alt="CloudArena Animated Architecture Flow" width="100%" style="max-width: 100%; height: auto;" />
 </p>
 
 ---

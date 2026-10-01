@@ -1,0 +1,359 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 390" width="940" height="390" style="width: 100%; max-width: 100%; height: auto;" fill="none">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad3d" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#040711" />
+      <stop offset="50%" stop-color="#080e22" />
+      <stop offset="100%" stop-color="#03050c" />
+    </linearGradient>
+
+    <!-- Border Glow Gradient -->
+    <linearGradient id="borderGrad3d" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.8" />
+      <stop offset="35%" stop-color="#38bdf8" stop-opacity="0.5" />
+      <stop offset="70%" stop-color="#a855f7" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.8" />
+    </linearGradient>
+
+    <!-- Card Background -->
+    <linearGradient id="podiumGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#030712" stop-opacity="0.95" />
+    </linearGradient>
+
+    <!-- Glowing Laser Connectors -->
+    <linearGradient id="laserBeam1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+    <linearGradient id="laserBeam2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <linearGradient id="laserBeam3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+
+    <!-- Glow Filters -->
+    <filter id="glow3d" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="intenseGlow3d" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Grid Pattern -->
+    <pattern id="grid3d" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#00f0ff" stroke-width="0.6" stroke-opacity="0.05" />
+    </pattern>
+
+    <!-- CSS Keyframe Animations for 3D Objects -->
+    <style>
+      @keyframes floatObj1 {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-9px) rotate(1deg); }
+      }
+      @keyframes floatObj2 {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-11px); }
+      }
+      @keyframes floatObj3 {
+        0%, 100% { transform: translateY(0px) scale(1); }
+        50% { transform: translateY(-8px) scale(1.03); }
+      }
+      @keyframes floatObj4 {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(-1deg); }
+      }
+      @keyframes spinHalo {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes pulseGlowRing {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.08); }
+      }
+      @keyframes beamStream {
+        0% { stroke-dashoffset: 40; }
+        100% { stroke-dashoffset: 0; }
+      }
+      @keyframes blinkLed {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.25; }
+      }
+      .float-1 { animation: floatObj1 4s ease-in-out infinite; transform-origin: 120px 85px; }
+      .float-2 { animation: floatObj2 4.5s ease-in-out infinite; transform-origin: 350px 85px; }
+      .float-3 { animation: floatObj3 3.8s ease-in-out infinite; transform-origin: 580px 85px; }
+      .float-4 { animation: floatObj4 4.2s ease-in-out infinite; transform-origin: 810px 85px; }
+      .spin-halo-1 { transform-origin: 120px 85px; animation: spinHalo 6s linear infinite; }
+      .spin-halo-3 { transform-origin: 580px 85px; animation: spinHalo 5s linear infinite; }
+      .spin-halo-4 { transform-origin: 810px 85px; animation: spinHalo 7s linear infinite; }
+      .laser-stream { stroke-dasharray: 8 6; animation: beamStream 1s linear infinite; }
+      .blink-led { animation: blinkLed 1.2s ease-in-out infinite; }
+      .blink-led-fast { animation: blinkLed 0.6s ease-in-out infinite; }
+    </style>
+  </defs>
+
+  <!-- Container Box -->
+  <rect x="2" y="2" width="936" height="386" rx="20" fill="url(#bgGrad3d)" stroke="url(#borderGrad3d)" stroke-width="1.8" />
+  <rect x="2" y="2" width="936" height="386" rx="20" fill="url(#grid3d)" />
+
+  <!-- Section Header -->
+  <g transform="translate(30, 24)">
+    <circle cx="8" cy="8" r="4" fill="#00f0ff" class="blink-led" />
+    <text x="20" y="12" fill="#e2e8f0" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="800" letter-spacing="1">
+      THE 4-STEP HACKATHON BATTLE LOOP • INTERACTIVE ISOMETRIC PIPELINE
+    </text>
+  </g>
+
+  <!-- 3 Connecting Animated Laser Beams -->
+  <!-- Beam 1 -> 2 -->
+  <path d="M 215 90 L 270 90" stroke="url(#laserBeam1)" stroke-width="3" class="laser-stream" filter="url(#glow3d)" />
+  <polygon points="274,90 264,85 264,95" fill="#38bdf8" />
+
+  <!-- Beam 2 -> 3 -->
+  <path d="M 445 90 L 500 90" stroke="url(#laserBeam2)" stroke-width="3" class="laser-stream" filter="url(#glow3d)" />
+  <polygon points="504,90 494,85 494,95" fill="#f59e0b" />
+
+  <!-- Beam 3 -> 4 -->
+  <path d="M 675 90 L 730 90" stroke="url(#laserBeam3)" stroke-width="3" class="laser-stream" filter="url(#glow3d)" />
+  <polygon points="734,90 724,85 724,95" fill="#10b981" />
+
+  <!-- ==================== STATION 1: 3D TOKEN COIN / KEYCARD ==================== -->
+  <g transform="translate(25, 45)">
+    <!-- Station Card Base -->
+    <rect x="0" y="0" width="190" height="315" rx="16" fill="url(#podiumGrad)" stroke="#00f0ff" stroke-opacity="0.4" stroke-width="1.2" />
+    
+    <!-- Step Badge -->
+    <rect x="15" y="14" width="30" height="18" rx="6" fill="#00f0ff" fill-opacity="0.2" stroke="#00f0ff" stroke-width="1" />
+    <text x="30" y="27" fill="#00f0ff" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="900" text-anchor="middle">01</text>
+    <text x="52" y="27" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700">HANDSHAKE</text>
+
+    <!-- 3D Hologram Area -->
+    <g transform="translate(0, 30)">
+      <!-- Isometric Ground Shadow -->
+      <ellipse cx="95" cy="100" rx="45" ry="14" fill="#00f0ff" fill-opacity="0.12" filter="url(#glow3d)" />
+
+      <!-- Floating 3D Isometric Object 1 -->
+      <g class="float-1">
+        <!-- 3D Orbit Ring -->
+        <ellipse cx="95" cy="65" rx="42" ry="18" fill="none" stroke="#00f0ff" stroke-width="1.2" stroke-dasharray="6 4" class="spin-halo-1" filter="url(#glow3d)" />
+
+        <!-- 3D Isometric Cube / Keycard -->
+        <!-- Top Face -->
+        <polygon points="95,30 130,48 95,66 60,48" fill="#38bdf8" stroke="#00f0ff" stroke-width="1" />
+        <!-- Left Face -->
+        <polygon points="60,48 95,66 95,102 60,84" fill="#0284c7" stroke="#0369a1" stroke-width="1" />
+        <!-- Right Face -->
+        <polygon points="95,66 130,48 130,84 95,102" fill="#0369a1" stroke="#0284c7" stroke-width="1" />
+
+        <!-- Hologram Circuit Lines on Top Face -->
+        <line x1="95" y1="38" x2="115" y2="48" stroke="#ffffff" stroke-width="1.2" />
+        <line x1="95" y1="46" x2="80" y2="54" stroke="#ffffff" stroke-width="1.2" />
+        <circle cx="95" cy="48" r="3.5" fill="#ffffff" filter="url(#intenseGlow3d)" />
+
+        <!-- Vertical Laser Attestation Beam -->
+        <line x1="95" y1="10" x2="95" y2="30" stroke="#00f0ff" stroke-width="2" stroke-dasharray="2 2" filter="url(#glow3d)" />
+      </g>
+    </g>
+
+    <!-- Card Text & Content -->
+    <text x="15" y="195" fill="#f8fafc" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="800">
+      AUTHENTICATE &amp; LINK
+    </text>
+    <text x="15" y="212" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10.5">
+      Mints your personal HMAC token &amp; links local cluster to leaderboard.
+    </text>
+
+    <!-- Command Snippet Box -->
+    <rect x="12" y="235" width="166" height="38" rx="8" fill="#040711" stroke="#00f0ff" stroke-opacity="0.3" stroke-width="1" />
+    <text x="20" y="252" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">$ cloudarena link</text>
+    <text x="20" y="265" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">&lt;token&gt; --event 2026</text>
+
+    <!-- Status Indicator -->
+    <circle cx="22" cy="295" r="3.5" fill="#00f0ff" class="blink-led" />
+    <text x="32" y="298" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">TOKEN ATTESTED ✓</text>
+  </g>
+
+  <!-- ==================== STATION 2: 3D KUBERNETES 3-NODE MESH ==================== -->
+  <g transform="translate(255, 45)">
+    <!-- Station Card Base -->
+    <rect x="0" y="0" width="190" height="315" rx="16" fill="url(#podiumGrad)" stroke="#38bdf8" stroke-opacity="0.4" stroke-width="1.2" />
+    
+    <!-- Step Badge -->
+    <rect x="15" y="14" width="30" height="18" rx="6" fill="#38bdf8" fill-opacity="0.2" stroke="#38bdf8" stroke-width="1" />
+    <text x="30" y="27" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="900" text-anchor="middle">02</text>
+    <text x="52" y="27" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700">BOOTSTRAP</text>
+
+    <!-- 3D Hologram Area -->
+    <g transform="translate(0, 30)">
+      <!-- Isometric Ground Shadow -->
+      <ellipse cx="95" cy="100" rx="45" ry="14" fill="#38bdf8" fill-opacity="0.12" filter="url(#glow3d)" />
+
+      <!-- Floating 3D Isometric Server Rack (3 Nodes) -->
+      <g class="float-2">
+        <!-- Node 3 (Bottom: Worker 2) -->
+        <polygon points="95,65 130,80 95,95 60,80" fill="#1e293b" stroke="#38bdf8" stroke-width="1" />
+        <polygon points="60,80 95,95 95,108 60,93" fill="#0f172a" />
+        <polygon points="95,95 130,80 130,93 95,108" fill="#1e293b" />
+        <circle cx="72" cy="88" r="2" fill="#10b981" class="blink-led" />
+        <circle cx="80" cy="92" r="2" fill="#38bdf8" class="blink-led-fast" />
+
+        <!-- Node 2 (Middle: Worker 1) -->
+        <polygon points="95,45 130,60 95,75 60,60" fill="#334155" stroke="#38bdf8" stroke-width="1" />
+        <polygon points="60,60 95,75 95,88 60,73" fill="#1e293b" />
+        <polygon points="95,75 130,60 130,73 95,88" fill="#334155" />
+        <circle cx="72" cy="68" r="2" fill="#10b981" class="blink-led" />
+        <circle cx="80" cy="72" r="2" fill="#10b981" class="blink-led" />
+
+        <!-- Node 1 (Top: Control Plane) -->
+        <polygon points="95,25 130,40 95,55 60,40" fill="#0284c7" stroke="#38bdf8" stroke-width="1" />
+        <polygon points="60,40 95,55 95,68 60,53" fill="#0369a1" />
+        <polygon points="95,55 130,40 130,53 95,68" fill="#0284c7" />
+        <circle cx="72" cy="48" r="2" fill="#10b981" class="blink-led" />
+        <circle cx="80" cy="52" r="2" fill="#00f0ff" class="blink-led-fast" />
+        <circle cx="95" cy="40" r="3.5" fill="#38bdf8" filter="url(#intenseGlow3d)" />
+
+        <!-- Vertical Bus Connectors -->
+        <line x1="60" y1="40" x2="60" y2="80" stroke="#00f0ff" stroke-width="1.5" stroke-dasharray="2 3" />
+        <line x1="130" y1="40" x2="130" y2="80" stroke="#00f0ff" stroke-width="1.5" stroke-dasharray="2 3" />
+      </g>
+    </g>
+
+    <!-- Card Text & Content -->
+    <text x="15" y="195" fill="#f8fafc" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="800">
+      LAUNCH 3-NODE MESH
+    </text>
+    <text x="15" y="212" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10.5">
+      Spins up k3d cluster with frontend, API &amp; Redis microservices ($0 bill).
+    </text>
+
+    <!-- Command Snippet Box -->
+    <rect x="12" y="235" width="166" height="38" rx="8" fill="#040711" stroke="#38bdf8" stroke-opacity="0.3" stroke-width="1" />
+    <text x="20" y="252" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">$ cloudarena start</text>
+    <text x="20" y="265" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">3/3 Nodes Ready ✓</text>
+
+    <!-- Status Indicator -->
+    <circle cx="22" cy="295" r="3.5" fill="#10b981" class="blink-led" />
+    <text x="32" y="298" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">MESH ONLINE (8080)</text>
+  </g>
+
+  <!-- ==================== STATION 3: 3D CHAOS REACTOR CORE ==================== -->
+  <g transform="translate(485, 45)">
+    <!-- Station Card Base -->
+    <rect x="0" y="0" width="190" height="315" rx="16" fill="url(#podiumGrad)" stroke="#f59e0b" stroke-opacity="0.4" stroke-width="1.2" />
+    
+    <!-- Step Badge -->
+    <rect x="15" y="14" width="30" height="18" rx="6" fill="#f59e0b" fill-opacity="0.2" stroke="#f59e0b" stroke-width="1" />
+    <text x="30" y="27" fill="#f59e0b" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="900" text-anchor="middle">03</text>
+    <text x="52" y="27" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700">INCIDENT</text>
+
+    <!-- 3D Hologram Area -->
+    <g transform="translate(0, 30)">
+      <!-- Isometric Ground Shadow -->
+      <ellipse cx="95" cy="100" rx="45" ry="14" fill="#f59e0b" fill-opacity="0.15" filter="url(#glow3d)" />
+
+      <!-- Floating 3D Isometric Chaos Reactor -->
+      <g class="float-3">
+        <!-- Rotating Hazard Halo -->
+        <ellipse cx="95" cy="65" rx="42" ry="18" fill="none" stroke="#f43f5e" stroke-width="1.4" stroke-dasharray="8 5" class="spin-halo-3" filter="url(#glow3d)" />
+
+        <!-- Reactor Base Ring -->
+        <polygon points="95,55 125,70 95,85 65,70" fill="#451a03" stroke="#f59e0b" stroke-width="1.2" />
+        <polygon points="65,70 95,85 95,95 65,80" fill="#290f02" />
+        <polygon points="95,85 125,70 125,80 95,95" fill="#451a03" />
+
+        <!-- 3D Plasma Flame / Warning Gem -->
+        <polygon points="95,20 115,45 95,65 75,45" fill="#f59e0b" filter="url(#intenseGlow3d)" />
+        <polygon points="95,25 110,45 95,60 80,45" fill="#f43f5e" />
+        <polygon points="95,30 105,45 95,55 85,45" fill="#fef08a" />
+
+        <!-- Glowing Warning Bolts -->
+        <polygon points="95,35 88,48 94,48 91,58 102,44 96,44" fill="#ffffff" />
+      </g>
+    </g>
+
+    <!-- Card Text & Content -->
+    <text x="15" y="195" fill="#f8fafc" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="800">
+      INJECT CHAOS OUTAGE
+    </text>
+    <text x="15" y="212" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10.5">
+      Injects outage + HMAC verification nonce challenge into cluster secret.
+    </text>
+
+    <!-- Command Snippet Box -->
+    <rect x="12" y="235" width="166" height="38" rx="8" fill="#040711" stroke="#f59e0b" stroke-opacity="0.3" stroke-width="1" />
+    <text x="20" y="252" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">$ cloudarena wave</text>
+    <text x="20" y="265" fill="#f59e0b" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">start 1 (CPU Hog)</text>
+
+    <!-- Status Indicator -->
+    <circle cx="22" cy="295" r="3.5" fill="#f43f5e" class="blink-led" />
+    <text x="32" y="298" fill="#fb7185" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">OUTAGE ACTIVE ⚠️</text>
+  </g>
+
+  <!-- ==================== STATION 4: 3D ATTESTATION TROPHY & SHIELD ==================== -->
+  <g transform="translate(715, 45)">
+    <!-- Station Card Base -->
+    <rect x="0" y="0" width="190" height="315" rx="16" fill="url(#podiumGrad)" stroke="#10b981" stroke-opacity="0.4" stroke-width="1.2" />
+    
+    <!-- Step Badge -->
+    <rect x="15" y="14" width="30" height="18" rx="6" fill="#10b981" fill-opacity="0.2" stroke="#10b981" stroke-width="1" />
+    <text x="30" y="27" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="900" text-anchor="middle">04</text>
+    <text x="52" y="27" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700">VICTORY</text>
+
+    <!-- 3D Hologram Area -->
+    <g transform="translate(0, 30)">
+      <!-- Isometric Ground Shadow -->
+      <ellipse cx="95" cy="100" rx="45" ry="14" fill="#10b981" fill-opacity="0.15" filter="url(#glow3d)" />
+
+      <!-- Floating 3D Isometric Victory Crystal -->
+      <g class="float-4">
+        <!-- Orbiting Victory Halo -->
+        <ellipse cx="95" cy="65" rx="42" ry="18" fill="none" stroke="#10b981" stroke-width="1.4" stroke-dasharray="6 4" class="spin-halo-4" filter="url(#glow3d)" />
+
+        <!-- 3D Pedestal Base -->
+        <polygon points="95,65 125,78 95,92 65,78" fill="#064e3b" stroke="#10b981" stroke-width="1" />
+        <polygon points="65,78 95,92 95,102 65,88" fill="#022c22" />
+        <polygon points="95,92 125,78 125,88 95,102" fill="#064e3b" />
+
+        <!-- Floating 3D Diamond / Hexagonal Gem -->
+        <!-- Upper Pyramid -->
+        <polygon points="95,20 120,45 95,58 70,45" fill="#34d399" stroke="#10b981" stroke-width="1" />
+        <!-- Lower Facets -->
+        <polygon points="70,45 95,58 95,72 70,55" fill="#059669" stroke="#047857" stroke-width="1" />
+        <polygon points="95,58 120,45 120,55 95,72" fill="#10b981" stroke="#059669" stroke-width="1" />
+
+        <!-- Sparkle Star in Gem Center -->
+        <circle cx="95" cy="45" r="4" fill="#ffffff" filter="url(#intenseGlow3d)" />
+        <path d="M 95 36 L 97 45 L 105 45 L 98 48 L 100 56 L 95 50 L 90 56 L 92 48 L 85 45 L 93 45 Z" fill="#ffffff" />
+      </g>
+    </g>
+
+    <!-- Card Text & Content -->
+    <text x="15" y="195" fill="#f8fafc" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="800">
+      WATCH &amp; ATTEST
+    </text>
+    <text x="15" y="212" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10.5">
+      10s synthetic traffic stabilization window checks health &amp; posts HMAC score.
+    </text>
+
+    <!-- Command Snippet Box -->
+    <rect x="12" y="235" width="166" height="38" rx="8" fill="#040711" stroke="#10b981" stroke-opacity="0.3" stroke-width="1" />
+    <text x="20" y="252" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">$ cloudarena wave</text>
+    <text x="20" y="265" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">watch (10s stable)</text>
+
+    <!-- Status Indicator -->
+    <circle cx="22" cy="295" r="3.5" fill="#10b981" class="blink-led" />
+    <text x="32" y="298" fill="#6ee7b7" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">+500 PTS SYNCED 🏆</text>
+  </g>
+</svg>
