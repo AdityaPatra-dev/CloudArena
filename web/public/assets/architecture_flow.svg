@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 370" width="100%" height="370" fill="none">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="archBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050813" />
+      <stop offset="50%" stop-color="#0a1024" />
+      <stop offset="100%" stop-color="#03060c" />
+    </linearGradient>
+
+    <!-- Node Gradients -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#050811" stop-opacity="0.95" />
+    </linearGradient>
+
+    <linearGradient id="flowCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <linearGradient id="flowEmerald" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+
+    <linearGradient id="flowPurple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#c084fc" />
+    </linearGradient>
+
+    <!-- Glowing Filters -->
+    <filter id="glowFlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <style>
+      @keyframes dashAnim {
+        from { stroke-dashoffset: 60; }
+        to { stroke-dashoffset: 0; }
+      }
+      @keyframes dashReverse {
+        from { stroke-dashoffset: 0; }
+        to { stroke-dashoffset: 60; }
+      }
+      @keyframes pulseNode {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
+      }
+      .stream-cyan {
+        stroke-dasharray: 6 6;
+        animation: dashAnim 1.2s linear infinite;
+      }
+      .stream-emerald {
+        stroke-dasharray: 6 6;
+        animation: dashAnim 1s linear infinite;
+      }
+      .stream-purple {
+        stroke-dasharray: 6 6;
+        animation: dashReverse 1.4s linear infinite;
+      }
+    </style>
+  </defs>
+
+  <!-- Canvas Box -->
+  <rect x="2" y="2" width="916" height="366" rx="18" fill="url(#archBg)" stroke="#1e293b" stroke-width="1.8" />
+
+  <!-- Section Title -->
+  <g transform="translate(30, 28)">
+    <circle cx="10" cy="10" r="4" fill="#00f0ff" />
+    <text x="24" y="14" fill="#e2e8f0" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="800" letter-spacing="0.5">
+      CLOUDARENA TOPOLOGY: LOCAL SANDBOX ➔ HMAC ATTESTATION ➔ CLOUD LEADERBOARD
+    </text>
+  </g>
+
+  <!-- ================= DOMAIN 1: LOCAL LAPTOP SANDBOX ================= -->
+  <g transform="translate(30, 60)">
+    <!-- Container Card -->
+    <rect x="0" y="0" width="360" height="280" rx="14" fill="url(#cardGrad)" stroke="#00f0ff" stroke-opacity="0.4" stroke-width="1.5" />
+    
+    <!-- Header -->
+    <rect x="0" y="0" width="360" height="34" rx="14" fill="#0f172a" fill-opacity="0.9" />
+    <rect x="0" y="20" width="360" height="14" fill="#0f172a" fill-opacity="0.9" />
+    <circle cx="16" cy="17" r="4.5" fill="#00f0ff" />
+    <text x="28" y="21" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700">💻 LOCAL LAPTOP SANDBOX ($0 COST)</text>
+
+    <!-- CLI Box -->
+    <rect x="15" y="45" width="330" height="50" rx="8" fill="#080e1e" stroke="#334155" stroke-width="1" />
+    <text x="28" y="65" fill="#f8fafc" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700">⚡ CloudArena CLI (Typer + Rich Engine)</text>
+    <text x="28" y="82" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="10">Subcommands: start • wave • watch • hint • reset</text>
+
+    <!-- 3-Node k3d Mesh Container -->
+    <rect x="15" y="105" width="330" height="160" rx="10" fill="#040713" stroke="#1e293b" stroke-width="1" />
+    <text x="28" y="125" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700">📦 Sandboxed 3-Node k3d Cluster (Docker Engine)</text>
+
+    <!-- 3 Nodes -->
+    <rect x="25" y="135" width="95" height="55" rx="6" fill="#0b1329" stroke="#38bdf8" stroke-opacity="0.5" stroke-width="1" />
+    <text x="33" y="152" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">control-plane</text>
+    <text x="33" y="166" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8">API Server</text>
+    <text x="33" y="178" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="8">CoreDNS ✓</text>
+
+    <rect x="130" y="135" width="95" height="55" rx="6" fill="#0b1329" stroke="#38bdf8" stroke-opacity="0.5" stroke-width="1" />
+    <text x="138" y="152" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">agent-worker-1</text>
+    <text x="138" y="166" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8">backend-api</text>
+    <text x="138" y="178" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8">cache-redis</text>
+
+    <rect x="235" y="135" width="95" height="55" rx="6" fill="#0b1329" stroke="#38bdf8" stroke-opacity="0.5" stroke-width="1" />
+    <text x="243" y="152" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">agent-worker-2</text>
+    <text x="243" y="166" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8">frontend (web)</text>
+    <text x="243" y="178" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="8">synthetic-probe</text>
+
+    <!-- Chaos Injection Banner -->
+    <rect x="25" y="200" width="305" height="52" rx="6" fill="#1f101d" stroke="#f43f5e" stroke-opacity="0.5" stroke-width="1" />
+    <text x="35" y="218" fill="#f43f5e" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="800">⚔️ CHAOS INJECTION ENGINE (Waves 1-8)</text>
+    <text x="35" y="233" fill="#fda4af" font-family="'JetBrains Mono', monospace" font-size="8.5">CFS Quotas • OOM 137 • DNS Blackout • Storage Lock</text>
+    <text x="35" y="244" fill="#fbbf24" font-family="'JetBrains Mono', monospace" font-size="8.5">Instant Rollback Engine: &lt;3s clean baseline restoration</text>
+  </g>
+
+  <!-- ================= DOMAIN 2: HMAC ATTESTATION ================= -->
+  <g transform="translate(420, 95)">
+    <!-- Container Card -->
+    <rect x="0" y="0" width="165" height="210" rx="12" fill="url(#cardGrad)" stroke="#10b981" stroke-opacity="0.5" stroke-width="1.5" />
+    <rect x="0" y="0" width="165" height="30" rx="12" fill="#064e3b" fill-opacity="0.5" />
+    <rect x="0" y="18" width="165" height="12" fill="#064e3b" fill-opacity="0.5" />
+    <text x="12" y="20" fill="#6ee7b7" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="800">🛡️ ATTESTATION</text>
+
+    <g font-family="'JetBrains Mono', monospace" font-size="8.5">
+      <rect x="10" y="40" width="145" height="38" rx="6" fill="#041a13" stroke="#10b981" stroke-width="0.8" />
+      <text x="18" y="55" fill="#a7f3d0" font-weight="700">Ephemeral Nonce</text>
+      <text x="18" y="68" fill="#94a3b8">SHA-256 HMAC</text>
+
+      <rect x="10" y="86" width="145" height="38" rx="6" fill="#041a13" stroke="#10b981" stroke-width="0.8" />
+      <text x="18" y="101" fill="#a7f3d0" font-weight="700">Cluster Secret</text>
+      <text x="18" y="114" fill="#94a3b8">Injected on Wave</text>
+
+      <rect x="10" y="132" width="145" height="42" rx="6" fill="#041a13" stroke="#10b981" stroke-width="0.8" />
+      <text x="18" y="147" fill="#a7f3d0" font-weight="700">Verification Proof</text>
+      <text x="18" y="160" fill="#6ee7b7" font-weight="800">10s Health Attested</text>
+    </g>
+
+    <text x="12" y="194" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700">Anti-Spoof Guarded ✓</text>
+  </g>
+
+  <!-- ================= DOMAIN 3: CLOUD PLATFORM ================= -->
+  <g transform="translate(615, 60)">
+    <!-- Container Card -->
+    <rect x="0" y="0" width="275" height="280" rx="14" fill="url(#cardGrad)" stroke="#a855f7" stroke-opacity="0.4" stroke-width="1.5" />
+    
+    <!-- Header -->
+    <rect x="0" y="0" width="275" height="34" rx="14" fill="#3b0764" fill-opacity="0.6" />
+    <rect x="0" y="20" width="275" height="14" fill="#3b0764" fill-opacity="0.6" />
+    <circle cx="16" cy="17" r="4.5" fill="#a855f7" />
+    <text x="28" y="21" fill="#e9d5ff" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700">☁️ GDG CLOUDARENA PLATFORM</text>
+
+    <!-- Subservices -->
+    <rect x="12" y="45" width="250" height="48" rx="8" fill="#140a24" stroke="#a855f7" stroke-opacity="0.3" stroke-width="1" />
+    <text x="22" y="64" fill="#d8b4fe" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700">🏆 Live Tournament Portal</text>
+    <text x="22" y="79" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">Vite + React • Real-Time Standings</text>
+
+    <rect x="12" y="102" width="250" height="48" rx="8" fill="#140a24" stroke="#a855f7" stroke-opacity="0.3" stroke-width="1" />
+    <text x="22" y="121" fill="#d8b4fe" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700">🔥 Cloud Firestore Database</text>
+    <text x="22" y="136" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">Single-Doc Cache (2,000+ Scale)</text>
+
+    <rect x="12" y="159" width="250" height="48" rx="8" fill="#140a24" stroke="#a855f7" stroke-opacity="0.3" stroke-width="1" />
+    <text x="22" y="178" fill="#d8b4fe" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700">🤖 Google Gemini AI Mentor</text>
+    <text x="22" y="193" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">Progressive Clues &amp; Incident RCA</text>
+
+    <rect x="12" y="216" width="250" height="48" rx="8" fill="#140a24" stroke="#a855f7" stroke-opacity="0.3" stroke-width="1" />
+    <text x="22" y="235" fill="#d8b4fe" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700">📜 Public SRE Cert Verifier</text>
+    <text x="22" y="250" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">gdg-cloudarena.web.app?verify=...</text>
+  </g>
+
+  <!-- ================= ANIMATED FLOW CONNECTORS ================= -->
+  <!-- Laptop -> Attestation -->
+  <path d="M 390 150 L 420 150" stroke="#00f0ff" stroke-width="2" class="stream-cyan" filter="url(#glowFlow)" />
+  <circle cx="405" cy="150" r="3" fill="#00f0ff" />
+
+  <!-- Attestation -> Cloud Platform -->
+  <path d="M 585 150 L 615 150" stroke="#10b981" stroke-width="2" class="stream-emerald" filter="url(#glowFlow)" />
+  <circle cx="600" cy="150" r="3" fill="#10b981" />
+
+  <!-- AI Mentor Hints (Cloud -> Laptop reverse flow) -->
+  <path d="M 615 250 C 520 250, 480 250, 390 250" stroke="#a855f7" stroke-width="1.8" class="stream-purple" filter="url(#glowFlow)" />
+  <text x="480" y="242" fill="#c084fc" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">
+    AI Mentor Clues &amp; RCA Feed
+  </text>
+</svg>

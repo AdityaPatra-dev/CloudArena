@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 260" width="100%" height="260" fill="none">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#040711" />
+      <stop offset="50%" stop-color="#070c1d" />
+      <stop offset="100%" stop-color="#03060c" />
+    </linearGradient>
+
+    <!-- Glowing Cyber Text Gradient -->
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="35%" stop-color="#00f0ff" />
+      <stop offset="70%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+
+    <!-- Radar Scanner Cone Gradient -->
+    <linearGradient id="radarCone" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.5" />
+      <stop offset="50%" stop-color="#10b981" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#00f0ff" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Border Glow Gradient -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#a855f7" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.8" />
+    </linearGradient>
+
+    <!-- EKG Wave Gradient -->
+    <linearGradient id="ekgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.3" />
+      <stop offset="45%" stop-color="#10b981" stop-opacity="1" />
+      <stop offset="55%" stop-color="#00f0ff" stop-opacity="1" />
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0.4" />
+    </linearGradient>
+
+    <!-- Glow Filters -->
+    <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="intenseGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Cyber Grid Pattern -->
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#00f0ff" stroke-width="0.75" stroke-opacity="0.06" />
+    </pattern>
+
+    <!-- CSS Keyframe Animations -->
+    <style>
+      @keyframes radarSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes pulseLight {
+        0%, 100% { opacity: 0.35; transform: scale(1); }
+        50% { opacity: 0.85; transform: scale(1.05); }
+      }
+      @keyframes blinker {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.2; }
+      }
+      @keyframes dashFlow {
+        0% { stroke-dashoffset: 600; }
+        100% { stroke-dashoffset: 0; }
+      }
+      @keyframes shimmerLine {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(200%); }
+      }
+      @keyframes floatDot {
+        0% { cx: 40; }
+        50% { cx: 880; }
+        100% { cx: 40; }
+      }
+      .radar-sweep {
+        transform-origin: 825px 95px;
+        animation: radarSpin 4s linear infinite;
+      }
+      .pulse-beacon {
+        animation: blinker 1.8s ease-in-out infinite;
+      }
+      .pulse-glow {
+        animation: pulseLight 3s ease-in-out infinite;
+      }
+      .ekg-path {
+        stroke-dasharray: 800;
+        animation: dashFlow 5s linear infinite;
+      }
+      .dot-scanner {
+        animation: floatDot 8s ease-in-out infinite;
+      }
+    </style>
+  </defs>
+
+  <!-- Background Base Box -->
+  <rect x="2" y="2" width="916" height="256" rx="20" fill="url(#bgGrad)" stroke="url(#borderGrad)" stroke-width="2" />
+  
+  <!-- Cyber Grid Overlay -->
+  <rect x="2" y="2" width="916" height="256" rx="20" fill="url(#grid)" />
+
+  <!-- Ambient Light Orbs -->
+  <circle cx="120" cy="70" r="90" fill="#00f0ff" fill-opacity="0.06" filter="url(#intenseGlow)" class="pulse-glow" />
+  <circle cx="820" cy="100" r="100" fill="#a855f7" fill-opacity="0.07" filter="url(#intenseGlow)" class="pulse-glow" />
+  <circle cx="480" cy="220" r="80" fill="#10b981" fill-opacity="0.05" filter="url(#intenseGlow)" />
+
+  <!-- Top Accent Light Bar -->
+  <path d="M 40 2 L 880 2" stroke="url(#borderGrad)" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Radar Scope Widget (Upper Right) -->
+  <g transform="translate(0, 0)">
+    <!-- Radar Rings -->
+    <circle cx="825" cy="95" r="48" stroke="#00f0ff" stroke-opacity="0.2" stroke-width="1.2" fill="#03060d" />
+    <circle cx="825" cy="95" r="32" stroke="#00f0ff" stroke-opacity="0.3" stroke-width="1" fill="none" />
+    <circle cx="825" cy="95" r="16" stroke="#00f0ff" stroke-opacity="0.4" stroke-width="1" fill="none" />
+    <!-- Radar Crosshairs -->
+    <line x1="777" y1="95" x2="873" y2="95" stroke="#00f0ff" stroke-opacity="0.25" stroke-width="1" stroke-dasharray="2 3" />
+    <line x1="825" y1="47" x2="825" y2="143" stroke="#00f0ff" stroke-opacity="0.25" stroke-width="1" stroke-dasharray="2 3" />
+    <!-- Sweeping Radar Cone -->
+    <g class="radar-sweep">
+      <path d="M 825 95 L 873 95 A 48 48 0 0 1 859 129 Z" fill="url(#radarCone)" />
+      <line x1="825" y1="95" x2="873" y2="95" stroke="#00f0ff" stroke-width="1.8" filter="url(#cyanGlow)" />
+    </g>
+    <!-- Target Blips -->
+    <circle cx="845" cy="80" r="2.5" fill="#10b981" class="pulse-beacon" />
+    <circle cx="810" cy="115" r="2" fill="#fbbf24" class="pulse-beacon" />
+    <!-- Label -->
+    <text x="825" y="157" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" text-anchor="middle" letter-spacing="1">RADAR: ACTIVE</text>
+  </g>
+
+  <!-- Left Logo Icon Graphic -->
+  <g transform="translate(45, 45)">
+    <!-- Hexagon Outer Glow -->
+    <polygon points="35,5 65,22 65,58 35,75 5,58 5,22" fill="#0b1329" stroke="#00f0ff" stroke-width="2" filter="url(#cyanGlow)" />
+    <!-- Cloud & Lightning Bolt Vector -->
+    <path d="M 23 42 C 20 42 17 39 17 35 C 17 32 19 29 22 28 C 23 23 27 20 33 20 C 38 20 42 23 44 26 C 46 25 48 25 50 27 C 53 29 54 32 54 35 C 54 39 51 42 47 42 Z" fill="#00f0ff" fill-opacity="0.2" stroke="#00f0ff" stroke-width="1.5" />
+    <!-- Bolt -->
+    <polygon points="35,32 29,43 34,43 32,53 41,40 36,40" fill="#fbbf24" filter="url(#cyanGlow)">
+      <animate attributeName="opacity" values="1;0.6;1;0.3;1" dur="2.5s" repeatCount="indefinite" />
+    </polygon>
+  </g>
+
+  <!-- Main Hero Brand Typography -->
+  <g transform="translate(135, 45)">
+    <!-- Event Subtitle Tag -->
+    <rect x="0" y="2" width="180" height="20" rx="10" fill="#a855f7" fill-opacity="0.15" stroke="#a855f7" stroke-opacity="0.4" stroke-width="1" />
+    <circle cx="10" cy="12" r="3.5" fill="#a855f7" class="pulse-beacon" />
+    <text x="22" y="15" fill="#d8b4fe" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="800" letter-spacing="1.2">GDG HACKATHON 2026</text>
+
+    <!-- Main Title "CLOUDARENA" -->
+    <text x="0" y="58" fill="url(#titleGrad)" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="46" font-weight="900" letter-spacing="1" filter="url(#cyanGlow)">
+      CLOUDARENA
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="82" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="13.5" font-weight="500" letter-spacing="0.5">
+      AI-Powered Sandboxed Kubernetes Incident Survival Arena • <tspan fill="#00f0ff" font-weight="700">$0 Cloud Bills</tspan>
+    </text>
+  </g>
+
+  <!-- Continuous EKG Waveform Across Center -->
+  <g transform="translate(0, 142)">
+    <!-- Waveform Track -->
+    <path d="M 40 30 L 180 30 L 195 24 L 205 36 L 215 30 L 260 30 L 270 4 L 280 56 L 290 -8 L 300 42 L 310 30 L 440 30 L 450 24 L 460 36 L 470 30 L 520 30 L 530 2 L 540 58 L 550 -10 L 560 40 L 570 30 L 700 30 L 710 24 L 720 36 L 730 30 L 780 30 L 790 6 L 800 54 L 810 0 L 820 38 L 830 30 L 880 30" 
+          fill="none" 
+          stroke="url(#ekgGrad)" 
+          stroke-width="2.5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          filter="url(#cyanGlow)" 
+          class="ekg-path" />
+
+    <!-- Sweeping Ping Dot along Waveform -->
+    <circle cx="550" cy="30" r="5" fill="#00f0ff" filter="url(#intenseGlow)" class="dot-scanner" />
+    <circle cx="550" cy="30" r="2.5" fill="#ffffff" class="dot-scanner" />
+  </g>
+
+  <!-- Bottom 4 Status Badges Row -->
+  <g transform="translate(45, 205)">
+    <!-- Badge 1: 3-Node Mesh -->
+    <rect x="0" y="0" width="190" height="34" rx="10" fill="#080e22" stroke="#10b981" stroke-opacity="0.4" stroke-width="1.2" />
+    <circle cx="16" cy="17" r="4" fill="#10b981" class="pulse-beacon" />
+    <text x="28" y="15" fill="#6ee7b7" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="800">3-NODE K3D MESH</text>
+    <text x="28" y="27" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">100% Local Sandbox</text>
+
+    <!-- Badge 2: HMAC Anti-Cheat -->
+    <rect x="210" y="0" width="195" height="34" rx="10" fill="#080e22" stroke="#00f0ff" stroke-opacity="0.4" stroke-width="1.2" />
+    <circle cx="226" cy="17" r="4" fill="#00f0ff" class="pulse-beacon" />
+    <text x="238" y="15" fill="#7dd3fc" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="800">HMAC-SHA256 LOCK</text>
+    <text x="238" y="27" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">Attested Nonce Proofs</text>
+
+    <!-- Badge 3: Google Gemini SRE -->
+    <rect x="425" y="0" width="200" height="34" rx="10" fill="#080e22" stroke="#a855f7" stroke-opacity="0.4" stroke-width="1.2" />
+    <circle cx="441" cy="17" r="4" fill="#a855f7" class="pulse-beacon" />
+    <text x="453" y="15" fill="#d8b4fe" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="800">GOOGLE GEMINI SRE</text>
+    <text x="453" y="27" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">3-Tier Hints &amp; RCA</text>
+
+    <!-- Badge 4: Instant Rollback -->
+    <rect x="645" y="0" width="185" height="34" rx="10" fill="#080e22" stroke="#fbbf24" stroke-opacity="0.4" stroke-width="1.2" />
+    <circle cx="661" cy="17" r="4" fill="#fbbf24" class="pulse-beacon" />
+    <text x="673" y="15" fill="#fde68a" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="800">INSTANT ROLLBACK</text>
+    <text x="673" y="27" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">&lt;3s Clean Reset</text>
+  </g>
+</svg>

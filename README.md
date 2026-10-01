@@ -1,69 +1,95 @@
 <div align="center">
 
-# 🌩️ CloudArena
-### AI-Powered Cloud Infrastructure Survival Arena & SRE Chaos Simulator
+<!-- Animated Header Banner SVG -->
+<p align="center">
+  <img src="assets/header_animation.svg" alt="CloudArena Cyber Header Banner" width="100%" />
+</p>
 
-> **Survive real-world Kubernetes outages on your own laptop with $0 cloud bills, anti-cheat cryptographic verification, and Google Gemini AI incident mentorship.**
+<!-- Live Typewriter Animation via SVG -->
+<p align="center">
+  <a href="https://gdg-cloudarena.web.app">
+    <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=20&duration=2800&pause=1000&color=00F0FF&center=true&vCenter=true&width=860&height=44&lines=Survive+Escalating+Kubernetes+Outages+Locally;100%25+Zero-Cost+Sandboxed+3-Node+k3d+Battlefield;Cryptographic+HMAC-SHA256+Anti-Cheat+Score+Attestation;Google+Gemini+AI+Incident+Mentor+%26+Automated+RCA;Co-op+Squad+CTF+Tournament+Mode+for+GDG+Hackathons;Instant+Wave+Rollback+Engine+(%3C3s+Clean+Reset)" alt="CloudArena Typing Headline" />
+  </a>
+</p>
 
-<br/>
+<!-- Official Event Badges & Hackathon Stickers -->
+<p align="center">
+  <a href="https://gdg-cloudarena.web.app"><img src="https://img.shields.io/badge/GDG%20Hackathon-2026%20Ready-EA4335?style=for-the-badge&logo=google&logoColor=white" alt="GDG Hackathon 2026" /></a>
+  <a href="https://k3d.io"><img src="https://img.shields.io/badge/Compute%20Bill-%240.00%20(Local%20k3d)-00C853?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Zero Cost" /></a>
+  <a href="tests"><img src="https://img.shields.io/badge/Unit%20Tests-99%2F99%20Passing-00E5FF?style=for-the-badge&logo=pytest&logoColor=black" alt="99 Tests Passing" /></a>
+  <a href="https://deepmind.google/technologies/gemini/"><img src="https://img.shields.io/badge/AI%20Incident%20Mentor-Google%20Gemini-7C4DFF?style=for-the-badge&logo=googlegemini&logoColor=white" alt="Gemini AI SRE Mentor" /></a>
+  <a href="https://gdg-cloudarena.web.app/verify"><img src="https://img.shields.io/badge/Anti--Cheat-HMAC--SHA256%20Verified-FF9100?style=for-the-badge&logo=auth0&logoColor=white" alt="Anti-Cheat HMAC" /></a>
+  <a href="https://gdg-cloudarena.web.app"><img src="https://img.shields.io/badge/Tournament%20Mode-Co--op%20Squad%20CTF-E040FB?style=for-the-badge&logo=target&logoColor=white" alt="Co-op Squad CTF" /></a>
+</p>
 
-[![GDG Hackathon](https://img.shields.io/badge/GDG%20Hackathon-2026%20Ready-EA4335?style=for-the-badge&logo=google&logoColor=white)](https://gdg-cloudarena.web.app)
-[![Zero Cost](https://img.shields.io/badge/Compute%20Bill-%240.00%20(Local%20k3d)-00C853?style=for-the-badge&logo=kubernetes&logoColor=white)](https://k3d.io)
-[![Tests Passing](https://img.shields.io/badge/Unit%20Tests-99%2F99%20Passing-00E5FF?style=for-the-badge&logo=pytest&logoColor=black)](tests)
-[![AI Mentor](https://img.shields.io/badge/AI%20Incident%20Mentor-Google%20Gemini-7C4DFF?style=for-the-badge&logo=googlegemini&logoColor=white)](https://deepmind.google/technologies/gemini/)
-[![Anti-Cheat](https://img.shields.io/badge/Anti--Cheat-HMAC--SHA256%20Verified-FF9100?style=for-the-badge&logo=auth0&logoColor=white)](https://gdg-cloudarena.web.app/verify)
-[![Co-op Squad](https://img.shields.io/badge/Tournament%20Mode-Co--op%20Squad%20CTF-E040FB?style=for-the-badge&logo=target&logoColor=white)](https://gdg-cloudarena.web.app)
-
-<br/>
-
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
-[![k3d Kubernetes](https://img.shields.io/badge/Cluster-k3d%20v1.30-326CE5?style=flat-square&logo=kubernetes&logoColor=white)](https://k3d.io)
-[![Vite + React](https://img.shields.io/badge/Web%20Platform-Vite%20%2B%20React%20%2B%20Tailwind-61DAFB?style=flat-square&logo=react&logoColor=black)](web)
-[![Firebase Hosting](https://img.shields.io/badge/Cloud%20Hosting-Firebase%20CDN-FFCA28?style=flat-square&logo=firebase&logoColor=black)](https://gdg-cloudarena.web.app)
+<!-- Tech Stack Pills -->
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" />
+  <img src="https://img.shields.io/badge/Cluster-k3d%20v1.30-326CE5?style=flat-square&logo=kubernetes&logoColor=white" alt="k3d v1.30" />
+  <img src="https://img.shields.io/badge/Web%20Platform-React%20%2B%20Tailwind-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React Platform" />
+  <img src="https://img.shields.io/badge/Cloud%20Hosting-Firebase%20CDN-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase Hosting" />
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT License" />
+</p>
 
 <br/>
 
 ### 🌐 Live Production Platform & Tournament Portal
 ### 👉 **[https://gdg-cloudarena.web.app](https://gdg-cloudarena.web.app)** 👈
-*Real-time leaderboard, personal token minting, co-op squad passport, auditorium projector mode, and public certificate verifier.*
+*Real-time leaderboard standings, personal token passport minting, co-op squad management, auditorium projector mode, and public SRE certificate verifier.*
 
 </div>
 
 ---
 
-## ⚡ Hackathon Quickstart (1-Minute Setup)
+## ⚡ 1-Minute Zero-Friction Setup
 
-CloudArena features **automated zero-friction installers** that auto-detect your operating system, check Docker daemon readiness, and download sandboxed tooling into user-space (`~/.cloudarena/bin/`) without touching your global environment.
+CloudArena features **automated zero-friction installers** that auto-detect your operating system, verify Docker daemon readiness, and download sandboxed tooling into user-space (`~/.cloudarena/bin/`) without altering your global `~/.kube/config`.
+
+<table width="100%">
+<tr>
+<td width="50%" valign="top">
 
 ### 🐧 Linux & 🍎 macOS (Terminal)
 ```bash
 curl -sSL https://gdg-cloudarena.web.app/install.sh | bash
 ```
 
-### 🪟 Windows (PowerShell as Administrator)
+</td>
+<td width="50%" valign="top">
+
+### 🪟 Windows (PowerShell as Admin)
 ```powershell
 irm https://gdg-cloudarena.web.app/install.ps1 | iex
 ```
-*(Alternative Windows direct pip install)*:
-```powershell
-pip install https://github.com/AdityaPatra-dev/CloudArena/archive/refs/heads/main.zip
-```
 
-> 💡 **Zero-PATH Fallback:** If your terminal does not have `~/.local/bin` in `$PATH`, run any command directly with:
+</td>
+</tr>
+</table>
+
+> 💡 **Zero-PATH Fallback:** If your terminal does not have `~/.local/bin` in `$PATH`, you never get stuck. Simply prepend `python3 -m`:
 > ```bash
 > python3 -m cloudarena <command>
 > ```
 
 ---
 
+## 🖥️ Live Terminal Battle Simulation
+
+Watch the complete incident survival loop below—from spinning up the 3-node cluster, injecting chaos, and stabilizing synthetic traffic, to cryptographic score attestation:
+
+<p align="center">
+  <img src="assets/terminal_animation.svg" alt="Animated Terminal Battle Loop" width="100%" />
+</p>
+
+---
+
 ## 🎮 The 4-Step Hackathon Battle Loop
 
 ```text
-  ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
-  │  1. Link Token  │ ────> │ 2. Start Mesh   │ ────> │ 3. Enter Wave   │ ────> │ 4. Watch & Win  │
-  │ cloudarena link │       │ cloudarena start│       │wave start <id>  │       │cloudarena watch │
-  └─────────────────┘       └─────────────────┘       └─────────────────┘       └─────────────────┘
+  ┌───────────────────────┐       ┌───────────────────────┐       ┌───────────────────────┐       ┌───────────────────────┐
+  │  1. Link Token        │ ────> │ 2. Start Mesh         │ ────> │ 3. Enter Chaos Wave   │ ────> │ 4. Watch & Attest     │
+  │  cloudarena link ...  │       │  cloudarena start     │       │  wave start <id>      │       │  cloudarena wave watch│
+  └───────────────────────┘       └───────────────────────┘       └───────────────────────┘       └───────────────────────┘
 ```
 
 ```bash
@@ -89,36 +115,6 @@ cloudarena postmortem 1
 
 ---
 
-## 🖥️ Live Terminal Simulation
-
-```console
-$ cloudarena start
-╭────────────────────────────────────────────────────────────╮
-│ 🚀 CloudArena Cluster Launcher                             │
-│ • Checking prerequisites: Docker Engine ✓, k3d ✓, kubectl ✓│
-│ • Creating 3-node mesh (1 server + 2 agents)...            │
-│ • Deploying microservices: frontend, backend-api, cache    │
-│ ✓ All pods in namespace "cloudarena-app" are Healthy [3/3] │
-╰────────────────────────────────────────────────────────────╯
-
-$ cloudarena wave start 1
-╭──────────────────────── ⚔️ Wave 1 Injected ────────────────────────╮
-│ ⚠️ INCIDENT ACTIVE: Wave 1: Rogue CPU Hog                          │
-│ Observed Symptoms: Node CPU saturates at 98.4%; probe latency spikes│
-│ Attestation Nonce: hmac_w1_7f8a9b committed to cluster secret.     │
-│ Mission: Investigate pods, eliminate rogue workload, restore health│
-╰────────────────────────────────────────────────────────────────────╯
-
-$ cloudarena wave watch
-📊 CloudArena Real-Time Telemetry Monitor
-[████████████████████████████████] 100.0% Traffic Success (120 req/s)
-⏱️ Stabilization window: 10.0s / 10.0s [STABLE ✓]
-🔐 Cryptographic HMAC proof generated: ca_cert_7f8a9b2c3d4e5f60
-🏆 WAVE 1 CLEARED! +500 PTS SYNCED TO LIVE LEADERBOARD.
-```
-
----
-
 ## 🌊 The 8 Escalating Chaos Waves
 
 Every wave injects an authentic SRE disaster into your cluster alongside an encrypted HMAC attestation nonce.
@@ -138,64 +134,46 @@ Every wave injects an authentic SRE disaster into your cluster alongside an encr
 
 ---
 
-## 🏛️ End-to-End Architecture
+## 🏛️ End-to-End Architecture & Data Flow
 
-```mermaid
-flowchart TD
-    subgraph Laptop["💻 Competitor Laptop (Local Sandbox)"]
-        CLI["CloudArena CLI<br/>(Typer + Rich)"]
-        Docker["Docker Engine"]
-        
-        subgraph K3D["3-Node k3d Cluster ($0 Cost)"]
-            ControlPlane["control-plane-0"]
-            Worker1["agent-worker-1"]
-            Worker2["agent-worker-2"]
-            AppNS["Namespace: cloudarena-app<br/>(Frontend, API, Redis)"]
-            ChaosNS["Chaos Injection Engine<br/>(8 Escalating Outages)"]
-        end
-        
-        AttestationEngine["HMAC-SHA256 Nonce<br/>Attestation Engine"]
-    end
+Live animated topology illustrating the local sandboxed cluster, cryptographic nonce verification, and the Google Gemini AI cloud platform:
 
-    subgraph Cloud["☁️ Cloud Platform (Firebase + Google Gemini)"]
-        WebPortal["Web Platform & Dashboard<br/>gdg-cloudarena.web.app"]
-        Firestore["Cloud Firestore<br/>(Single-Doc Cache Strategy)"]
-        GeminiAI["Google Gemini AI<br/>Incident Mentor & RCA"]
-        CertVerifier["Public SRE Certificate &<br/>Badge Verifier"]
-    end
-
-    CLI --> Docker
-    Docker --> K3D
-    ChaosNS -.-> AppNS
-    CLI --> AttestationEngine
-    AttestationEngine -- "Cryptographic Proof" --> Firestore
-    Firestore --> WebPortal
-    WebPortal --> CertVerifier
-    CLI -- "cloudarena hint" --> GeminiAI
-```
+<p align="center">
+  <img src="assets/architecture_flow.svg" alt="CloudArena Animated Architecture Flow" width="100%" />
+</p>
 
 ---
 
-## 👥 Co-op Squad Mode (CTF Team Standings)
+## 👥 Co-op Squad CTF Mode (Team Standings)
 
 Team up with 2 to 10 engineers in **Co-op Squad Mode**!
 * **Squad Passport:** Cadets generate a shareable Squad Code on the web portal.
 * **Collective Scoring:** Incident clearances and speed bonuses aggregate into a unified squad score.
 * **Role Specialization:** Assign teammates specialized SRE roles:
-  * 🛡️ *Squad Captain*
-  * ⚡ *Chaos Specialist*
-  * 🔍 *Triage Engineer*
-  * 🏗️ *Platform Architect*
+  * 🛡️ **Squad Captain:** Coordinates triage protocol and syncs team scores.
+  * ⚡ **Chaos Specialist:** Isolates rogue workloads and repairs manifests.
+  * 🔍 **Triage Engineer:** Analyzes pod logs and inspects container events.
+  * 🏗️ **Platform Architect:** Configures autoscaling, storage volumes, and DNS.
+
+```bash
+# Link your terminal directly to your squad
+cloudarena link <ARENA_TOKEN> --team <SQUAD_CODE>
+```
 
 ---
 
 ## 🤖 AI Incident Mentor (Google Gemini SRE)
 
 CloudArena features a built-in AI Incident Mentor providing progressive anti-spoiler clues:
-* **Tier 1 (Nudge -10 pts):** Points in the general direction (e.g. check container events).
+* **Tier 1 (Nudge -10 pts):** Points in the general direction (e.g., check container events).
 * **Tier 2 (Guidance -25 pts):** Highlights the specific misconfigured manifest or flag.
 * **Tier 3 (Solution -50 pts):** Provides exact kubectl remediation commands.
 * **Automated RCA:** Cleared incidents generate a comprehensive Gemini SRE root cause analysis with prevention best practices.
+
+```bash
+# Request guidance (prompts confirmation before deducting points)
+cloudarena hint
+```
 
 ---
 
@@ -213,6 +191,44 @@ CloudArena features a built-in AI Incident Mentor providing progressive anti-spo
 Every cadet who clears all 8 challenge waves earns a **cryptographically verifiable SRE Certificate** and SVG Badge minted with their unique signature, completion time, and tournament event ID:
 * Online verification endpoint: `https://gdg-cloudarena.web.app?verify=<CERT_ID>`
 * Fully printable, SVG-rendered, tamper-evident.
+
+---
+
+## 📂 Master Playbooks & Collapsible Deep Dives
+
+<details>
+<summary><b>🏆 Hackathon Organizer Quick Guide (Click to Expand)</b></summary>
+<br/>
+
+1. **Create Tournament Event:** Sign in at [https://gdg-cloudarena.web.app](https://gdg-cloudarena.web.app) with your Google account.
+2. **Elevate to Organizer:** Enter the master passcode `admin2026` in the Organizer Verification card.
+3. **Auditorium Projector Mode:** Click the **Projector** button in the navigation bar to launch the high-contrast spectator scoreboard with real-time audio sound effects.
+4. **Leaderboard Freeze:** Use the Organizer Command Center to freeze scores during the final 30 minutes for a dramatic reveal ceremony!
+</details>
+
+<details>
+<summary><b>🧑‍💻 Competitor Troubleshooting & Zero-PATH Guide (Click to Expand)</b></summary>
+<br/>
+
+* **Command not recognized?** If you see `bash: cloudarena: command not found`, run:
+  ```bash
+  export PATH="$HOME/.local/bin:$PATH"
+  ```
+  Or use Zero-PATH mode:
+  ```bash
+  python3 -m cloudarena <command>
+  ```
+* **Docker daemon not running?** Ensure Docker Engine or Docker Desktop is active. CloudArena will automatically notify you if Docker needs to be started.
+* **Reset wave without restarting cluster?** Run `cloudarena reset` to wipe out-of-order changes in under 3 seconds!
+</details>
+
+<details>
+<summary><b>📖 Comprehensive Incident Solutions & Playbook (Click to Expand)</b></summary>
+<br/>
+
+For an exhaustive, step-by-step engineering walkthrough of all 8 challenge waves, root cause analyses, diagnostic commands, and solutions, consult:
+👉 **[WAVES_MASTER_PLAYBOOK_AND_SOLUTIONS.md](WAVES_MASTER_PLAYBOOK_AND_SOLUTIONS.md)**
+</details>
 
 ---
 
